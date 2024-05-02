@@ -19,6 +19,8 @@ find_package(Hedgehog REQUIRED)
 
 # OpenBLAS
 find_package(OpenBLAS QUIET)
+# OpenBLAS
+find_package(X11 QUIET)
 
 # Cuda
 find_package(CUDA QUIET)
@@ -42,3 +44,4 @@ set(hh_img_files
 
 # main executable
 add_executable(hh-img ${hh_img_files})
+target_link_libraries(hh-img ${X11_LIBRARIES})
