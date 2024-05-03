@@ -32,12 +32,6 @@ template <typename T> class AbstractPixel {
     /* operators **************************************************************/
 
     std::shared_ptr<AbstractPixel<T>>
-    operator=(std::shared_ptr<AbstractPixel<T>> const other) {
-        set(other->red(), other->green(), other->blue(), other->alpha());
-        return *this;
-    }
-
-    std::shared_ptr<AbstractPixel<T>>
     operator+(std::shared_ptr<AbstractPixel<T>> const other) {
         auto add = [this](T a, T b) { return a + b; };
         apply(other, add);
