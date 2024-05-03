@@ -1,9 +1,8 @@
 #ifndef MASK_APPLIER_HPP
 #define MASK_APPLIER_HPP
 #include "../abstract/abstract_algorithm.h"
-#include "../abstract/data/abstract_image.h"
 #include "../concrete/data/mask.h"
-#include <iostream>
+#include <queue>
 
 namespace hhimg {
 
@@ -18,34 +17,57 @@ template <typename T> class MaskApplier : public AbstractAlgorithm<T> {
         size_t halfHeight = mask_.height() / 2;
         size_t beginX = halfWidth, endX = image->width() - halfWidth;
         size_t beginY = halfHeight, endY = image->height() - halfHeight;
+        std::queue<PixelValue> values;
 
         for (size_t y = beginY; y < endY; ++y) {
             for (size_t x = beginX; x < endX; ++x) {
-                applyMask(x, y, image);
+                values.push(computeValue(x, y, image));
             }
         }
+        applyValues(image, values);
         return image;
     }
 
   private:
     Mask<mask_type> mask_;
 
-    void applyMask(size_t x, size_t y, ImgData<T> image) const {
-        mask_type result[3] = {0};
+    struct PixelValue {
+        mask_type red;
+        mask_type green;
+        mask_type blue;
+    };
+
+    PixelValue computeValue(size_t x, size_t y, ImgData<T> image) const {
         int halfWidth = mask_.width() / 2;
         int halfHeight = mask_.height() / 2;
+        PixelValue result = {0, 0, 0};
 
         for (size_t my = 0; my < mask_.height(); ++my) {
             for (size_t mx = 0; mx < mask_.width(); ++mx) {
                 auto pixel = image->at(x + mx - halfWidth, y + my - halfHeight);
                 mask_type value = mask_.get(mx, my);
-                result[0] += pixel->red() * value;
-                result[1] += pixel->green() * value;
-                result[2] += pixel->blue() * value;
+                result.red += pixel->red() * value;
+                result.green += pixel->green() * value;
+                result.blue += pixel->blue() * value;
             }
         }
-        image->at(x, y)->set(validate(result[0]), validate(result[1]),
-                            validate(result[2]));
+        return result;
+    }
+
+    void applyValues(ImgData<T> image, std::queue<PixelValue>& values) const {
+        size_t halfWidth = mask_.width() / 2;
+        size_t halfHeight = mask_.height() / 2;
+        size_t beginX = halfWidth, endX = image->width() - halfWidth;
+        size_t beginY = halfHeight, endY = image->height() - halfHeight;
+
+        for (size_t y = beginY; y < endY; ++y) {
+            for (size_t x = beginX; x < endX; ++x) {
+                PixelValue value = values.front();
+                image->at(x, y)->set(validate(value.red), validate(value.green),
+                                    validate(value.blue));
+                values.pop();
+            }
+        }
     }
 
     mask_type validate(mask_type value) const {

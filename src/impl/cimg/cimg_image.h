@@ -1,15 +1,17 @@
 #ifndef CIMG_IMAGE_HPP
 #define CIMG_IMAGE_HPP
-#include <hhimg/hhimg.h>
 #include "cimg_pixel.h"
 #include <CImg/CImg.h>
+#include <hhimg/hhimg.h>
 
 template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
   public:
     CImgImage(std::string const &filename)
-        : hhimg::AbstractImage<unsigned char>(filename), image_(filename.c_str()) {}
+        : hhimg::AbstractImage<unsigned char>(filename),
+          image_(filename.c_str()) {}
     CImgImage(CImgImage const &other)
-        : hhimg::AbstractImage<unsigned char>(other.filename()), image_(other.image_) {}
+        : hhimg::AbstractImage<unsigned char>(other.filename()),
+          image_(other.image_) {}
 
     const cimg_library::CImg<T> &image() const { return image_; }
     cimg_library::CImg<T> &image() { return image_; }

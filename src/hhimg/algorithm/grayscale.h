@@ -1,6 +1,5 @@
 #ifndef GRAYSCALE_HPP
 #define GRAYSCALE_HPP
-#include "../abstract/data/abstract_image.h"
 #include "hhimg/abstract/abstract_algorithm.h"
 
 namespace hhimg {
