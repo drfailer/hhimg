@@ -8,7 +8,7 @@ namespace hhimg {
 
 template <typename T> class Mask {
   public:
-    Mask(std::vector<int> mask, size_t width, size_t height)
+    Mask(std::vector<T> mask, size_t width, size_t height)
         : mask_(mask), width_(width), height_(height) {
         if (width % 2 == 0 || height % 2 == 0) {
             throw std::invalid_argument("error: the width and the height of a "
@@ -23,7 +23,7 @@ template <typename T> class Mask {
     T get(size_t mx, size_t my) const { return mask_[my * width_ + mx]; }
 
   private:
-    std::vector<int> mask_ = {};
+    std::vector<T> mask_ = {};
     size_t width_ = 0;
     size_t height_ = 0;
 };
