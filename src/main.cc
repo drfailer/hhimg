@@ -9,8 +9,8 @@ int main(int, char **) {
     auto image = std::make_shared<CImgImage<PixelType>>("../img/rivendell.jpg");
     std::vector<double> v(9, 1.0 / 9);
     hhimg::Mask<double> meanFilter(v, 3, 3);
-    hhimg::Mask<double> horizontalBorders({-1, 0, 1}, 3, 1);
-    hhimg::Mask<double> verticalBorders({-1, 0, 1}, 1, 3);
+    hhimg::Mask<double> verticalBorders({-1, 0, 1}, 3, 1);
+    hhimg::Mask<double> horizontalBorders({-1, 0, 1}, 1, 3);
 
     /* image |= hhimg::GrayScale<PixelType>() | hhimg::MaskApplier<PixelType, double>(horizontalBorders); */
     image |= hhimg::GrayScale<PixelType>() |
