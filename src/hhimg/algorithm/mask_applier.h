@@ -1,51 +1,56 @@
 #ifndef MASK_APPLIER_HPP
 #define MASK_APPLIER_HPP
+#include "../abstract/abstract_algorithm.h"
 #include "../abstract/data/abstract_image.h"
 #include "../concrete/data/mask.h"
+#include <iostream>
 
 namespace hhimg {
 
-template <typename T> class MaskApplier {
+template <typename T> class MaskApplier : public AbstractAlgorithm<T> {
   public:
-    MaskApplier(Mask<T> const &mask) : mask_(mask) {}
+    using mask_type = double;
+    MaskApplier(Mask<mask_type> const &mask) : mask_(mask) {}
     ~MaskApplier() = default;
 
-    void operator()(std::shared_ptr<AbstractImage<T>> image) {
+    AbstractImage<T> &operator()(AbstractImage<T> &image) const override {
         size_t halfWidth = mask_.width() / 2;
         size_t halfHeight = mask_.height() / 2;
-        size_t beginX = halfWidth, endX = image->width() - halfWidth;
-        size_t beginY = halfHeight, endY = image->height() - halfHeight;
+        size_t beginX = halfWidth, endX = image.width() - halfWidth;
+        size_t beginY = halfHeight, endY = image.height() - halfHeight;
 
         for (size_t y = beginY; y < endY; ++y) {
             for (size_t x = beginX; x < endX; ++x) {
                 applyMask(x, y, image);
             }
         }
+        return image;
     }
 
   private:
-    Mask<T> mask_;
+    Mask<mask_type> mask_;
 
-    void applyMask(size_t x, size_t y,
-                   std::shared_ptr<AbstractImage<T>> image) {
-        T result[3] = {0};
+    void applyMask(size_t x, size_t y, AbstractImage<T> &image) const {
+        mask_type result[3] = {0};
         int halfWidth = mask_.width() / 2;
         int halfHeight = mask_.height() / 2;
 
-        for (int my = -halfHeight; my <= halfHeight; ++my) {
-            for (int mx = -halfWidth; mx <= halfWidth; ++mx) {
-                auto pixel = image->at(x + mx, y + my);
-                int value = mask_.get(my + halfHeight, mx + halfWidth);
-                result[0] += pixel.red() * value;
-                result[1] += pixel.green() * value;
-                result[2] += pixel.blue() * value;
+        for (size_t my = 0; my < mask_.height(); ++my) {
+            for (size_t mx = 0; mx < mask_.width(); ++mx) {
+                /* std::cout << "halfWidth: " << halfWidth << std::endl; */
+                /* std::cout << "halfHeight: " << halfHeight << std::endl; */
+                auto pixel = image.at(x + mx - halfWidth, y + my - halfHeight);
+                mask_type value = mask_.get(mx, my);
+                result[0] += pixel->red() * value;
+                result[1] += pixel->green() * value;
+                result[2] += pixel->blue() * value;
             }
         }
-        image->at(x, y)->set(validate(result[0]), validate(result[1]),
-                             validate(result[2]));
+        image.at(x, y)->set(validate(result[0]), validate(result[1]),
+                            validate(result[2]));
     }
 
-    int validate(int value) const {
+    mask_type validate(mask_type value) const {
         if (value < 0)
             return 0;
         if (value > 255)

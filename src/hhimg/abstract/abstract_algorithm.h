@@ -9,8 +9,7 @@ template <typename T> struct AbstractAlgorithm {
     AbstractAlgorithm() = default;
     virtual ~AbstractAlgorithm() {}
 
-    virtual AbstractImage<T> const &
-    operator()(AbstractImage<T> &image) const = 0;
+    virtual AbstractImage<T> &operator()(AbstractImage<T> &image) const = 0;
 };
 
 } // namespace hhimg
