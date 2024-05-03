@@ -10,7 +10,8 @@ template <typename T> struct ChainAlgorithm : public AbstractAlgorithm<T> {
                    AbstractAlgorithm<T> const &algorithm2)
         : algorithm1_(algorithm1), algorithm2_(algorithm2) {}
 
-    AbstractImage<T> &operator()(AbstractImage<T> &image) const override {
+    std::shared_ptr<AbstractImage<T>>
+    operator()(std::shared_ptr<AbstractImage<T>> image) const override {
         return algorithm2_(algorithm1_(image));
     }
 

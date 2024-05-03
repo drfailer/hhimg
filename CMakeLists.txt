@@ -47,6 +47,7 @@ set(hh_img_files
     ./src/hhimg/abstract/abstract_pixel_factory.h
     ./src/hhimg/abstract/abstract_algorithm.h
     ./src/hhimg/concrete/data/mask.h
+    ./src/hhimg/concrete/chain_algorithm.h
     ./src/hhimg/algorithm/grayscale.h
     ./src/hhimg/algorithm/mask_applier.h
     )

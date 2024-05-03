@@ -1,6 +1,6 @@
 #ifndef ABSTRACT_IMAGE_HPP
 #define ABSTRACT_IMAGE_HPP
-#include "../abstract_algorithm.h"
+/* #include "../abstract_algorithm.h" */
 #include "abstract_pixel.h"
 #include <cstddef>
 #include <memory>
@@ -56,10 +56,10 @@ template <typename T> class AbstractImage {
 
     virtual std::shared_ptr<AbstractImage<T>> copy() const = 0;
 
-    AbstractImage<T> const &
-    operator|=(hhimg::AbstractAlgorithm<T> const &algorithm) {
-        return algorithm(*this);
-    }
+    /* AbstractImage<T> const & */
+    /* operator|=(hhimg::AbstractAlgorithm<T> const &algorithm) { */
+    /*     return algorithm(*this); */
+    /* } */
 
   protected:
     virtual std::shared_ptr<AbstractPixel<T>> atImpl(size_t offset) = 0;

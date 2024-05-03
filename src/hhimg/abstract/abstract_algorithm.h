@@ -1,16 +1,26 @@
 #ifndef ABSTRACT_ALGORITHM_HPP
 #define ABSTRACT_ALGORITHM_HPP
+#include "../abstract/data/abstract_image.h"
+#include <memory>
 
 namespace hhimg {
 
 template <typename T> class AbstractImage;
+template <typename T> using ImgData = std::shared_ptr<AbstractImage<T>>;
 
 template <typename T> struct AbstractAlgorithm {
     AbstractAlgorithm() = default;
     virtual ~AbstractAlgorithm() {}
 
-    virtual AbstractImage<T> &operator()(AbstractImage<T> &image) const = 0;
+    virtual ImgData<T> operator()(ImgData<T> image) const = 0;
 };
+
+// TODO: if possible use a constraint to check if Img derive from AbstractImage
+template <typename Img, typename T>
+ImgData<T> operator|=(std::shared_ptr<Img> &image,
+                      hhimg::AbstractAlgorithm<T> const &algorithm) {
+    return algorithm(image);
+}
 
 } // namespace hhimg
 

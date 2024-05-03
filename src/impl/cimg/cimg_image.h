@@ -9,7 +9,7 @@ template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
     CImgImage(std::string const &filename)
         : hhimg::AbstractImage<unsigned char>(filename), image_(filename.c_str()) {}
     CImgImage(CImgImage const &other)
-        : hhimg::AbstractImage<unsigned char>(other.filename_), image_(other.image_) {}
+        : hhimg::AbstractImage<unsigned char>(other.filename()), image_(other.image_) {}
 
     const cimg_library::CImg<T> &image() const { return image_; }
     cimg_library::CImg<T> &image() { return image_; }
@@ -27,8 +27,7 @@ template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
     }
 
     std::shared_ptr<hhimg::AbstractImage<T>> copy() const override {
-        /* return std::make_shared<CImgPixel<T>>(this->filename()); */
-        return nullptr;
+        return std::make_shared<CImgImage<T>>(*this);
     }
 
   private:
