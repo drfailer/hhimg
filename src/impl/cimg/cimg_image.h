@@ -32,6 +32,12 @@ template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
         return std::make_shared<CImgImage<T>>(*this);
     }
 
+    void set(std::shared_ptr<hhimg::AbstractImage<T>> &&other) override {
+        auto i = std::static_pointer_cast<CImgImage<T>>(other);
+        this->filename(other->filename());
+        image_.swap(i->image());
+    }
+
   private:
     cimg_library::CImg<T> image_;
 

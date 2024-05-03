@@ -55,11 +55,7 @@ template <typename T> class AbstractImage {
     virtual void save(std::string const &filename) = 0;
 
     virtual std::shared_ptr<AbstractImage<T>> copy() const = 0;
-
-    /* AbstractImage<T> const & */
-    /* operator|=(hhimg::AbstractAlgorithm<T> const &algorithm) { */
-    /*     return algorithm(*this); */
-    /* } */
+    virtual void set(std::shared_ptr<AbstractImage<T>> &&other) = 0;
 
   protected:
     virtual std::shared_ptr<AbstractPixel<T>> atImpl(size_t offset) = 0;

@@ -20,16 +20,7 @@ template <typename T> struct AbstractAlgorithm {
 // TODO: if possible use a constraint to check if Img derive from AbstractImage
 template <typename Img, typename T>
 std::shared_ptr<Img> operator|=(std::shared_ptr<Img> image, AbstractAlgorithm<T> const &algorithm) {
-    auto result = algorithm(image);
-
-    if (result.get() != image.get()) {
-        for (size_t y = 0; y < result->height(); ++y) {
-            for (size_t x = 0; x < result->width(); ++x) {
-                image->at(x, y)->set(result->at(x, y));
-            }
-        }
-    }
-
+    image->set(algorithm(image));
     return image;
 }
 
