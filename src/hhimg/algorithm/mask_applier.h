@@ -2,14 +2,13 @@
 #define MASK_APPLIER_HPP
 #include "../abstract/abstract_algorithm.h"
 #include "../concrete/data/mask.h"
-#include <queue>
 
 namespace hhimg {
 
-template <typename T> class MaskApplier : public AbstractAlgorithm<T> {
+template <typename T, typename MaskType>
+class MaskApplier : public AbstractAlgorithm<T> {
   public:
-    using mask_type = double;
-    MaskApplier(Mask<mask_type> const &mask) : mask_(mask) {}
+    MaskApplier(Mask<MaskType> const &mask) : mask_(mask) {}
     ~MaskApplier() = default;
 
     ImgData<T> operator()(ImgData<T> image) const override {
@@ -17,26 +16,26 @@ template <typename T> class MaskApplier : public AbstractAlgorithm<T> {
         size_t halfHeight = mask_.height() / 2;
         size_t beginX = halfWidth, endX = image->width() - halfWidth;
         size_t beginY = halfHeight, endY = image->height() - halfHeight;
-        std::queue<PixelValue> values;
         auto result = image->copy();
 
         for (size_t y = beginY; y < endY; ++y) {
             for (size_t x = beginX; x < endX; ++x) {
                 auto value = computeValue(x, y, image);
                 result->at(x, y)->set(validate(value.red),
-                        validate(value.green), validate(value.blue));
+                                      validate(value.green),
+                                      validate(value.blue));
             }
         }
         return result;
     }
 
   private:
-    Mask<mask_type> mask_;
+    Mask<MaskType> mask_;
 
     struct PixelValue {
-        mask_type red;
-        mask_type green;
-        mask_type blue;
+        MaskType red;
+        MaskType green;
+        MaskType blue;
     };
 
     PixelValue computeValue(size_t x, size_t y, ImgData<T> image) const {
@@ -47,16 +46,15 @@ template <typename T> class MaskApplier : public AbstractAlgorithm<T> {
         for (size_t my = 0; my < mask_.height(); ++my) {
             for (size_t mx = 0; mx < mask_.width(); ++mx) {
                 auto pixel = image->at(x + mx - halfWidth, y + my - halfHeight);
-                mask_type value = mask_.get(mx, my);
-                result.red += pixel->red() * value;
-                result.green += pixel->green() * value;
-                result.blue += pixel->blue() * value;
+                result.red += pixel->red() * mask_.get(mx, my, 0);
+                result.green += pixel->green() * mask_.get(mx, my, 1);
+                result.blue += pixel->blue() * mask_.get(mx, my, 2);
             }
         }
         return result;
     }
 
-    mask_type validate(mask_type value) const {
+    MaskType validate(MaskType value) const {
         if (value < 0)
             return 0;
         if (value > 255)
