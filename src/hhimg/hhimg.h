@@ -10,6 +10,7 @@
 #include "./concrete/chain_algorithm.h"
 
 #include "./algorithm/mask_applier.h"
-#include "./algorithm/grayscale.h"
+#include "./algorithm/gray_scale.h"
+#include "./algorithm/non_maximum_suppression.h"
 
 #endif

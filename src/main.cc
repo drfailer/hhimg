@@ -1,8 +1,6 @@
-#include "hhimg/algorithm/non_maximum_suppression.h"
-#include "hhimg/concrete/data/mask.h"
+#include <hhimg/hhimg.h>
 #include "impl/cimg/cimg_image.h"
 #include <CImg/CImg.h>
-/* #include <hhimg/hhimg.h> */
 
 using PixelType = unsigned char;
 #undef GrayScale
@@ -14,8 +12,7 @@ int main(int, char **) {
     hhimg::Mask<double> horizontalBorders({-1, 0, 1}, 3, 1);
     hhimg::Mask<double> verticalBorders({-1, 0, 1}, 1, 3);
 
-    /* image |= hhimg::GrayScale<PixelType>() | hhimg::MaskApplier<PixelType,
-     * double>(horizontalBorders); */
+    /* image |= hhimg::GrayScale<PixelType>() | hhimg::MaskApplier<PixelType, double>(horizontalBorders); */
     image |= hhimg::GrayScale<PixelType>() |
              hhimg::MaskApplier<PixelType, double>(verticalBorders) |
              hhimg::NonMaximumSuppression<PixelType>(50);

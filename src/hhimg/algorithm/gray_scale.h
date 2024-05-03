@@ -1,5 +1,5 @@
-#ifndef GRAYSCALE_HPP
-#define GRAYSCALE_HPP
+#ifndef GRAY_SCALE_HPP
+#define GRAY_SCALE_HPP
 #include "hhimg/abstract/abstract_algorithm.h"
 
 namespace hhimg {
