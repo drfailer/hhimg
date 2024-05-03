@@ -11,7 +11,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake-mo
 set(Hedgehog_INCLUDE_DIR ./lib/AtomicHedeghog/)
 
 # added tclap
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/
+                    ${CMAKE_CURRENT_SOURCE_DIR}/src/)
 
 # Need to defined variable Hedgehog_INCLUDE_DIR to the hedgehog path
 # hedgehog
@@ -40,8 +41,16 @@ endif (NOT MSVC)
 
 # files of the project
 set(hh_img_files
-    src/main.cc)
+    ./src/hhimg/hhimg.h
+    ./src/hhimg/abstract/data/abstract_image.h
+    ./src/hhimg/abstract/data/abstract_pixel.h
+    ./src/hhimg/abstract/abstract_pixel_factory.h
+    ./src/hhimg/abstract/abstract_algorithm.h
+    ./src/hhimg/concrete/data/mask.h
+    ./src/hhimg/algorithm/grayscale.h
+    ./src/hhimg/algorithm/mask_applier.h
+    )
 
 # main executable
-add_executable(hh-img ${hh_img_files})
+add_executable(hh-img src/main.cc ${hh_img_files})
 target_link_libraries(hh-img ${X11_LIBRARIES})
