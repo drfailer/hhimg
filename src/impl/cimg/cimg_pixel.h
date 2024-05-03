@@ -1,9 +1,9 @@
 #ifndef CIMG_PIXEL_HPP
 #define CIMG_PIXEL_HPP
-#include "../../api/data/abastract_pixel.h"
+#include <hhimg/hhimg.h>
 
 template <typename T>
-class CImgPixel: public AbstractPixel<T> {
+class CImgPixel: public hhimg::AbstractPixel<T> {
   public:
     CImgPixel(T &red, T &green, T &blue):
         red_(red), green_(green), blue_(blue) {}
@@ -16,9 +16,9 @@ class CImgPixel: public AbstractPixel<T> {
     T green() const override { return green_; }
     T blue() const override { return blue_; }
     T alpha() const override { return 255; }
-    void red(T red) override { red_ = this->validate(red); }
-    void green(T green) override { green_ = this->validate(green); }
-    void blue(T blue) override { blue_ = this->validate(blue); }
+    void red(T red) override { red_ = red; }
+    void green(T green) override { green_ = green; }
+    void blue(T blue) override { blue_ = blue; }
     void alpha(T) override {}
 
     void set(T red, T green, T blue, T) override {
