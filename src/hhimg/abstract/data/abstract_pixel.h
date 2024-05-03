@@ -28,78 +28,44 @@ template <typename T> class AbstractPixel {
     // function for improving readability when working with gray images
     // (warn: we do not test if the pixel is actually gray)
     T get() const { return red(); }
-
-    /* operators **************************************************************/
-
-    std::shared_ptr<AbstractPixel<T>>
-    operator+(std::shared_ptr<AbstractPixel<T>> const other) {
-        auto add = [this](T a, T b) { return a + b; };
-        apply(other, add);
-        return *this;
-    }
-
-    std::shared_ptr<AbstractPixel<T>>
-    operator-(std::shared_ptr<AbstractPixel<T>> const other) {
-        auto sub = [this](T a, T b) { return a - b; };
-        apply(other, sub);
-        return *this;
-    }
-
-    std::shared_ptr<AbstractPixel<T>>
-    operator*(std::shared_ptr<AbstractPixel<T>> const other) {
-        auto div = [this](T a, T b) { return a * b; };
-        apply(other, div);
-        return *this;
-    }
-
-    std::shared_ptr<AbstractPixel<T>>
-    operator/(std::shared_ptr<AbstractPixel<T>> const other) {
-        auto div = [](T a, T b) { return a / b; }; // we suppose b > 0
-        apply(other, div);
-        return *this;
-    }
-
-    std::shared_ptr<AbstractPixel<T>> operator+(T value) {
-        auto add = [this](T a, T b) { return a + b; };
-        apply(value, add);
-        return *this;
-    }
-
-    std::shared_ptr<AbstractPixel<T>> operator-(T value) {
-        auto sub = [this](T a, T b) { return a - b; };
-        apply(value, sub);
-        return *this;
-    }
-
-    std::shared_ptr<AbstractPixel<T>> operator*(T value) {
-        auto div = [this](T a, T b) { return a * b; };
-        apply(value, div);
-        return *this;
-    }
-
-    std::shared_ptr<AbstractPixel<T>> operator/(T value) {
-        auto div = [](T a, T b) { return a / b; }; // we suppose b > 0
-        apply(value, div);
-        return *this;
-    }
-
-  protected:
-    void apply(std::shared_ptr<AbstractPixel<T>> const other,
-               std::function<T(T, T)> op) {
-        this->red(op(this->red(), other->red()));
-        this->green(op(this->green(), other->green()));
-        this->blue(op(this->blue(), other->blue()));
-        // this->alpha(op(this->alpha, other->alpha())); // don't touch the
-        // alpha here
-    }
-
-    void apply(T value, std::function<T(T, T)> op) {
-        this->red(op(this->red(), value));
-        this->green(op(this->green(), value));
-        this->blue(op(this->blue(), value));
-        // this->alpha(op(this->alpha, value)); // don't touch the alpha here
-    }
 };
+
+/******************************************************************************/
+/*                                 operators                                  */
+/******************************************************************************/
+
+namespace pixelOperators {
+
+template <typename T> using PixelPtr = std::shared_ptr<AbstractPixel<T>>;
+
+template <typename T>
+void apply(PixelPtr<T> &pixel, PixelPtr<T> const &other,
+           std::function<T(T, T)> op) {
+    pixel->red(op(pixel->red(), other->red()));
+    pixel->green(op(pixel->green(), other->green()));
+    pixel->blue(op(pixel->blue(), other->blue()));
+    // we don't modify alpha here
+}
+
+template <typename T>
+void apply(PixelPtr<T> &pixel, T value, std::function<T(T, T)> op) {
+    pixel->red(op(pixel->red(), value));
+    pixel->green(op(pixel->green(), value));
+    pixel->blue(op(pixel->blue(), value));
+    // we don't modify alpha here
+}
+
+#define PixelOperator(Op)                                                      \
+    template <typename T, typename RhsType>                                    \
+    PixelPtr<T> const &operator Op(PixelPtr<T> &pixel, RhsType rhs) {          \
+        auto op = [](T a, T b) { return a Op b; };                             \
+        apply(pixel, rhs, op);                                                 \
+        return pixel;                                                          \
+    }
+PixelOperator(+) PixelOperator(-) PixelOperator(*) PixelOperator(/)
+#undef PixelOperator
+
+} // namespace pixelOperators
 
 } // namespace hhimg
 
