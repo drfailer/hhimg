@@ -18,14 +18,16 @@ template <typename T> class MaskApplier : public AbstractAlgorithm<T> {
         size_t beginX = halfWidth, endX = image->width() - halfWidth;
         size_t beginY = halfHeight, endY = image->height() - halfHeight;
         std::queue<PixelValue> values;
+        auto result = image->copy();
 
         for (size_t y = beginY; y < endY; ++y) {
             for (size_t x = beginX; x < endX; ++x) {
-                values.push(computeValue(x, y, image));
+                auto value = computeValue(x, y, image);
+                result->at(x, y)->set(validate(value.red),
+                        validate(value.green), validate(value.blue));
             }
         }
-        applyValues(image, values);
-        return image;
+        return result;
     }
 
   private:
@@ -52,22 +54,6 @@ template <typename T> class MaskApplier : public AbstractAlgorithm<T> {
             }
         }
         return result;
-    }
-
-    void applyValues(ImgData<T> image, std::queue<PixelValue>& values) const {
-        size_t halfWidth = mask_.width() / 2;
-        size_t halfHeight = mask_.height() / 2;
-        size_t beginX = halfWidth, endX = image->width() - halfWidth;
-        size_t beginY = halfHeight, endY = image->height() - halfHeight;
-
-        for (size_t y = beginY; y < endY; ++y) {
-            for (size_t x = beginX; x < endX; ++x) {
-                PixelValue value = values.front();
-                image->at(x, y)->set(validate(value.red), validate(value.green),
-                                    validate(value.blue));
-                values.pop();
-            }
-        }
     }
 
     mask_type validate(mask_type value) const {
