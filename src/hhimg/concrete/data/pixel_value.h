@@ -10,9 +10,10 @@ template <typename T> class PixelValue : public AbstractPixel<T> {
   public:
     PixelValue(T red, T green, T blue, T alpha = 255)
         : red_(red), green_(green), blue_(blue), alpha_(alpha) {}
+    PixelValue(AbstractPixel<T> const &other)
+        : red_(other.red()), green_(other.green()), blue_(other.blue()), alpha_(other.alpha()) {}
     PixelValue(std::shared_ptr<AbstractPixel<T>> const &other)
-        : PixelValue(other->red(), other->green(), other->blue(),
-                     other->alpha()) {}
+        : red_(other->red()), green_(other->green()), blue_(other->blue()), alpha_(other->alpha()) {}
 
     T red() const override { return red_; }
     T green() const override { return green_; }

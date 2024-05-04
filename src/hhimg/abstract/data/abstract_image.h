@@ -56,8 +56,12 @@ template <typename T> class AbstractImage {
         return atImpl(offset);
     }
 
+    // type
+    using type = T;
+
   protected:
     virtual std::shared_ptr<AbstractPixel<T>> atImpl(size_t offset) = 0;
+    virtual std::shared_ptr<AbstractPixel<T>> const atImpl(size_t offset) const = 0;
 
   private:
     std::string filename_ = "";

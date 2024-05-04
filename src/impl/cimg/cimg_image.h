@@ -47,6 +47,13 @@ template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
         T &blue = image_.at(offset + 2 * width() * height() * image_.depth());
         return std::make_shared<CImgPixel<T>>(red, green, blue);
     }
+
+    std::shared_ptr<hhimg::AbstractPixel<T>> const atImpl(size_t offset) const override {
+        T red = image_.at(offset);
+        T green = image_.at(offset + width() * height() * image_.depth());
+        T blue = image_.at(offset + 2 * width() * height() * image_.depth());
+        return std::make_shared<hhimg::PixelValue<T>>(red, green, blue);
+    }
 };
 
 #endif

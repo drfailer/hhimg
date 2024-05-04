@@ -4,27 +4,27 @@
 #include "../concrete/data/pixel_value.h"
 #include <functional>
 
-template <typename T> using PixelPtr = std::shared_ptr<hhimg::AbstractPixel<T>>;
-
 template <typename T>
-void apply(PixelPtr<T> pixel, PixelPtr<T> other, std::function<T(T, T)> op) {
-    pixel->red(op(pixel->red(), other->red()));
-    pixel->green(op(pixel->green(), other->green()));
-    pixel->blue(op(pixel->blue(), other->blue()));
+void apply(hhimg::AbstractPixel<T> &pixel, hhimg::AbstractPixel<T> const &other,
+           std::function<T(T, T)> op) {
+    pixel.red(op(pixel.red(), other.red()));
+    pixel.green(op(pixel.green(), other.green()));
+    pixel.blue(op(pixel.blue(), other.blue()));
     // we don't modify alpha here
 }
 
 template <typename T>
-void apply(PixelPtr<T> pixel, T value, std::function<T(T, T)> op) {
-    pixel->red(op(pixel->red(), value));
-    pixel->green(op(pixel->green(), value));
-    pixel->blue(op(pixel->blue(), value));
+void apply(hhimg::AbstractPixel<T> &pixel, T value, std::function<T(T, T)> op) {
+    pixelred(op(pixel->red(), value));
+    pixelgreen(op(pixel->green(), value));
+    pixelblue(op(pixel->blue(), value));
     // we don't modify alpha here
 }
 
 #define PixelAffectationOperator(Op)                                           \
     template <typename T, typename RhsType>                                    \
-    PixelPtr<T> operator Op##=(PixelPtr<T> pixel, RhsType rhs) {               \
+    hhimg::AbstractPixel<T> const &operator Op##=(                             \
+        hhimg::AbstractPixel<T> &pixel, RhsType const &rhs) {                  \
         std::function<T(T, T)> op = [](T a, T b) { return a Op b; };           \
         apply(pixel, rhs, op);                                                 \
         return pixel;                                                          \
@@ -35,10 +35,10 @@ PixelAffectationOperator(+) PixelAffectationOperator(-)
 
 #define PixelOperator(Op)                                                      \
     template <typename T, typename RhsType>                                    \
-    std::shared_ptr<hhimg::PixelValue<T>> const &operator Op(                  \
-        PixelPtr<T> const &pixel, RhsType rhs) {                               \
-        auto op = [](T a, T b) { return a Op b; };                             \
-        auto result = std::make_shared<hhimg::PixelValue<T>>(pixel);           \
+    hhimg::PixelValue<T> operator Op(hhimg::AbstractPixel<T> const &pixel,     \
+                                     RhsType const &rhs) {                     \
+        std::function<T(T, T)> op = [](T a, T b) { return a Op b; };           \
+        hhimg::PixelValue<T> result(pixel);                                    \
         apply(result, rhs, op);                                                \
         return result;                                                         \
     }

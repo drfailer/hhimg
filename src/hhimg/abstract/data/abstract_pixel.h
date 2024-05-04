@@ -33,21 +33,12 @@ template <typename T> class AbstractPixel {
         set(other.red(), other.green(), other.blue(), other.alpha());
     }
 
-    // operator=
-    AbstractPixel<T> const &
-    operator=(std::shared_ptr<AbstractPixel<T>> const &other) {
-        this->set(other);
-        return *this;
-    }
-
-    AbstractPixel<T> const &operator=(AbstractPixel<T> const &other) {
-        this->set(other);
-        return *this;
-    }
-
     // function for improving readability when working with gray images
     // (warn: we do not test if the pixel is actually gray)
     T get() const { return red(); }
+
+    // type
+    using type = T;
 };
 
 } // namespace hhimg
