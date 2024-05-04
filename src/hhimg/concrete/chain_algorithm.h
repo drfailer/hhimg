@@ -18,12 +18,6 @@ template <typename T> struct ChainAlgorithm : public AbstractAlgorithm<T> {
     AbstractAlgorithm<T> const &algorithm2_;
 };
 
-template <typename T>
-ChainAlgorithm<T> operator|(AbstractAlgorithm<T> const &algorithm1,
-                            AbstractAlgorithm<T> const &algorithm2) {
-    return ChainAlgorithm<T>(algorithm1, algorithm2);
-}
-
 } // namespace hhimg
 
 #endif

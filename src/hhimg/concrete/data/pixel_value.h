@@ -30,21 +30,6 @@ template <typename T> class PixelValue : public AbstractPixel<T> {
     T alpha_ = 0;
 };
 
-namespace pixelOperators {
-
-#define PixelOperator(Op)                                                      \
-    template <typename T, typename RhsType>                                    \
-    std::shared_ptr<PixelValue<T>> const &operator Op(                         \
-        PixelPtr<T> const &pixel, RhsType rhs) {                               \
-        auto op = [](T a, T b) { return a Op b; };                             \
-        auto result = std::make_shared<PixelValue<T>>(pixel);                  \
-        apply(result, rhs, op);                                                \
-        return result;                                                         \
-    }
-PixelOperator(+) PixelOperator(-) PixelOperator(*) PixelOperator(/)
-#undef PixelOperator
-
-} // namespace pixelOperators
 } // namespace hhimg
 
 #endif

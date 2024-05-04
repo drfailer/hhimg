@@ -1,6 +1,5 @@
 #ifndef ABASTRACT_PIXEL_HPP
 #define ABASTRACT_PIXEL_HPP
-#include <functional>
 #include <memory>
 
 namespace hhimg {
@@ -52,38 +51,5 @@ template <typename T> class AbstractPixel {
 };
 
 } // namespace hhimg
-
-/******************************************************************************/
-/*                                 operators                                  */
-/******************************************************************************/
-
-template <typename T> using PixelPtr = std::shared_ptr<hhimg::AbstractPixel<T>>;
-
-template <typename T>
-void apply(PixelPtr<T> pixel, PixelPtr<T> other, std::function<T(T, T)> op) {
-    pixel->red(op(pixel->red(), other->red()));
-    pixel->green(op(pixel->green(), other->green()));
-    pixel->blue(op(pixel->blue(), other->blue()));
-    // we don't modify alpha here
-}
-
-template <typename T>
-void apply(PixelPtr<T> pixel, T value, std::function<T(T, T)> op) {
-    pixel->red(op(pixel->red(), value));
-    pixel->green(op(pixel->green(), value));
-    pixel->blue(op(pixel->blue(), value));
-    // we don't modify alpha here
-}
-
-#define PixelAffectationOperator(Op)                                           \
-    template <typename T, typename RhsType>                                    \
-    PixelPtr<T> operator Op##=(PixelPtr<T> pixel, RhsType rhs) {               \
-        std::function<T(T, T)> op = [](T a, T b) { return a Op b; };           \
-        apply(pixel, rhs, op);                                                 \
-        return pixel;                                                          \
-    }
-PixelAffectationOperator(+) PixelAffectationOperator(-)
-    PixelAffectationOperator(*) PixelAffectationOperator(/)
-#undef PixelAffectationOperator
 
 #endif

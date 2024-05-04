@@ -1,12 +1,9 @@
 #ifndef ABSTRACT_IMAGE_HPP
 #define ABSTRACT_IMAGE_HPP
-/* #include "../abstract_algorithm.h" */
 #include "abstract_pixel.h"
 #include <cstddef>
 #include <memory>
-#include <stdexcept>
 #include <string>
-#include <type_traits>
 
 namespace hhimg {
 
@@ -67,33 +64,5 @@ template <typename T> class AbstractImage {
 };
 
 } // namespace hhimg
-
-// operator-=
-template <typename Img>
-std::shared_ptr<Img> const &operator-=(std::shared_ptr<Img> &lhs,
-                                       std::shared_ptr<Img> const &rhs) {
-    if (lhs->width() != rhs->width() || lhs->height() != rhs->height()) {
-        throw std::invalid_argument(
-            "error: can't substract images with different shapes");
-    }
-    for (size_t y = 0; y < lhs->height(); ++y) {
-        for (size_t x = 0; x < lhs->width(); ++x) {
-            lhs->at(x, y) -= rhs->at(x, y);
-        }
-    }
-    return lhs;
-}
-
-// operator-
-template <typename Img>
-std::shared_ptr<Img> const &operator-(std::shared_ptr<Img> const &lhs,
-                                      std::shared_ptr<Img> const &rhs) {
-    if (lhs->width() != rhs->width() || lhs->height() != rhs->height()) {
-        throw std::invalid_argument(
-            "error: can't substract images with different shapes");
-    }
-    auto result = lhs->copy();
-    return result -= rhs;
-}
 
 #endif
