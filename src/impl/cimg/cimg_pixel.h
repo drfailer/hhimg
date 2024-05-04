@@ -21,12 +21,6 @@ class CImgPixel: public hhimg::AbstractPixel<T> {
     void blue(T blue) override { blue_ = blue; }
     void alpha(T) override {}
 
-    void set(T red, T green, T blue, T) override {
-        this->red_ = red;
-        this->green_ = green;
-        this->blue_ = blue;
-    }
-
   private:
     T &red_ = nullptr;
     T &green_ = nullptr;
