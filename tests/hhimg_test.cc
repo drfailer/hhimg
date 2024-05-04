@@ -71,6 +71,11 @@ TEST(ArithmeticOperators, Pixels) {
     ASSERT_EQ(r3, 10);
     ASSERT_EQ(g3, 10);
     ASSERT_EQ(b3, 10);
+
+    p3->set(p1 + p2 - (p1 / p2));
+    ASSERT_EQ(r3, 1);
+    ASSERT_EQ(g3, 12);
+    ASSERT_EQ(b3, 23);
 }
 
 int main(int argc, char **argv) {
