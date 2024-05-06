@@ -14,7 +14,7 @@ int main(int, char **) {
     hhimg::Mask<double> horizontalBorders({-1, 0, 1}, 1, 3);
 
     secondImage |= hhimg::MaskApplier<PixelType, double>(meanFilter);
-    image -= secondImage;
+    image |= hhimg::Minus<PixelType>(secondImage);
     /* image |= hhimg::GrayScale<PixelType>() | */
     /*          hhimg::MaskApplier<PixelType, double>(verticalBorders) | */
     /*          hhimg::NonMaximumSuppression<PixelType>(50); */

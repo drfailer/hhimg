@@ -7,7 +7,7 @@
 #include "./algorithm/gray_scale.h"
 #include "./algorithm/non_maximum_suppression.h"
 #include "./algorithm/mask_applier.h"
-#include "./tools/image_operators.h"
+#include "./algorithm/minus.h"
 #include "./tools/concepts.h"
 #include "./tools/shared_ptr_operators.h"
 #include "./tools/pixel_operators.h"
