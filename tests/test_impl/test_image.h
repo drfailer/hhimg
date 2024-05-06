@@ -14,7 +14,6 @@ template <typename T> class TestImage : public hhimg::AbstractImage<T> {
     TestImage(TestImage<T> const &other) {
         memcpy(image_, other.image_, width_ * height_ * sizeof(T));
     }
-    ~TestImage() { delete image_; }
 
     size_t width() const override { return width_; }
     size_t height() const override { return height_; }
@@ -33,8 +32,9 @@ template <typename T> class TestImage : public hhimg::AbstractImage<T> {
     }
 
     std::shared_ptr<hhimg::AbstractImage<T>> copy() const override {
-        return std::make_shared<TestImage<T>>(new RGBValue<T>[width_ * height_],
-                                              width_, height_);
+        RGBValue<unsigned char> *mem = new RGBValue<T>[width_ * height_];
+        memcpy(mem, image_, width_ * height_ * sizeof(*mem));
+        return std::make_shared<TestImage<T>>(mem, width_, height_);
     }
 
     void set(std::shared_ptr<hhimg::AbstractImage<T>> &&other) override {

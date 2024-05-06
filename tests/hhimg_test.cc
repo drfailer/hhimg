@@ -1,9 +1,13 @@
+#include "hhimg/algorithm/gray_scale.h"
+#include "hhimg/algorithm/non_maximum_suppression.h"
 #include "test_impl/rgb_value.h"
 #include "test_impl/test_image.h"
 #include "test_impl/test_pixel.h"
 #include <gtest/gtest.h>
 #include <hhimg/hhimg.h>
 #include <memory>
+#define px(v)                                                                  \
+    { v, v, v }
 
 TEST(Set, Pixels) {
     unsigned char r1 = 0, g1 = 0, b1 = 0;
@@ -89,8 +93,10 @@ TEST(ArithmeticOperators, Pixels) {
 TEST(AtRead, Images) {
     constexpr size_t width = 10;
     constexpr size_t height = 10;
-    RGBValue<unsigned char> *mem = randomRGBValues<unsigned char>(width, height);
-    RGBValue<unsigned char> *constMem = randomRGBValues<unsigned char>(width, height);
+    RGBValue<unsigned char> *mem =
+        randomRGBValues<unsigned char>(width, height);
+    RGBValue<unsigned char> *constMem =
+        randomRGBValues<unsigned char>(width, height);
     TestImage<unsigned char> image(mem, width, height);
     const TestImage<unsigned char> constImage(constMem, width, height);
 
@@ -101,12 +107,17 @@ TEST(AtRead, Images) {
             ASSERT_EQ(constImage.at(x, y), constMem[y * width + x]);
         }
     }
+
+    // free memory
+    delete[] mem;
+    delete[] constMem;
 }
 
 TEST(AtWrite, Images) {
     constexpr size_t width = 10;
     constexpr size_t height = 10;
-    RGBValue<unsigned char> *mem = randomRGBValues<unsigned char>(width, height);
+    RGBValue<unsigned char> *mem =
+        randomRGBValues<unsigned char>(width, height);
     TestImage<unsigned char> image(mem, width, height);
 
     // modifications
@@ -121,6 +132,9 @@ TEST(AtWrite, Images) {
     ASSERT_EQ(mem[5 * width + 3], RGBValue<unsigned char>(20, 40, 60));
     ASSERT_EQ(mem[3 * width + 5], RGBValue<unsigned char>(1, 2, 3));
     ASSERT_EQ(mem[9 * width + 9], RGBValue<unsigned char>(11, 22, 33));
+
+    // free memory
+    delete[] mem;
 }
 
 TEST(AffectationOperators, Images) {
@@ -134,26 +148,49 @@ TEST(ArithmeticOperators, Images) {
 TEST(OneOperation, Algorithms) {
     constexpr size_t width = 10;
     constexpr size_t height = 10;
-    RGBValue<unsigned char> *mem = new RGBValue<unsigned char>[width * height];
+    RGBValue<unsigned char> *mem = randomRGBValues<unsigned char>(width, height);
     auto image = std::make_shared<TestImage<unsigned char>>(mem, width, height);
 
-    for (size_t i = 0; i < width * height; ++i) {
-        ASSERT_FALSE(isGrayScaled(mem, width, height));
-    }
+    ASSERT_FALSE(isGrayScaled(mem, width, height));
 
     image |= hhimg::GrayScale<unsigned char>();
 
     // should we test the calculus ?
-    for (size_t i = 0; i < width * height; ++i) {
-        ASSERT_TRUE(isGrayScaled(mem, width, height));
-    }
+    ASSERT_TRUE(isGrayScaled(mem, width, height));
+
+    // free memory
+    delete[] mem;
 }
 
 TEST(MultiplePipedOperation, Algorithms) {
-    // TODO
+    RGBValue<unsigned char> wht = {255, 255, 255};
+    RGBValue<unsigned char> blk = {0, 0, 0};
+    constexpr size_t width = 3;
+    constexpr size_t height = 3;
+    // clang-format off
+    RGBValue<unsigned char> mem[] = {
+        wht, wht, wht,
+        wht, blk, wht,
+        wht, wht, wht,
+    };
+    // clang-format on
+    auto image = std::make_shared<TestImage<unsigned char>>(mem, width, height);
+    std::vector<double> v(9, 1.0 / 9);
+    hhimg::Mask<double> meanFilter(v, 3, 3);
+
+    image |=
+        hhimg::GrayScale<unsigned char>() |
+        hhimg::MaskApplier<unsigned char, double>(meanFilter) |
+        hhimg::NonMaximumSuppression<unsigned char>(20); // blk => value < 20
+
+    for (size_t y = 0; y < height; ++y) {
+        for (size_t x = 0; x < width; ++x) {
+            ASSERT_EQ(image->at(x, y), wht); // the black dot has been erased
+        }
+    }
 }
 
 int main(int argc, char **argv) {
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
