@@ -9,7 +9,8 @@ namespace hhimg {
 template <typename T, typename MaskType>
 class Convolute : public AbstractAlgorithm<T> {
   public:
-    Convolute(Mask<MaskType> const &kernel) : kernel_(kernel) {}
+    Convolute(Mask<MaskType> const &kernel, MaskType bias = 0)
+        : kernel_(kernel), bias_(bias) {}
     ~Convolute() = default;
 
     ImgData<T> operator()(ImgData<T> image) const override {
@@ -22,9 +23,9 @@ class Convolute : public AbstractAlgorithm<T> {
         for (size_t y = beginY; y < endY; ++y) {
             for (size_t x = beginX; x < endX; ++x) {
                 auto value = computeValue(x, y, image);
-                result->at(x, y)->set(utils::validate(value.red),
-                                      utils::validate(value.green),
-                                      utils::validate(value.blue));
+                result->at(x, y)->set(utils::validate(value.red + bias_),
+                                      utils::validate(value.green + bias_),
+                                      utils::validate(value.blue + bias_));
             }
         }
         return result;
@@ -32,6 +33,7 @@ class Convolute : public AbstractAlgorithm<T> {
 
   private:
     Mask<MaskType> kernel_;
+    MaskType bias_ = 0;
 
     struct PixelValue {
         MaskType red;
