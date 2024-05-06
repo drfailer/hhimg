@@ -135,66 +135,6 @@ TEST(Images, AtWrite) {
     delete[] mem;
 }
 
-TEST(Images, AffectationOperators) {
-    RGBValue<unsigned char> wht = {255, 255, 255};
-    RGBValue<unsigned char> blk = {0, 0, 0};
-    constexpr size_t width = 3;
-    constexpr size_t height = 3;
-    // clang-format off
-    RGBValue<unsigned char> mem1[] = {
-        wht, blk, wht,
-        blk, wht, blk,
-        wht, blk, wht,
-    };
-    RGBValue<unsigned char> mem2[] = {
-        blk, blk, blk,
-        blk, blk, blk,
-        blk, blk, blk,
-    };
-    RGBValue<unsigned char> mem3[] = {
-        wht, wht, wht,
-        wht, wht, wht,
-        wht, wht, wht,
-    };
-    // clang-format on
-    auto image1 =
-        std::make_shared<TestImage<unsigned char>>(mem1, width, height);
-    auto image2 =
-        std::make_shared<TestImage<unsigned char>>(mem2, width, height);
-    auto image3 =
-        std::make_shared<TestImage<unsigned char>>(mem3, width, height);
-
-    for (size_t i = 0; i < width * height; ++i) {
-        if (i % 2 == 0) {
-            ASSERT_EQ(image1->at(i), wht);
-        } else {
-            ASSERT_EQ(image1->at(i), blk);
-        }
-    }
-
-    image1 -= image2;
-
-    // nothing has changed
-    for (size_t i = 0; i < width * height; ++i) {
-        if (i % 2 == 0) {
-            ASSERT_EQ(image1->at(i), wht);
-        } else {
-            ASSERT_EQ(image1->at(i), blk);
-        }
-    }
-
-    image1 -= image3;
-
-    // everything is black
-    for (size_t i = 0; i < width * height; ++i) {
-        ASSERT_EQ(image1->at(i), blk);
-    }
-}
-
-TEST(Images, ArithmeticOperators) {
-    // TODO
-}
-
 TEST(Algorithms, OneOperation) {
     constexpr size_t width = 10;
     constexpr size_t height = 10;
@@ -238,6 +178,62 @@ TEST(Algorithms, MultiplePipedOperation) {
         for (size_t x = 0; x < width; ++x) {
             ASSERT_EQ(image->at(x, y), wht); // the black dot has been erased
         }
+    }
+}
+
+TEST(Algorithms, Minus) {
+    RGBValue<unsigned char> wht = {255, 255, 255};
+    RGBValue<unsigned char> blk = {0, 0, 0};
+    constexpr size_t width = 3;
+    constexpr size_t height = 3;
+    // clang-format off
+    RGBValue<unsigned char> mem1[] = {
+        wht, blk, wht,
+        blk, wht, blk,
+        wht, blk, wht,
+    };
+    RGBValue<unsigned char> mem2[] = {
+        blk, blk, blk,
+        blk, blk, blk,
+        blk, blk, blk,
+    };
+    RGBValue<unsigned char> mem3[] = {
+        wht, wht, wht,
+        wht, wht, wht,
+        wht, wht, wht,
+    };
+    // clang-format on
+    auto image1 =
+        std::make_shared<TestImage<unsigned char>>(mem1, width, height);
+    auto image2 =
+        std::make_shared<TestImage<unsigned char>>(mem2, width, height);
+    auto image3 =
+        std::make_shared<TestImage<unsigned char>>(mem3, width, height);
+
+    for (size_t i = 0; i < width * height; ++i) {
+        if (i % 2 == 0) {
+            ASSERT_EQ(image1->at(i), wht);
+        } else {
+            ASSERT_EQ(image1->at(i), blk);
+        }
+    }
+
+    image1 |= hhimg::Minus<unsigned char>(image2);
+
+    // nothing has changed
+    for (size_t i = 0; i < width * height; ++i) {
+        if (i % 2 == 0) {
+            ASSERT_EQ(image1->at(i), wht);
+        } else {
+            ASSERT_EQ(image1->at(i), blk);
+        }
+    }
+
+    image1 |= hhimg::Minus<unsigned char>(image3);
+
+    // everything is black
+    for (size_t i = 0; i < width * height; ++i) {
+        ASSERT_EQ(image1->at(i), blk);
     }
 }
 
