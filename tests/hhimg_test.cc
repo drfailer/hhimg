@@ -6,10 +6,8 @@
 #include <gtest/gtest.h>
 #include <hhimg/hhimg.h>
 #include <memory>
-#define px(v)                                                                  \
-    { v, v, v }
 
-TEST(Set, Pixels) {
+TEST(Pixels, Set) {
     unsigned char r1 = 0, g1 = 0, b1 = 0;
     TestPixel<unsigned char> p1(r1, g1, b1);
 
@@ -20,7 +18,7 @@ TEST(Set, Pixels) {
     ASSERT_EQ(b1, 30);
 }
 
-TEST(AffectationOperators, Pixels) {
+TEST(Pixels, AffectationOperators) {
     unsigned char r1 = 10, g1 = 20, b1 = 30;
     unsigned char r2 = 1, g2 = 2, b2 = 3;
     auto p1 = std::make_shared<TestPixel<unsigned char>>(r1, g1, b1);
@@ -50,7 +48,7 @@ TEST(AffectationOperators, Pixels) {
     ASSERT_EQ(b1, 30);
 }
 
-TEST(ArithmeticOperators, Pixels) {
+TEST(Pixels, ArithmeticOperators) {
     unsigned char r1 = 10, g1 = 20, b1 = 30;
     unsigned char r2 = 1, g2 = 2, b2 = 3;
     unsigned char r3 = 0, g3 = 0, b3 = 0;
@@ -90,7 +88,7 @@ TEST(ArithmeticOperators, Pixels) {
     ASSERT_EQ(b3, 23);
 }
 
-TEST(AtRead, Images) {
+TEST(Images, AtRead) {
     constexpr size_t width = 10;
     constexpr size_t height = 10;
     RGBValue<unsigned char> *mem =
@@ -113,7 +111,7 @@ TEST(AtRead, Images) {
     delete[] constMem;
 }
 
-TEST(AtWrite, Images) {
+TEST(Images, AtWrite) {
     constexpr size_t width = 10;
     constexpr size_t height = 10;
     RGBValue<unsigned char> *mem =
@@ -137,18 +135,71 @@ TEST(AtWrite, Images) {
     delete[] mem;
 }
 
-TEST(AffectationOperators, Images) {
+TEST(Images, AffectationOperators) {
+    RGBValue<unsigned char> wht = {255, 255, 255};
+    RGBValue<unsigned char> blk = {0, 0, 0};
+    constexpr size_t width = 3;
+    constexpr size_t height = 3;
+    // clang-format off
+    RGBValue<unsigned char> mem1[] = {
+        wht, blk, wht,
+        blk, wht, blk,
+        wht, blk, wht,
+    };
+    RGBValue<unsigned char> mem2[] = {
+        blk, blk, blk,
+        blk, blk, blk,
+        blk, blk, blk,
+    };
+    RGBValue<unsigned char> mem3[] = {
+        wht, wht, wht,
+        wht, wht, wht,
+        wht, wht, wht,
+    };
+    // clang-format on
+    auto image1 =
+        std::make_shared<TestImage<unsigned char>>(mem1, width, height);
+    auto image2 =
+        std::make_shared<TestImage<unsigned char>>(mem2, width, height);
+    auto image3 =
+        std::make_shared<TestImage<unsigned char>>(mem3, width, height);
+
+    for (size_t i = 0; i < width * height; ++i) {
+        if (i % 2 == 0) {
+            ASSERT_EQ(image1->at(i), wht);
+        } else {
+            ASSERT_EQ(image1->at(i), blk);
+        }
+    }
+
+    image1 -= image2;
+
+    // nothing has changed
+    for (size_t i = 0; i < width * height; ++i) {
+        if (i % 2 == 0) {
+            ASSERT_EQ(image1->at(i), wht);
+        } else {
+            ASSERT_EQ(image1->at(i), blk);
+        }
+    }
+
+    image1 -= image3;
+
+    // everything is black
+    for (size_t i = 0; i < width * height; ++i) {
+        ASSERT_EQ(image1->at(i), blk);
+    }
+}
+
+TEST(Images, ArithmeticOperators) {
     // TODO
 }
 
-TEST(ArithmeticOperators, Images) {
-    // TODO
-}
-
-TEST(OneOperation, Algorithms) {
+TEST(Algorithms, OneOperation) {
     constexpr size_t width = 10;
     constexpr size_t height = 10;
-    RGBValue<unsigned char> *mem = randomRGBValues<unsigned char>(width, height);
+    RGBValue<unsigned char> *mem =
+        randomRGBValues<unsigned char>(width, height);
     auto image = std::make_shared<TestImage<unsigned char>>(mem, width, height);
 
     ASSERT_FALSE(isGrayScaled(mem, width, height));
@@ -162,7 +213,7 @@ TEST(OneOperation, Algorithms) {
     delete[] mem;
 }
 
-TEST(MultiplePipedOperation, Algorithms) {
+TEST(Algorithms, MultiplePipedOperation) {
     RGBValue<unsigned char> wht = {255, 255, 255};
     RGBValue<unsigned char> blk = {0, 0, 0};
     constexpr size_t width = 3;
