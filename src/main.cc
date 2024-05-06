@@ -18,7 +18,7 @@ void verticalBordersExtr(std::string const &filename) {
     hhimg::Mask<double> verticalBorders({-1, 0, 1}, 3, 1);
 
     image |= hhimg::GrayScale<PixelType>() |
-             hhimg::MaskApplier<PixelType, double>(verticalBorders) |
+             hhimg::Convolute<PixelType, double>(verticalBorders) |
              hhimg::NonMaximumSuppression<PixelType>(50);
     displayCImgImage(image);
 }
@@ -28,7 +28,7 @@ void horizontalBordersExtr(std::string const &filename) {
     hhimg::Mask<double> horizontalBorders({-1, 0, 1}, 1, 3);
 
     image |= hhimg::GrayScale<PixelType>() |
-             hhimg::MaskApplier<PixelType, double>(horizontalBorders) |
+             hhimg::Convolute<PixelType, double>(horizontalBorders) |
              hhimg::NonMaximumSuppression<PixelType>(50);
     displayCImgImage(image);
 }
@@ -39,7 +39,7 @@ void detailExtr(std::string const &filename) {
     std::vector<double> v(9, 1.0 / 9);
     hhimg::Mask<double> meanFilter(v, 3, 3);
 
-    secondImage |= hhimg::MaskApplier<PixelType, double>(meanFilter);
+    secondImage |= hhimg::Convolute<PixelType, double>(meanFilter);
     image |= hhimg::Minus<PixelType>(secondImage) |
              hhimg::NonMaximumSuppression<PixelType>(10);
     displayCImgImage(image);

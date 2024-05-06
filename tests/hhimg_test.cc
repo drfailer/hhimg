@@ -171,7 +171,7 @@ TEST(Algorithms, MultiplePipedOperation) {
 
     image |=
         hhimg::GrayScale<unsigned char>() |
-        hhimg::MaskApplier<unsigned char, double>(meanFilter) |
+        hhimg::Convolute<unsigned char, double>(meanFilter) |
         hhimg::NonMaximumSuppression<unsigned char>(20); // blk => value < 20
 
     for (size_t y = 0; y < height; ++y) {

@@ -6,7 +6,7 @@
 #include "./concrete/data/mask.h"
 #include "./algorithm/gray_scale.h"
 #include "./algorithm/non_maximum_suppression.h"
-#include "./algorithm/mask_applier.h"
+#include "./algorithm/convolute.h"
 #include "./algorithm/minus.h"
 #include "./tools/concepts.h"
 #include "./tools/shared_ptr_operators.h"

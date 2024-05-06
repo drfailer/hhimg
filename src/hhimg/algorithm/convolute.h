@@ -7,14 +7,14 @@
 namespace hhimg {
 
 template <typename T, typename MaskType>
-class MaskApplier : public AbstractAlgorithm<T> {
+class Convolute : public AbstractAlgorithm<T> {
   public:
-    MaskApplier(Mask<MaskType> const &mask) : mask_(mask) {}
-    ~MaskApplier() = default;
+    Convolute(Mask<MaskType> const &kernel) : kernel_(kernel) {}
+    ~Convolute() = default;
 
     ImgData<T> operator()(ImgData<T> image) const override {
-        size_t halfWidth = mask_.width() / 2;
-        size_t halfHeight = mask_.height() / 2;
+        size_t halfWidth = kernel_.width() / 2;
+        size_t halfHeight = kernel_.height() / 2;
         size_t beginX = halfWidth, endX = image->width() - halfWidth;
         size_t beginY = halfHeight, endY = image->height() - halfHeight;
         auto result = image->copy();
@@ -31,7 +31,7 @@ class MaskApplier : public AbstractAlgorithm<T> {
     }
 
   private:
-    Mask<MaskType> mask_;
+    Mask<MaskType> kernel_;
 
     struct PixelValue {
         MaskType red;
@@ -40,16 +40,16 @@ class MaskApplier : public AbstractAlgorithm<T> {
     };
 
     PixelValue computeValue(size_t x, size_t y, ImgData<T> image) const {
-        int halfWidth = mask_.width() / 2;
-        int halfHeight = mask_.height() / 2;
+        int halfWidth = kernel_.width() / 2;
+        int halfHeight = kernel_.height() / 2;
         PixelValue result = {0, 0, 0};
 
-        for (size_t my = 0; my < mask_.height(); ++my) {
-            for (size_t mx = 0; mx < mask_.width(); ++mx) {
+        for (size_t my = 0; my < kernel_.height(); ++my) {
+            for (size_t mx = 0; mx < kernel_.width(); ++mx) {
                 auto pixel = image->at(x + mx - halfWidth, y + my - halfHeight);
-                result.red += pixel->red() * mask_.get(mx, my, 0);
-                result.green += pixel->green() * mask_.get(mx, my, 1);
-                result.blue += pixel->blue() * mask_.get(mx, my, 2);
+                result.red += pixel->red() * kernel_.get(mx, my, 0);
+                result.green += pixel->green() * kernel_.get(mx, my, 1);
+                result.blue += pixel->blue() * kernel_.get(mx, my, 2);
             }
         }
         return result;
