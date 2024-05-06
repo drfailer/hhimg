@@ -5,9 +5,12 @@
 #include "utils.h"
 #include <functional>
 
+// NOTE: the op functions have to take doubles to avoid convertion errors when
+// substracting or multiplying by non doubleegers values.
+
 template <typename T>
 void apply(hhimg::AbstractPixel<T> &pixel, hhimg::AbstractPixel<T> const &other,
-           std::function<T(T, T)> op) {
+           std::function<double(double, double)> op) {
     pixel.red(hhimg::utils::validate(op(pixel.red(), other.red())));
     pixel.green(hhimg::utils::validate(op(pixel.green(), other.green())));
     pixel.blue(hhimg::utils::validate(op(pixel.blue(), other.blue())));
@@ -15,7 +18,8 @@ void apply(hhimg::AbstractPixel<T> &pixel, hhimg::AbstractPixel<T> const &other,
 }
 
 template <typename T>
-void apply(hhimg::AbstractPixel<T> &pixel, T value, std::function<T(T, T)> op) {
+void apply(hhimg::AbstractPixel<T> &pixel, T value,
+           std::function<double(double, double)> op) {
     pixelred(hhimg::utils::validate(op(pixel->red(), value)));
     pixelgreen(hhimg::utils::validate(op(pixel->green(), value)));
     pixelblue(hhimg::utils::validate(op(pixel->blue(), value)));
@@ -26,7 +30,9 @@ void apply(hhimg::AbstractPixel<T> &pixel, T value, std::function<T(T, T)> op) {
     template <typename T, typename RhsType>                                    \
     hhimg::AbstractPixel<T> const &operator Op##=(                             \
         hhimg::AbstractPixel<T> &pixel, RhsType const &rhs) {                  \
-        std::function<T(T, T)> op = [](T a, T b) { return a Op b; };           \
+        std::function<double(double, double)> op = [](double a, double b) {    \
+            return a Op b;                                                     \
+        };                                                                     \
         apply(pixel, rhs, op);                                                 \
         return pixel;                                                          \
     }
