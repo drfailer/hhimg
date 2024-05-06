@@ -2,22 +2,23 @@
 #define PIXEL_OPERATORS_HPP
 #include "../abstract/data/abstract_pixel.h"
 #include "../concrete/data/pixel_value.h"
+#include "utils.h"
 #include <functional>
 
 template <typename T>
 void apply(hhimg::AbstractPixel<T> &pixel, hhimg::AbstractPixel<T> const &other,
            std::function<T(T, T)> op) {
-    pixel.red(op(pixel.red(), other.red()));
-    pixel.green(op(pixel.green(), other.green()));
-    pixel.blue(op(pixel.blue(), other.blue()));
+    pixel.red(hhimg::utils::validate(op(pixel.red(), other.red())));
+    pixel.green(hhimg::utils::validate(op(pixel.green(), other.green())));
+    pixel.blue(hhimg::utils::validate(op(pixel.blue(), other.blue())));
     // we don't modify alpha here
 }
 
 template <typename T>
 void apply(hhimg::AbstractPixel<T> &pixel, T value, std::function<T(T, T)> op) {
-    pixelred(op(pixel->red(), value));
-    pixelgreen(op(pixel->green(), value));
-    pixelblue(op(pixel->blue(), value));
+    pixelred(hhimg::utils::validate(op(pixel->red(), value)));
+    pixelgreen(hhimg::utils::validate(op(pixel->green(), value)));
+    pixelblue(hhimg::utils::validate(op(pixel->blue(), value)));
     // we don't modify alpha here
 }
 

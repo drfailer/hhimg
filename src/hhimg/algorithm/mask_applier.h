@@ -2,6 +2,7 @@
 #define MASK_APPLIER_HPP
 #include "../abstract/abstract_algorithm.h"
 #include "../concrete/data/mask.h"
+#include "../tools/utils.h"
 
 namespace hhimg {
 
@@ -21,9 +22,9 @@ class MaskApplier : public AbstractAlgorithm<T> {
         for (size_t y = beginY; y < endY; ++y) {
             for (size_t x = beginX; x < endX; ++x) {
                 auto value = computeValue(x, y, image);
-                result->at(x, y)->set(validate(value.red),
-                                      validate(value.green),
-                                      validate(value.blue));
+                result->at(x, y)->set(utils::validate(value.red),
+                                      utils::validate(value.green),
+                                      utils::validate(value.blue));
             }
         }
         return result;
@@ -52,14 +53,6 @@ class MaskApplier : public AbstractAlgorithm<T> {
             }
         }
         return result;
-    }
-
-    MaskType validate(MaskType value) const {
-        if (value < 0)
-            return 0;
-        if (value > 255)
-            return 255;
-        return value;
     }
 };
 
