@@ -1,4 +1,6 @@
-#include "test_pixel.h"
+#include "test_impl/rgb_value.h"
+#include "test_impl/test_image.h"
+#include "test_impl/test_pixel.h"
 #include <gtest/gtest.h>
 #include <hhimg/hhimg.h>
 #include <memory>
@@ -82,6 +84,73 @@ TEST(ArithmeticOperators, Pixels) {
     ASSERT_EQ(r3, 1);
     ASSERT_EQ(g3, 12);
     ASSERT_EQ(b3, 23);
+}
+
+TEST(AtRead, Images) {
+    constexpr size_t width = 10;
+    constexpr size_t height = 10;
+    RGBValue<unsigned char> *mem = randomRGBValues<unsigned char>(width, height);
+    RGBValue<unsigned char> *constMem = randomRGBValues<unsigned char>(width, height);
+    TestImage<unsigned char> image(mem, width, height);
+    const TestImage<unsigned char> constImage(constMem, width, height);
+
+    // access to pixels
+    for (size_t y = 0; y < height; ++y) {
+        for (size_t x = 0; x < width; ++x) {
+            ASSERT_EQ(image.at(x, y), mem[y * width + x]);
+            ASSERT_EQ(constImage.at(x, y), constMem[y * width + x]);
+        }
+    }
+}
+
+TEST(AtWrite, Images) {
+    constexpr size_t width = 10;
+    constexpr size_t height = 10;
+    RGBValue<unsigned char> *mem = randomRGBValues<unsigned char>(width, height);
+    TestImage<unsigned char> image(mem, width, height);
+
+    // modifications
+    image.at(0, 0)->set(10, 20, 30);
+    image.at(9, 9)->set(10, 20, 30);
+    image.at(3, 5)->set(0, 0, 0);
+    image.at(3, 5)->set(image.at(0, 0) + image.at(9, 9));
+    image.at(5, 3)->set(1, 2, 3);
+    image.at(9, 9) += image.at(5, 3);
+
+    ASSERT_EQ(mem[0], RGBValue<unsigned char>(10, 20, 30));
+    ASSERT_EQ(mem[5 * width + 3], RGBValue<unsigned char>(20, 40, 60));
+    ASSERT_EQ(mem[3 * width + 5], RGBValue<unsigned char>(1, 2, 3));
+    ASSERT_EQ(mem[9 * width + 9], RGBValue<unsigned char>(11, 22, 33));
+}
+
+TEST(AffectationOperators, Images) {
+    // TODO
+}
+
+TEST(ArithmeticOperators, Images) {
+    // TODO
+}
+
+TEST(OneOperation, Algorithms) {
+    constexpr size_t width = 10;
+    constexpr size_t height = 10;
+    RGBValue<unsigned char> *mem = new RGBValue<unsigned char>[width * height];
+    auto image = std::make_shared<TestImage<unsigned char>>(mem, width, height);
+
+    for (size_t i = 0; i < width * height; ++i) {
+        ASSERT_FALSE(isGrayScaled(mem, width, height));
+    }
+
+    image |= hhimg::GrayScale<unsigned char>();
+
+    // should we test the calculus ?
+    for (size_t i = 0; i < width * height; ++i) {
+        ASSERT_TRUE(isGrayScaled(mem, width, height));
+    }
+}
+
+TEST(MultiplePipedOperation, Algorithms) {
+    // TODO
 }
 
 int main(int argc, char **argv) {
