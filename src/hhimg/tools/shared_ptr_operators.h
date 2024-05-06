@@ -1,8 +1,7 @@
 #ifndef SHARED_PTR_OPERATORS_HPP
 #define SHARED_PTR_OPERATORS_HPP
-#include "image_operators.h"
 #include "pixel_operators.h"
-#include "concepts"
+#include "concepts.h"
 #include <memory>
 
 #define SharedPtrAffectationOp(Op)                                             \
