@@ -16,7 +16,7 @@ template <typename T>
 hhimg::ChainAlgorithm<T>
 operator|(hhimg::AbstractAlgorithm<T> const &algorithm1,
           hhimg::AbstractAlgorithm<T> const &algorithm2) {
-    return ChainAlgorithm<T>(algorithm1, algorithm2);
+    return hhimg::ChainAlgorithm<T>(algorithm1, algorithm2);
 }
 
 #endif
