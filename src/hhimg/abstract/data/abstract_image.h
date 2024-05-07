@@ -32,12 +32,12 @@ template <typename T> class AbstractImage {
     virtual T green(size_t offset) const = 0;
     virtual T blue(size_t offset) const = 0;
 
-    T &red(size_t x, size_t y) { return red(y * width() + x); }
-    T &green(size_t x, size_t y) { return green(y * width() + x); }
-    T &blue(size_t x, size_t y) { return blue(y * width() + x); }
-    T red(size_t x, size_t y) const { return red(y * width() + x); }
-    T green(size_t x, size_t y) const { return green(y * width() + x); }
-    T blue(size_t x, size_t y) const { return blue(y * width() + x); }
+    virtual T &red(size_t x, size_t y) { return red(y * width() + x); }
+    virtual T &green(size_t x, size_t y) { return green(y * width() + x); }
+    virtual T &blue(size_t x, size_t y) { return blue(y * width() + x); }
+    virtual T red(size_t x, size_t y) const { return red(y * width() + x); }
+    virtual T green(size_t x, size_t y) const { return green(y * width() + x); }
+    virtual T blue(size_t x, size_t y) const { return blue(y * width() + x); }
 
     // virtual as it can be optimized
     virtual void set(size_t offset, T r, T g, T b) {
