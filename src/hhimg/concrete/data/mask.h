@@ -1,5 +1,6 @@
 #ifndef MASK_HPP
 #define MASK_HPP
+#include "hhimg/concrete/data/pixel.h"
 #include <cstddef>
 #include <stdexcept>
 #include <vector>
@@ -36,9 +37,12 @@ template <typename T> class Mask {
     size_t height() const { return height_; }
 
     // TODO: need red / green / blue functions
-    T get(size_t mx, size_t my) const { return mask_[my * width_ + mx][0]; }
-    T get(size_t mx, size_t my, size_t colorIdx) const {
+    T get(size_t mx, size_t my, size_t colorIdx = 0) const {
         return mask_[my * width_ + mx][colorIdx];
+    }
+    Pixel<T> at(size_t mx, size_t my) const {
+        return {mask_[my * width_ + mx][0], mask_[my * width_ + mx][1],
+                mask_[my * width_ + mx][2]};
     }
 
   private:

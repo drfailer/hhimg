@@ -1,5 +1,6 @@
 #ifndef ABSTRACT_IMAGE_HPP
 #define ABSTRACT_IMAGE_HPP
+#include "../../concrete/data/pixel.h"
 #include <cstddef>
 #include <memory>
 #include <string>
@@ -45,15 +46,31 @@ template <typename T> class AbstractImage {
         green(offset) = g;
         blue(offset) = b;
     }
-    void set(size_t offset, T v) { set(offset, v, v, v); }
     void set(size_t x, size_t y, T r, T g, T b) {
         set(y * width() + x, r, g, b);
     }
+    void set(size_t offset, T v) { set(offset, v, v, v); }
     void set(size_t x, size_t y, T v) { set(y * width() + x, v); }
 
     // for grayscaled image
     T get(size_t x, size_t y) const { return red(x, y); }
     T get(size_t offset) const { return red(offset); }
+
+    // pixel functions
+    template <typename PT = T>
+    Pixel<PT> at(size_t offset) const {
+        return {(PT)red(offset), (PT)green(offset), (PT)blue(offset)};
+    }
+    template <typename PT = T>
+    Pixel<PT> at(size_t x, size_t y) const {
+        return {(PT)red(x, y), (PT)green(x, y), (PT)blue(x, y)};
+    }
+    void set(size_t x, size_t y, Pixel<T> const &pixel) {
+        set(x, y, pixel.red, pixel.green, pixel.blue);
+    }
+    void set(size_t offset, Pixel<T> pixel) {
+        set(offset, pixel.red, pixel.green, pixel.blue);
+    }
 
     size_t size() const { return width() * height(); }
     const std::string &filename() const { return filename_; }

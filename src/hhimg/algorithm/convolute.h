@@ -30,9 +30,7 @@ class Convolute : public AbstractAlgorithm<T> {
                 auto value = computeValue(x, y, image);
                 size_t rx = x - beginX;
                 size_t ry = y - beginY;
-                result->set(rx, ry, utils::validate(value.red + bias_),
-                            utils::validate(value.green + bias_),
-                            utils::validate(value.blue + bias_));
+                result->set(rx, ry, validate<T>(value + bias_));
             }
         }
         utils::PerfRectorder::end("Convolute");
@@ -44,24 +42,16 @@ class Convolute : public AbstractAlgorithm<T> {
     Mask<MaskType> kernel_;
     MaskType bias_ = 0;
 
-    struct PixelValue {
-        MaskType red;
-        MaskType green;
-        MaskType blue;
-    };
-
-    PixelValue computeValue(size_t x, size_t y, ImgData<T> image) const {
+    Pixel<MaskType> computeValue(size_t x, size_t y, ImgData<T> image) const {
         int halfWidth = kernel_.width() / 2;
         int halfHeight = kernel_.height() / 2;
-        PixelValue result = {0, 0, 0};
+        Pixel<MaskType> result = {0, 0, 0};
 
         for (size_t my = 0; my < kernel_.height(); ++my) {
             for (size_t mx = 0; mx < kernel_.width(); ++mx) {
                 size_t ix = x + mx - halfWidth;
                 size_t iy = y + my - halfHeight;
-                result.red += image->red(ix, iy) * kernel_.get(mx, my, 0);
-                result.green += image->green(ix, iy) * kernel_.get(mx, my, 1);
-                result.blue += image->blue(ix, iy) * kernel_.get(mx, my, 2);
+                result += image->template at<MaskType>(ix, iy) * kernel_.at(mx, my);
             }
         }
         return result;
