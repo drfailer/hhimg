@@ -1,2 +1,4 @@
 build
 .cache/clangd/index
+src/.cache/clangd/index
+src/compile_commands.json

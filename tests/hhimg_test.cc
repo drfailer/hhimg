@@ -2,6 +2,7 @@
 #include "hhimg/algorithm/non_maximum_suppression.h"
 #include "test_impl/rgb_value.h"
 #include "test_impl/test_image.h"
+#include "test_impl/test_image_factory.h"
 #include "test_impl/test_pixel.h"
 #include <gtest/gtest.h>
 #include <hhimg/hhimg.h>
@@ -235,6 +236,28 @@ TEST(Algorithms, Minus) {
     for (size_t i = 0; i < width * height; ++i) {
         ASSERT_EQ(image1->at(i), blk);
     }
+}
+
+TEST(Algorithms, Crop) {
+    RGBValue<unsigned char> wht = {255, 255, 255};
+    RGBValue<unsigned char> blk = {0, 0, 0};
+    constexpr size_t width = 3;
+    constexpr size_t height = 3;
+    // clang-format off
+    RGBValue<unsigned char> mem[] = {
+        blk, blk, blk,
+        blk, wht, blk,
+        blk, blk, blk,
+    };
+    // clang-format on
+    auto image = std::make_shared<TestImage<unsigned char>>(mem, width, height);
+    auto createImage = std::make_shared<TestImageFactory<unsigned char>>();
+
+    image |= hhimg::Crop<unsigned char>(1, 1, 1, 1, createImage);
+
+    ASSERT_EQ(image->width(), 1);
+    ASSERT_EQ(image->height(), 1);
+    ASSERT_EQ(image->at(0, 0), wht);
 }
 
 int main(int argc, char **argv) {
