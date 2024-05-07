@@ -1,10 +1,11 @@
+#include <hhimg/hhimg.h>
 #include "impl/cimg/cimg_image.h"
 #include <CImg/CImg.h>
-#include <hhimg/hhimg.h>
 #include "config.h"
 
-using PixelType = unsigned char;
 #undef GrayScale
+
+using PixelType = unsigned char;
 
 void displayCImgImage(std::shared_ptr<CImgImage<PixelType>> image) {
     cimg_library::CImgDisplay main_disp(image->image(), "Click a point");

@@ -2,8 +2,8 @@
 #define MASK_APPLIER_HPP
 #include "../abstract/abstract_algorithm.h"
 #include "../concrete/data/mask.h"
-#include "../tools/utils.h"
 #include "../tools/perf_recorder.h"
+#include "../tools/utils.h"
 
 namespace hhimg {
 
@@ -20,14 +20,14 @@ class Convolute : public AbstractAlgorithm<T> {
         size_t halfHeight = kernel_.height() / 2;
         size_t beginX = halfWidth, endX = image->width() - halfWidth;
         size_t beginY = halfHeight, endY = image->height() - halfHeight;
-        auto result = image->copy();
+        auto result = image->copy(); // TODO: use a factory instead
 
         for (size_t y = beginY; y < endY; ++y) {
             for (size_t x = beginX; x < endX; ++x) {
                 auto value = computeValue(x, y, image);
-                result->at(x, y)->set(utils::validate(value.red + bias_),
-                                      utils::validate(value.green + bias_),
-                                      utils::validate(value.blue + bias_));
+                result->set(x, y, utils::validate(value.red + bias_),
+                            utils::validate(value.green + bias_),
+                            utils::validate(value.blue + bias_));
             }
         }
         utils::PerfRectorder::end("Convolute");
@@ -51,10 +51,11 @@ class Convolute : public AbstractAlgorithm<T> {
 
         for (size_t my = 0; my < kernel_.height(); ++my) {
             for (size_t mx = 0; mx < kernel_.width(); ++mx) {
-                auto pixel = image->at(x + mx - halfWidth, y + my - halfHeight);
-                result.red += pixel->red() * kernel_.get(mx, my, 0);
-                result.green += pixel->green() * kernel_.get(mx, my, 1);
-                result.blue += pixel->blue() * kernel_.get(mx, my, 2);
+                size_t ix = x + mx - halfWidth;
+                size_t iy = y + my - halfHeight;
+                result.red += image->red(ix, iy) * kernel_.get(mx, my, 0);
+                result.green += image->green(ix, iy) * kernel_.get(mx, my, 1);
+                result.blue += image->blue(ix, iy) * kernel_.get(mx, my, 2);
             }
         }
         return result;

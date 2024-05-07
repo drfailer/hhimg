@@ -28,7 +28,10 @@ template <typename T> class Crop : public AbstractAlgorithm<T> {
         // test width_ and height_ valid ?
         for (size_t y = 0; y < width_; ++y) {
             for (size_t x = 0; x < height_; ++x) {
-                output->at(x, y)->set(image->at(x + x_, y + y_));
+                T red = image->red(x + x_, y + y_);
+                T green = image->green(x + x_, y + y_);
+                T blue = image->blue(x + x_, y + y_);
+                output->set(x, y, red, green, blue);
             }
         }
         utils::PerfRectorder::end("Crop");

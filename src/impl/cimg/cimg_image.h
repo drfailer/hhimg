@@ -1,8 +1,7 @@
 #ifndef CIMG_IMAGE_HPP
 #define CIMG_IMAGE_HPP
-#include "cimg_pixel.h"
-#include <CImg/CImg.h>
 #include <hhimg/hhimg.h>
+#include <CImg/CImg.h>
 
 template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
   public:
@@ -38,22 +37,23 @@ template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
         image_.swap(i->image());
     }
 
+    T &red(size_t offset) override { return image_.at(offset); }
+    T &green(size_t offset) override {
+        return image_.at(offset + width() * height() * image_.depth());
+    }
+    T &blue(size_t offset) override {
+        return image_.at(offset + 2 * width() * height() * image_.depth());
+    }
+    T red(size_t offset) const override { return image_.at(offset); }
+    T green(size_t offset) const override {
+        return image_.at(offset + width() * height() * image_.depth());
+    }
+    T blue(size_t offset) const override {
+        return image_.at(offset + 2 * width() * height() * image_.depth());
+    }
+
   private:
     cimg_library::CImg<T> image_;
-
-    std::shared_ptr<hhimg::AbstractPixel<T>> atImpl(size_t offset) override {
-        T &red = image_.at(offset);
-        T &green = image_.at(offset + width() * height() * image_.depth());
-        T &blue = image_.at(offset + 2 * width() * height() * image_.depth());
-        return std::make_shared<CImgPixel<T>>(red, green, blue);
-    }
-
-    std::shared_ptr<hhimg::AbstractPixel<T>> const atImpl(size_t offset) const override {
-        T red = image_.at(offset);
-        T green = image_.at(offset + width() * height() * image_.depth());
-        T blue = image_.at(offset + 2 * width() * height() * image_.depth());
-        return std::make_shared<hhimg::PixelValue<T>>(red, green, blue);
-    }
 };
 
 #endif

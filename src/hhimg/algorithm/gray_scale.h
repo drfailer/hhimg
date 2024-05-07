@@ -1,7 +1,7 @@
 #ifndef GRAY_SCALE_HPP
 #define GRAY_SCALE_HPP
-#include "hhimg/abstract/abstract_algorithm.h"
 #include "../tools/perf_recorder.h"
+#include "hhimg/abstract/abstract_algorithm.h"
 
 namespace hhimg {
 
@@ -13,9 +13,10 @@ template <typename T> struct GrayScale : public AbstractAlgorithm<T> {
         utils::PerfRectorder::start("GrayScale");
         for (size_t i = 0; i < image->height(); ++i) {
             for (size_t j = 0; j < image->width(); ++j) {
-                auto p = image->at(j, i);
-                auto mean = (p->red() + p->green() + p->blue()) / 3;
-                p->set(mean);
+                auto mean = (image->red(j, i) + image->green(j, i) +
+                             image->blue(j, i)) /
+                            3;
+                image->set(j, i, mean);
             }
         }
         utils::PerfRectorder::end("GrayScale");

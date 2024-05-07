@@ -2,8 +2,7 @@
 #define MINUS_HPP
 #include "../abstract/abstract_algorithm.h"
 #include "../tools/perf_recorder.h"
-#include "../tools/pixel_operators.h"
-#include "../tools/shared_ptr_operators.h"
+#include "hhimg/tools/utils.h"
 
 namespace hhimg {
 
@@ -22,7 +21,10 @@ template <typename T> class Minus : public AbstractAlgorithm<T> {
         }
         for (size_t y = 0; y < image->height(); ++y) {
             for (size_t x = 0; x < image->width(); ++x) {
-                image->at(x, y) -= imageToSubstract_->at(x, y);
+                T red = utils::validate<int>(image->red(x, y) - imageToSubstract_->red(x, y));
+                T green = utils::validate<int>(image->green(x, y) - imageToSubstract_->green(x, y));
+                T blue = utils::validate<int>(image->blue(x, y) - imageToSubstract_->blue(x, y));
+                image->set(x, y, red, green, blue);
             }
         }
         utils::PerfRectorder::end("Minus");

@@ -15,10 +15,10 @@ class NonMaximumSuppression : public AbstractAlgorithm<T> {
         utils::PerfRectorder::start("NonMaximumSuppression");
         for (size_t y = 0; y < image->height(); ++y) {
             for (size_t x = 0; x < image->width(); ++x) {
-                if (image->at(x, y)->get() < max_) {
-                    image->at(x, y)->set(lowValue_);
+                if (image->get(x, y) < max_) {
+                    image->set(x, y, lowValue_);
                 } else {
-                    image->at(x, y)->set(highValue_);
+                    image->set(x, y, highValue_);
                 }
             }
         }
