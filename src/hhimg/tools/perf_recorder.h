@@ -5,7 +5,6 @@
 #include <iostream>
 #include <map>
 #include <numeric>
-#include <stack>
 #include <vector>
 
 namespace hhimg::utils {
@@ -15,7 +14,7 @@ class PerfRectorder {
     PerfRectorder() = delete;
 
     static void start(std::string const &desc) {
-        timers_.push(std::chrono::system_clock::now());
+        timers_.insert({desc, std::chrono::system_clock::now()});
         if (!durations_.contains(desc)) {
             durations_.insert({desc, {}});
         }
@@ -23,8 +22,8 @@ class PerfRectorder {
 
     static void end(std::string const &desc) {
         auto end = std::chrono::system_clock::now();
-        durations_.at(desc).push_back(end - timers_.top());
-        timers_.pop();
+        durations_.at(desc).push_back(end - timers_.at(desc));
+        timers_.erase(desc);
     }
 
     static void report() {
@@ -39,7 +38,7 @@ class PerfRectorder {
     }
 
   private:
-    static inline std::stack<std::chrono::time_point<std::chrono::system_clock>>
+    static inline std::map<std::string, std::chrono::time_point<std::chrono::system_clock>>
         timers_;
     static inline std::map<std::string,
                            std::vector<std::chrono::duration<double>>>
@@ -49,8 +48,8 @@ class PerfRectorder {
                        std::vector<std::chrono::duration<double>> times) {
         double avg = avgTime(times);
         double stddev = stdDev(times, avg);
-        double min = std::min(times.begin(), times.end())->count();
-        double max = std::max(times.begin(), times.end())->count();
+        double min = minTime(times);
+        double max = maxTime(times);
         std::cout << desc << ": " << avg << "s +- " << stddev
                   << "s (min: " << min << "s, " << max << "s)" << std::endl;
     }
@@ -71,6 +70,28 @@ class PerfRectorder {
             result += diff * diff;
         });
         return std::sqrt(result / times.size());
+    }
+
+    static double maxTime(std::vector<std::chrono::duration<double>> times) {
+        double max = times.at(0).count();
+
+        for (auto time : times) {
+            if (time.count() > max) {
+                max = time.count();
+            }
+        }
+        return max;
+    }
+
+    static double minTime(std::vector<std::chrono::duration<double>> times) {
+        double min = times.at(0).count();
+
+        for (auto time : times) {
+            if (time.count() < min) {
+                min = time.count();
+            }
+        }
+        return min;
     }
 };
 
