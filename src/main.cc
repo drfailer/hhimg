@@ -1,7 +1,8 @@
-#include <hhimg/hhimg.h>
-#include "impl/cimg/cimg_image.h"
-#include <CImg/CImg.h>
 #include "config.h"
+#include "impl/cimg/cimg_image.h"
+#include "impl/cimg/cimg_image_factory.h"
+#include <CImg/CImg.h>
+#include <hhimg/hhimg.h>
 
 #undef GrayScale
 
@@ -17,21 +18,25 @@ void displayCImgImage(std::shared_ptr<CImgImage<PixelType>> image) {
 
 void verticalBordersExtr(std::shared_ptr<CImgImage<PixelType>> image) {
     hhimg::Mask<double> verticalBorders({-1, 0, 1}, 3, 1);
+    auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
 
     hhimg::utils::PerfRectorder::start("verticalBordersExtr");
-    image |= hhimg::GrayScale<PixelType>() |
-             hhimg::Convolute<PixelType, double>(verticalBorders) |
-             hhimg::NonMaximumSuppression<PixelType>(50);
+    image |=
+        hhimg::GrayScale<PixelType>() |
+        hhimg::Convolute<PixelType, double>(imageFactory, verticalBorders) |
+        hhimg::NonMaximumSuppression<PixelType>(50);
     hhimg::utils::PerfRectorder::end("verticalBordersExtr");
 }
 
 void horizontalBordersExtr(std::shared_ptr<CImgImage<PixelType>> image) {
     hhimg::Mask<double> horizontalBorders({-1, 0, 1}, 1, 3);
+    auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
 
     hhimg::utils::PerfRectorder::start("horizontalBordersExtr");
-    image |= hhimg::GrayScale<PixelType>() |
-             hhimg::Convolute<PixelType, double>(horizontalBorders) |
-             hhimg::NonMaximumSuppression<PixelType>(50);
+    image |=
+        hhimg::GrayScale<PixelType>() |
+        hhimg::Convolute<PixelType, double>(imageFactory, horizontalBorders) |
+        hhimg::NonMaximumSuppression<PixelType>(50);
     hhimg::utils::PerfRectorder::end("horizontalBordersExtr");
 }
 
@@ -39,10 +44,14 @@ void detailExtr(std::shared_ptr<CImgImage<PixelType>> image) {
     auto secondImage = image->copy();
     std::vector<double> v(9, 1.0 / 9);
     hhimg::Mask<double> meanFilter(v, 3, 3);
+    auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
 
     hhimg::utils::PerfRectorder::start("detailExtr");
-    secondImage |= hhimg::Convolute<PixelType, double>(meanFilter);
-    image |= hhimg::Minus<PixelType>(secondImage) |
+    secondImage |=
+        hhimg::Convolute<PixelType, double>(imageFactory, meanFilter);
+    image |= hhimg::Crop<PixelType>(imageFactory, 1, 1, secondImage->width(),
+                                    secondImage->height()) |
+             hhimg::Minus<PixelType>(secondImage) |
              hhimg::NonMaximumSuppression<PixelType>(10);
     hhimg::utils::PerfRectorder::end("detailExtr");
 }
@@ -64,8 +73,8 @@ void run(Config config) {
         break;
     }
 
-    std::cout << "image size: " << image->width() << "x" << image->height() <<
-        std::endl;
+    std::cout << "image size: " << image->width() << "x" << image->height()
+              << std::endl;
     if (config.display) {
         displayCImgImage(image);
     }

@@ -87,14 +87,15 @@ TEST(Algorithms, MultiplePipedOperation) {
     auto image = std::make_shared<TestImage<unsigned char>>(mem, width, height);
     std::vector<double> v(9, 1.0 / 9);
     hhimg::Mask<double> meanFilter(v, 3, 3);
+    auto imgFactory = std::make_shared<TestImageFactory<unsigned char>>();
 
     image |=
         hhimg::GrayScale<unsigned char>() |
-        hhimg::Convolute<unsigned char, double>(meanFilter) |
+        hhimg::Convolute<unsigned char, double>(imgFactory, meanFilter) |
         hhimg::NonMaximumSuppression<unsigned char>(20); // blk => value < 20
 
-    for (size_t y = 0; y < height; ++y) {
-        for (size_t x = 0; x < width; ++x) {
+    for (size_t y = 0; y < image->height(); ++y) {
+        for (size_t x = 0; x < image->width(); ++x) {
             // the black dot has been erased
             ASSERT_EQ(image->red(x, y), wht.red);
             ASSERT_EQ(image->green(x, y), wht.green);
@@ -182,9 +183,9 @@ TEST(Algorithms, Crop) {
     };
     // clang-format on
     auto image = std::make_shared<TestImage<unsigned char>>(mem, width, height);
-    auto createImage = std::make_shared<TestImageFactory<unsigned char>>();
+    auto imgFactory = std::make_shared<TestImageFactory<unsigned char>>();
 
-    image |= hhimg::Crop<unsigned char>(1, 1, 1, 1, createImage);
+    image |= hhimg::Crop<unsigned char>(imgFactory, 1, 1, 1, 1);
 
     ASSERT_EQ(image->width(), 1);
     ASSERT_EQ(image->height(), 1);

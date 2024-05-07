@@ -1,6 +1,7 @@
 #ifndef MASK_APPLIER_HPP
 #define MASK_APPLIER_HPP
 #include "../abstract/abstract_algorithm.h"
+#include "../abstract/abstract_image_factory.h"
 #include "../concrete/data/mask.h"
 #include "../tools/perf_recorder.h"
 #include "../tools/utils.h"
@@ -10,8 +11,9 @@ namespace hhimg {
 template <typename T, typename MaskType>
 class Convolute : public AbstractAlgorithm<T> {
   public:
-    Convolute(Mask<MaskType> const &kernel, MaskType bias = 0)
-        : kernel_(kernel), bias_(bias) {}
+    Convolute(std::shared_ptr<AbstractImageFactory<T>> imageFactory,
+              Mask<MaskType> const &kernel, MaskType bias = 0)
+        : imageFactory_(imageFactory), kernel_(kernel), bias_(bias) {}
     ~Convolute() = default;
 
     ImgData<T> operator()(ImgData<T> image) const override {
@@ -20,7 +22,9 @@ class Convolute : public AbstractAlgorithm<T> {
         size_t halfHeight = kernel_.height() / 2;
         size_t beginX = halfWidth, endX = image->width() - halfWidth;
         size_t beginY = halfHeight, endY = image->height() - halfHeight;
-        auto result = image->copy(); // TODO: use a factory instead
+        auto result = imageFactory_->get(image->width() - kernel_.width() + 1,
+                                         image->height() - kernel_.height() +
+                                             1);
 
         for (size_t y = beginY; y < endY; ++y) {
             for (size_t x = beginX; x < endX; ++x) {
@@ -35,6 +39,7 @@ class Convolute : public AbstractAlgorithm<T> {
     }
 
   private:
+    std::shared_ptr<AbstractImageFactory<T>> imageFactory_ = nullptr;
     Mask<MaskType> kernel_;
     MaskType bias_ = 0;
 
