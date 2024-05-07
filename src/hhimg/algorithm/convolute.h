@@ -23,13 +23,14 @@ class Convolute : public AbstractAlgorithm<T> {
         size_t beginX = halfWidth, endX = image->width() - halfWidth;
         size_t beginY = halfHeight, endY = image->height() - halfHeight;
         auto result = imageFactory_->get(image->width() - kernel_.width() + 1,
-                                         image->height() - kernel_.height() +
-                                             1);
+                                         image->height() - kernel_.height() + 1);
 
         for (size_t y = beginY; y < endY; ++y) {
             for (size_t x = beginX; x < endX; ++x) {
                 auto value = computeValue(x, y, image);
-                result->set(x, y, utils::validate(value.red + bias_),
+                size_t rx = x - beginX;
+                size_t ry = y - beginY;
+                result->set(rx, ry, utils::validate(value.red + bias_),
                             utils::validate(value.green + bias_),
                             utils::validate(value.blue + bias_));
             }

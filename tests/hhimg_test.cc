@@ -94,14 +94,12 @@ TEST(Algorithms, MultiplePipedOperation) {
         hhimg::Convolute<unsigned char, double>(imgFactory, meanFilter) |
         hhimg::NonMaximumSuppression<unsigned char>(20); // blk => value < 20
 
-    for (size_t y = 0; y < image->height(); ++y) {
-        for (size_t x = 0; x < image->width(); ++x) {
-            // the black dot has been erased
-            ASSERT_EQ(image->red(x, y), wht.red);
-            ASSERT_EQ(image->green(x, y), wht.green);
-            ASSERT_EQ(image->blue(x, y), wht.blue);
-        }
-    }
+    std::cout << (int) image->red(0, 0) << std::endl;
+    ASSERT_EQ(image->width(), 1);
+    ASSERT_EQ(image->height(), 1);
+    ASSERT_EQ(image->red(0, 0), wht.red);
+    ASSERT_EQ(image->green(0, 0), wht.green);
+    ASSERT_EQ(image->blue(0, 0), wht.blue);
 }
 
 TEST(Algorithms, Minus) {
