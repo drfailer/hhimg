@@ -1,8 +1,6 @@
 #ifndef RGB_VALUE_HPP
 #define RGB_VALUE_HPP
 #include <cstddef>
-#include <hhimg/hhimg.h>
-#include <iostream>
 #include <random>
 
 template <typename T> struct RGBValue {
@@ -26,13 +24,6 @@ template <typename T> struct RGBValue {
 template <typename T>
 bool operator==(RGBValue<T> const &lhs, RGBValue<T> const &rhs) {
     return lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue;
-}
-
-template <typename T>
-bool operator==(std::shared_ptr<hhimg::AbstractPixel<T>> lhs,
-                RGBValue<T> const &rhs) {
-    return lhs->red() == rhs.red && lhs->green() == rhs.green &&
-           lhs->blue() == rhs.blue;
 }
 
 template <typename T>

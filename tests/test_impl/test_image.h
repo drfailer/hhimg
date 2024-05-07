@@ -1,7 +1,6 @@
 #ifndef TEST_IMAGE_HPP
 #define TEST_IMAGE_HPP
 #include "rgb_value.h"
-#include "test_pixel.h"
 #include <cstring>
 #include <hhimg/hhimg.h>
 #include <memory>
@@ -11,7 +10,8 @@ template <typename T> class TestImage : public hhimg::AbstractImage<T> {
     TestImage(RGBValue<T> *image, size_t width, size_t height)
         : hhimg::AbstractImage<T>(""), image_(image), width_(width),
           height_(height) {}
-    TestImage(TestImage<T> const &other) {
+    TestImage(TestImage<T> const &other)
+        : hhimg::AbstractImage<T>(other.filename()) {
         memcpy(image_, other.image_, width_ * height_ * sizeof(T));
     }
 
@@ -20,16 +20,6 @@ template <typename T> class TestImage : public hhimg::AbstractImage<T> {
 
     void load(std::string const &) override {}
     void save(std::string const &) override {}
-
-    friend bool operator==(std::shared_ptr<TestImage<T>> lhs,
-                           std::shared_ptr<TestImage<T>> rhs) {
-        for (size_t i = 0; i < lhs->width() * lhs->height(); ++i) {
-            if (lhs.get()->image_[i] != rhs.get()->image_[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     std::shared_ptr<hhimg::AbstractImage<T>> copy() const override {
         RGBValue<unsigned char> *mem = new RGBValue<T>[width_ * height_];
@@ -44,23 +34,32 @@ template <typename T> class TestImage : public hhimg::AbstractImage<T> {
         std::swap(this->image_, otherI->image_);
     }
 
+    T &red(size_t offset) override { return image_[offset].red; }
+    T &green(size_t offset) override { return image_[offset].green; }
+    T &blue(size_t offset) override { return image_[offset].blue; }
+    T red(size_t offset) const override { return image_[offset].red; }
+    T green(size_t offset) const override { return image_[offset].green; }
+    T blue(size_t offset) const override { return image_[offset].blue; }
+
+    using hhimg::AbstractImage<T>::red;
+    using hhimg::AbstractImage<T>::green;
+    using hhimg::AbstractImage<T>::blue;
+    using hhimg::AbstractImage<T>::set;
+
+    friend bool operator==(std::shared_ptr<TestImage<T>> lhs,
+                           std::shared_ptr<TestImage<T>> rhs) {
+        for (size_t i = 0; i < lhs->width() * lhs->height(); ++i) {
+            if (lhs.get()->image_[i] != rhs.get()->image_[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
   private:
     RGBValue<T> *image_ = {0};
     size_t width_ = 0;
     size_t height_ = 0;
-
-    std::shared_ptr<hhimg::AbstractPixel<T>> atImpl(size_t offset) override {
-        auto pixel = std::make_shared<TestPixel<T>>(
-            image_[offset].red, image_[offset].green, image_[offset].blue);
-        return pixel;
-    }
-
-    std::shared_ptr<hhimg::AbstractPixel<T>> const
-    atImpl(size_t offset) const override {
-        auto pixel = std::make_shared<hhimg::PixelValue<T>>(
-            image_[offset].red, image_[offset].green, image_[offset].blue);
-        return pixel;
-    }
 };
 
 #endif
