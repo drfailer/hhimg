@@ -5,17 +5,17 @@
 #include <hhimg/hhimg.h>
 #include <memory>
 
+using PixelType = unsigned char;
+
 TEST(Images, ReadAccessor) {
     constexpr size_t width = 10;
     constexpr size_t height = 10;
-    RGBValue<unsigned char> *mem =
-        randomRGBValues<unsigned char>(width, height);
-    RGBValue<unsigned char> *constMem =
-        randomRGBValues<unsigned char>(width, height);
-    TestImage<unsigned char> image(mem, width, height);
-    const TestImage<unsigned char> constImage(constMem, width, height);
-    std::shared_ptr<hhimg::AbstractImage<unsigned char>> p =
-        std::make_shared<TestImage<unsigned char>>(mem, width, height);
+    RGBValue<PixelType> *mem = randomRGBValues<PixelType>(width, height);
+    RGBValue<PixelType> *constMem = randomRGBValues<PixelType>(width, height);
+    TestImage<PixelType> image(mem, width, height);
+    const TestImage<PixelType> constImage(constMem, width, height);
+    std::shared_ptr<hhimg::AbstractImage<PixelType>> p =
+        std::make_shared<TestImage<PixelType>>(mem, width, height);
 
     // access to pixels
     for (size_t y = 0; y < height; ++y) {
@@ -37,18 +37,17 @@ TEST(Images, ReadAccessor) {
 TEST(Images, WriteAccessors) {
     constexpr size_t width = 10;
     constexpr size_t height = 10;
-    RGBValue<unsigned char> *mem =
-        randomRGBValues<unsigned char>(width, height);
-    TestImage<unsigned char> image(mem, width, height);
+    RGBValue<PixelType> *mem = randomRGBValues<PixelType>(width, height);
+    TestImage<PixelType> image(mem, width, height);
 
     // modifications
     image.set(0, 0, 10, 20, 30);
     image.set(9, 9, 20, 40, 60);
     image.set(3, 5, 1, 2, 3);
 
-    ASSERT_EQ(mem[0], RGBValue<unsigned char>(10, 20, 30));
-    ASSERT_EQ(mem[9 * width + 9], RGBValue<unsigned char>(20, 40, 60));
-    ASSERT_EQ(mem[5 * width + 3], RGBValue<unsigned char>(1, 2, 3));
+    ASSERT_EQ(mem[0], RGBValue<PixelType>(10, 20, 30));
+    ASSERT_EQ(mem[9 * width + 9], RGBValue<PixelType>(20, 40, 60));
+    ASSERT_EQ(mem[5 * width + 3], RGBValue<PixelType>(1, 2, 3));
 
     // free memory
     delete[] mem;
@@ -57,13 +56,12 @@ TEST(Images, WriteAccessors) {
 TEST(Algorithms, OneOperation) {
     constexpr size_t width = 10;
     constexpr size_t height = 10;
-    RGBValue<unsigned char> *mem =
-        randomRGBValues<unsigned char>(width, height);
-    auto image = std::make_shared<TestImage<unsigned char>>(mem, width, height);
+    RGBValue<PixelType> *mem = randomRGBValues<PixelType>(width, height);
+    auto image = std::make_shared<TestImage<PixelType>>(mem, width, height);
 
     ASSERT_FALSE(isGrayScaled(mem, width, height));
 
-    image |= hhimg::GrayScale<unsigned char>();
+    image |= hhimg::GrayScale<PixelType>();
 
     // should we test the calculus ?
     ASSERT_TRUE(isGrayScaled(mem, width, height));
@@ -73,28 +71,27 @@ TEST(Algorithms, OneOperation) {
 }
 
 TEST(Algorithms, MultiplePipedOperation) {
-    RGBValue<unsigned char> wht = {255, 255, 255};
-    RGBValue<unsigned char> blk = {0, 0, 0};
+    RGBValue<PixelType> wht = {255, 255, 255};
+    RGBValue<PixelType> blk = {0, 0, 0};
     constexpr size_t width = 3;
     constexpr size_t height = 3;
     // clang-format off
-    RGBValue<unsigned char> mem[] = {
+    RGBValue<PixelType> mem[] = {
         wht, wht, wht,
         wht, blk, wht,
         wht, wht, wht,
     };
     // clang-format on
-    auto image = std::make_shared<TestImage<unsigned char>>(mem, width, height);
+    auto image = std::make_shared<TestImage<PixelType>>(mem, width, height);
     std::vector<double> v(9, 1.0 / 9);
     hhimg::Mask<double> meanFilter(v, 3, 3);
-    auto imgFactory = std::make_shared<TestImageFactory<unsigned char>>();
+    auto imgFactory = std::make_shared<TestImageFactory<PixelType>>();
 
-    image |=
-        hhimg::GrayScale<unsigned char>() |
-        hhimg::Convolute<unsigned char, double>(imgFactory, meanFilter) |
-        hhimg::NonMaximumSuppression<unsigned char>(20); // blk => value < 20
+    image |= hhimg::GrayScale<PixelType>() |
+             hhimg::Convolute<PixelType, double>(imgFactory, meanFilter) |
+             hhimg::NonMaximumSuppression<PixelType>(20); // blk => value < 20
 
-    std::cout << (int) image->red(0, 0) << std::endl;
+    std::cout << (int)image->red(0, 0) << std::endl;
     ASSERT_EQ(image->width(), 1);
     ASSERT_EQ(image->height(), 1);
     ASSERT_EQ(image->red(0, 0), wht.red);
@@ -103,33 +100,30 @@ TEST(Algorithms, MultiplePipedOperation) {
 }
 
 TEST(Algorithms, Minus) {
-    RGBValue<unsigned char> wht = {255, 255, 255};
-    RGBValue<unsigned char> blk = {0, 0, 0};
+    RGBValue<PixelType> wht = {255, 255, 255};
+    RGBValue<PixelType> blk = {0, 0, 0};
     constexpr size_t width = 3;
     constexpr size_t height = 3;
     // clang-format off
-    RGBValue<unsigned char> mem1[] = {
+    RGBValue<PixelType> mem1[] = {
         wht, blk, wht,
         blk, wht, blk,
         wht, blk, wht,
     };
-    RGBValue<unsigned char> mem2[] = {
+    RGBValue<PixelType> mem2[] = {
         blk, blk, blk,
         blk, blk, blk,
         blk, blk, blk,
     };
-    RGBValue<unsigned char> mem3[] = {
+    RGBValue<PixelType> mem3[] = {
         wht, wht, wht,
         wht, wht, wht,
         wht, wht, wht,
     };
     // clang-format on
-    auto image1 =
-        std::make_shared<TestImage<unsigned char>>(mem1, width, height);
-    auto image2 =
-        std::make_shared<TestImage<unsigned char>>(mem2, width, height);
-    auto image3 =
-        std::make_shared<TestImage<unsigned char>>(mem3, width, height);
+    auto image1 = std::make_shared<TestImage<PixelType>>(mem1, width, height);
+    auto image2 = std::make_shared<TestImage<PixelType>>(mem2, width, height);
+    auto image3 = std::make_shared<TestImage<PixelType>>(mem3, width, height);
 
     for (size_t i = 0; i < width * height; ++i) {
         if (i % 2 == 0) {
@@ -143,7 +137,7 @@ TEST(Algorithms, Minus) {
         }
     }
 
-    image1 |= hhimg::Minus<unsigned char>(image2);
+    image1 |= hhimg::Minus<PixelType>(image2);
 
     // nothing has changed
     for (size_t i = 0; i < width * height; ++i) {
@@ -158,7 +152,7 @@ TEST(Algorithms, Minus) {
         }
     }
 
-    image1 |= hhimg::Minus<unsigned char>(image3);
+    image1 |= hhimg::Minus<PixelType>(image3);
 
     // everything is black
     for (size_t i = 0; i < width * height; ++i) {
@@ -169,21 +163,21 @@ TEST(Algorithms, Minus) {
 }
 
 TEST(Algorithms, Crop) {
-    RGBValue<unsigned char> wht = {255, 255, 255};
-    RGBValue<unsigned char> blk = {0, 0, 0};
+    RGBValue<PixelType> wht = {255, 255, 255};
+    RGBValue<PixelType> blk = {0, 0, 0};
     constexpr size_t width = 3;
     constexpr size_t height = 3;
     // clang-format off
-    RGBValue<unsigned char> mem[] = {
+    RGBValue<PixelType> mem[] = {
         blk, blk, blk,
         blk, wht, blk,
         blk, blk, blk,
     };
     // clang-format on
-    auto image = std::make_shared<TestImage<unsigned char>>(mem, width, height);
-    auto imgFactory = std::make_shared<TestImageFactory<unsigned char>>();
+    auto image = std::make_shared<TestImage<PixelType>>(mem, width, height);
+    auto imgFactory = std::make_shared<TestImageFactory<PixelType>>();
 
-    image |= hhimg::Crop<unsigned char>(imgFactory, 1, 1, 1, 1);
+    image |= hhimg::Crop<PixelType>(imgFactory, 1, 1, 1, 1);
 
     ASSERT_EQ(image->width(), 1);
     ASSERT_EQ(image->height(), 1);
