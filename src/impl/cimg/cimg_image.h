@@ -11,6 +11,9 @@ template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
     CImgImage(CImgImage const &other)
         : hhimg::AbstractImage<unsigned char>(other.filename()),
           image_(other.image_) {}
+    CImgImage(size_t width, size_t height)
+        : hhimg::AbstractImage<unsigned char>(""),
+          image_(width, height) {}
 
     const cimg_library::CImg<T> &image() const { return image_; }
     cimg_library::CImg<T> &image() { return image_; }
