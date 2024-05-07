@@ -3,6 +3,7 @@
 #include "../abstract/abstract_algorithm.h"
 #include "../concrete/data/mask.h"
 #include "../tools/utils.h"
+#include "../tools/perf_recorder.h"
 
 namespace hhimg {
 
@@ -14,6 +15,7 @@ class Convolute : public AbstractAlgorithm<T> {
     ~Convolute() = default;
 
     ImgData<T> operator()(ImgData<T> image) const override {
+        utils::PerfRectorder::start("Convolute");
         size_t halfWidth = kernel_.width() / 2;
         size_t halfHeight = kernel_.height() / 2;
         size_t beginX = halfWidth, endX = image->width() - halfWidth;
@@ -28,6 +30,7 @@ class Convolute : public AbstractAlgorithm<T> {
                                       utils::validate(value.blue + bias_));
             }
         }
+        utils::PerfRectorder::end("Convolute");
         return result;
     }
 

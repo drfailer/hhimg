@@ -1,6 +1,7 @@
 #ifndef CROP_HPP
 #define CROP_HPP
 #include "../abstract/abstract_algorithm.h"
+#include "../tools/perf_recorder.h"
 #include "hhimg/abstract/abstract_image_factory.h"
 #include <cstddef>
 #include <memory>
@@ -17,6 +18,7 @@ template <typename T> class Crop : public AbstractAlgorithm<T> {
     ~Crop() = default;
 
     ImgData<T> operator()(ImgData<T> image) const override {
+        utils::PerfRectorder::start("Crop");
         auto output = imageFactory_->get(width_, height_);
 
         if (x_ + width_ >= image->width() || y_ + height_ >= image->height()) {
@@ -29,6 +31,7 @@ template <typename T> class Crop : public AbstractAlgorithm<T> {
                 output->at(x, y)->set(image->at(x + x_, y + y_));
             }
         }
+        utils::PerfRectorder::end("Crop");
         return output;
     }
 

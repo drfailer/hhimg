@@ -1,6 +1,7 @@
 #ifndef MINUS_HPP
 #define MINUS_HPP
 #include "../abstract/abstract_algorithm.h"
+#include "../tools/perf_recorder.h"
 #include "../tools/pixel_operators.h"
 #include "../tools/shared_ptr_operators.h"
 
@@ -13,6 +14,7 @@ template <typename T> class Minus : public AbstractAlgorithm<T> {
     ~Minus() = default;
 
     ImgData<T> operator()(ImgData<T> image) const override {
+        utils::PerfRectorder::start("Minus");
         if (image->width() != imageToSubstract_->width() ||
             image->height() != imageToSubstract_->height()) {
             throw std::invalid_argument(
@@ -23,6 +25,7 @@ template <typename T> class Minus : public AbstractAlgorithm<T> {
                 image->at(x, y) -= imageToSubstract_->at(x, y);
             }
         }
+        utils::PerfRectorder::end("Minus");
         return image;
     }
 

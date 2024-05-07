@@ -49,5 +49,6 @@ int main(int, char **) {
     /* verticalBordersExtr("../img/rivendell.jpg"); */
     /* horizontalBordersExtr("../img/rivendell.jpg"); */
     detailExtr("../img/rivendell.jpg");
+    hhimg::utils::PerfRectorder::report();
     return 0;
 }

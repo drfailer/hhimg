@@ -1,6 +1,7 @@
 #ifndef NON_MAXIMUM_SUPPRESSION_HPP
 #define NON_MAXIMUM_SUPPRESSION_HPP
 #include "hhimg/abstract/abstract_algorithm.h"
+#include "../tools/perf_recorder.h"
 
 namespace hhimg {
 
@@ -11,6 +12,7 @@ class NonMaximumSuppression : public AbstractAlgorithm<T> {
         : max_(max), lowValue_(lowValue_), highValue_(highValue) {}
 
     ImgData<T> operator()(ImgData<T> image) const override {
+        utils::PerfRectorder::start("NonMaximumSuppression");
         for (size_t y = 0; y < image->height(); ++y) {
             for (size_t x = 0; x < image->width(); ++x) {
                 if (image->at(x, y)->get() < max_) {
@@ -20,6 +22,7 @@ class NonMaximumSuppression : public AbstractAlgorithm<T> {
                 }
             }
         }
+        utils::PerfRectorder::end("NonMaximumSuppression");
         return image;
     }
 
