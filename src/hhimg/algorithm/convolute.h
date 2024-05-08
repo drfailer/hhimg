@@ -51,7 +51,7 @@ class Convolute : public AbstractAlgorithm<T> {
             for (size_t mx = 0; mx < kernel_.width(); ++mx) {
                 size_t ix = x + mx - halfWidth;
                 size_t iy = y + my - halfHeight;
-                result += image->template at<MaskType>(ix, iy) * kernel_.at(mx, my);
+                result += pixelCast<MaskType>(image->at(ix, iy)) * kernel_.at(mx, my);
             }
         }
         return result;

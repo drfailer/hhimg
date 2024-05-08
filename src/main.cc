@@ -4,8 +4,6 @@
 #include <CImg/CImg.h>
 #include <hhimg/hhimg.h>
 
-#undef GrayScale
-
 using PixelType = unsigned char;
 
 void displayCImgImage(std::shared_ptr<CImgImage<PixelType>> image) {
@@ -52,6 +50,7 @@ void detailExtr(std::shared_ptr<CImgImage<PixelType>> image) {
     image |= hhimg::Crop<PixelType>(imageFactory, 1, 1, secondImage->width(),
                                     secondImage->height()) |
              hhimg::Minus<PixelType>(secondImage) |
+             hhimg::GrayScale<PixelType>() |
              hhimg::NonMaximumSuppression<PixelType>(10);
     hhimg::utils::PerfRectorder::end("detailExtr");
 }

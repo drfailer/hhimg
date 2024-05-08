@@ -16,6 +16,11 @@ Pixel<Out> validate(Pixel<In> const &pixel) {
             (Out)utils::validate(pixel.blue)};
 }
 
+template <typename Out, typename In>
+Pixel<Out> pixelCast(Pixel<In> const &pixel) {
+    return {(Out)pixel.red, (Out)pixel.green, (Out)pixel.blue};
+}
+
 #define PixelOpPixel(Op)                                                       \
     template <typename T>                                                      \
     Pixel<T> operator Op(Pixel<T> const &lhs, Pixel<T> const &rhs) {           \

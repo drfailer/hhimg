@@ -1,7 +1,7 @@
 #ifndef CIMG_IMAGE_HPP
 #define CIMG_IMAGE_HPP
-#include <hhimg/hhimg.h>
 #include <CImg/CImg.h>
+#include <hhimg/hhimg.h>
 
 template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
   public:
@@ -12,8 +12,7 @@ template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
         : hhimg::AbstractImage<unsigned char>(other.filename()),
           image_(other.image_) {}
     CImgImage(size_t width, size_t height)
-        : hhimg::AbstractImage<unsigned char>(""),
-          image_(width, height) {}
+        : hhimg::AbstractImage<unsigned char>(""), image_(width, height, 1, 3) {}
 
     const cimg_library::CImg<T> &image() const { return image_; }
     cimg_library::CImg<T> &image() { return image_; }
@@ -40,20 +39,28 @@ template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
         image_.swap(i->image());
     }
 
-    T &red(size_t offset) override { return image_.at(offset); }
-    T &green(size_t offset) override {
-        return image_.at(offset + width() * height() * image_.depth());
+    hhimg::Pixel<T> at(size_t offset) const override {
+        return {image_.at(offset),
+                image_.at(offset + width() * height() * image_.depth()),
+                image_.at(offset + 2 * width() * height() * image_.depth())};
     }
-    T &blue(size_t offset) override {
-        return image_.at(offset + 2 * width() * height() * image_.depth());
+
+    void set(size_t offset, hhimg::Pixel<T> const &pixel) override {
+        image_.at(offset) = pixel.red;
+        image_.at(offset + width() * height() * image_.depth()) = pixel.green;
+        image_.at(offset + 2 * width() * height() * image_.depth()) =
+            pixel.blue;
     }
-    T red(size_t offset) const override { return image_.at(offset); }
-    T green(size_t offset) const override {
-        return image_.at(offset + width() * height() * image_.depth());
-    }
-    T blue(size_t offset) const override {
-        return image_.at(offset + 2 * width() * height() * image_.depth());
-    }
+
+    /* hhimg::Pixel<T> at(size_t x, size_t y) const override { */
+    /*     return {image_.atXY(x, y, 0, 0), image_.atXY(x, y, 0, 1), image_.atXY(x, y, 0, 2)}; */
+    /* } */
+
+    /* void set(size_t x, size_t y, hhimg::Pixel<T> const &pixel) override { */
+    /*     image_.atXY(x, y, 0, 0) = pixel.red; */
+    /*     image_.atXY(x, y, 0, 1) = pixel.green; */
+    /*     image_.atXY(x, y, 0, 2) = pixel.blue; */
+    /* } */
 
   private:
     cimg_library::CImg<T> image_;
