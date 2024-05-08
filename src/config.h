@@ -8,6 +8,7 @@ enum Algorithms {
     VerticalBorders,
     HorizontalBorders,
     Detail,
+    Rainbow,
 };
 
 struct Config {
@@ -51,8 +52,11 @@ inline void parseCmdArgs(int argc, char **argv, Config &config) {
             config.algorithm = VerticalBorders;
         } else if (algoArg.getValue() == "hb") {
             config.algorithm = HorizontalBorders;
-        } else {
+        } else if (algoArg.getValue() == "detail") {
             config.algorithm = Detail;
+        } else {
+            std::cout << "rainbow" << std::endl;
+            config.algorithm = Rainbow;
         }
         config.display = displayArg.getValue();
         config.filename = filenameArg.getValue();

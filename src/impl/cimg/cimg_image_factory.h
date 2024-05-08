@@ -5,6 +5,7 @@
 
 template <typename T>
 class CImgImageFactory : public hhimg::AbstractImageFactory<T> {
+  public:
     std::shared_ptr<hhimg::AbstractImage<T>> get(size_t width,
                                                  size_t height) const override {
         return std::make_shared<CImgImage<T>>(width, height);

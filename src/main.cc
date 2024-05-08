@@ -55,6 +55,17 @@ void detailExtr(std::shared_ptr<CImgImage<PixelType>> image) {
     hhimg::utils::PerfRectorder::end("detailExtr");
 }
 
+void generateRainbow() {
+    auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
+    auto computeRed = [](size_t x, size_t) { return 255 - x; };
+    auto computeGreen = [](size_t, size_t y) { return y; };
+    auto computeBlue = [](size_t x, size_t) { return x; };
+    auto image = imageFactory->get(255, 255);
+
+    image |= hhimg::RGBMapMutate<PixelType>(computeRed, computeGreen, computeBlue);
+    displayCImgImage(std::dynamic_pointer_cast<CImgImage<PixelType>>(image));
+}
+
 void run(Config config) {
     hhimg::utils::PerfRectorder::start("Image load");
     auto image = std::make_shared<CImgImage<PixelType>>(config.filename);
@@ -67,8 +78,11 @@ void run(Config config) {
     case HorizontalBorders:
         horizontalBordersExtr(image);
         break;
-    default:
+    case Detail:
         detailExtr(image);
+        break;
+    case Rainbow:
+        generateRainbow();
         break;
     }
 

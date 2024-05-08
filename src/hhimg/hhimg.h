@@ -9,6 +9,8 @@
 #include "./algorithm/crop.h"
 #include "./algorithm/minus.h"
 #include "./algorithm/convolution.h"
+#include "./algorithm/rgb_map.h"
+#include "./algorithm/rgb_map_mutate.h"
 #include "./tools/perf_recorder.h"
 #include "./tools/algorithm_operators.h"
 #include "./tools/utils.h"
