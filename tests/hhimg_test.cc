@@ -95,23 +95,23 @@ TEST(Algorithms, MultiplePipedOperation) {
 TEST(Algorithms, Minus) {
     RGBValue<PixelType> wht = {255, 255, 255};
     RGBValue<PixelType> blk = {0, 0, 0};
-    constexpr size_t width = 3;
+    constexpr size_t width = 4;
     constexpr size_t height = 3;
     // clang-format off
     RGBValue<PixelType> mem1[] = {
-        wht, blk, wht,
-        blk, wht, blk,
-        wht, blk, wht,
+        wht, blk, wht, blk,
+        wht, blk, wht, blk,
+        wht, blk, wht, blk,
     };
     RGBValue<PixelType> mem2[] = {
-        blk, blk, blk,
-        blk, blk, blk,
-        blk, blk, blk,
+        blk, blk, blk, blk,
+        blk, blk, blk, blk,
+        blk, blk, blk, blk,
     };
     RGBValue<PixelType> mem3[] = {
-        wht, wht, wht,
-        wht, wht, wht,
-        wht, wht, wht,
+        wht, wht, wht, wht,
+        wht, wht, wht, wht,
+        wht, wht, wht, wht,
     };
     // clang-format on
     auto image1 = std::make_shared<TestImage<PixelType>>(mem1, width, height);
@@ -148,23 +148,24 @@ TEST(Algorithms, Minus) {
 TEST(Algorithms, Crop) {
     RGBValue<PixelType> wht = {255, 255, 255};
     RGBValue<PixelType> blk = {0, 0, 0};
-    constexpr size_t width = 3;
+    constexpr size_t width = 4;
     constexpr size_t height = 3;
     // clang-format off
     RGBValue<PixelType> mem[] = {
-        blk, blk, blk,
-        blk, wht, blk,
-        blk, blk, blk,
+        blk, blk, blk, blk,
+        blk, wht, wht, blk,
+        blk, blk, blk, blk,
     };
     // clang-format on
     auto image = std::make_shared<TestImage<PixelType>>(mem, width, height);
     auto imgFactory = std::make_shared<TestImageFactory<PixelType>>();
 
-    image |= hhimg::Crop<PixelType>(imgFactory, 1, 1, 1, 1);
+    image |= hhimg::Crop<PixelType>(imgFactory, 1, 1, 2, 1);
 
-    ASSERT_EQ(image->width(), 1);
+    ASSERT_EQ(image->width(), 2);
     ASSERT_EQ(image->height(), 1);
     ASSERT_EQ(image->at(0, 0), wht);
+    ASSERT_EQ(image->at(1, 0), wht);
 }
 
 int main(int argc, char **argv) {
