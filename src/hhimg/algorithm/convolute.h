@@ -30,7 +30,7 @@ class Convolute : public AbstractAlgorithm<T> {
                 auto value = computeValue(x, y, image);
                 size_t rx = x - beginX;
                 size_t ry = y - beginY;
-                result->set(rx, ry, validate<T>(value + bias_));
+                result->set(rx, ry, pixelValidCast<T>(value + bias_));
             }
         }
         utils::PerfRectorder::end("Convolute");
