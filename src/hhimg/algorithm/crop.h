@@ -25,9 +25,8 @@ template <typename T> class Crop : public AbstractAlgorithm<T> {
             throw std::invalid_argument("error: invalid crop dimentions");
         }
 
-        // test width_ and height_ valid ?
-        for (size_t y = 0; y < width_; ++y) {
-            for (size_t x = 0; x < height_; ++x) {
+        for (size_t y = 0; y < height_; ++y) {
+            for (size_t x = 0; x < width_; ++x) {
                 output->set(x, y, image->at(x + x_, y + y_));
             }
         }
