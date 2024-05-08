@@ -26,8 +26,8 @@ template <typename T> class Crop : public AbstractAlgorithm<T> {
         }
 
         // test width_ and height_ valid ?
-        for (size_t y = 0; y < width_; ++y) {
-            for (size_t x = 0; x < height_; ++x) {
+        for (size_t y = 0; y < height_; ++y) {
+            for (size_t x = 0; x < width_; ++x) {
                 output->at(x, y)->set(image->at(x + x_, y + y_));
             }
         }
