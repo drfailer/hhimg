@@ -52,16 +52,6 @@ template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
             pixel.blue;
     }
 
-    /* hhimg::Pixel<T> at(size_t x, size_t y) const override { */
-    /*     return {image_.atXY(x, y, 0, 0), image_.atXY(x, y, 0, 1), image_.atXY(x, y, 0, 2)}; */
-    /* } */
-
-    /* void set(size_t x, size_t y, hhimg::Pixel<T> const &pixel) override { */
-    /*     image_.atXY(x, y, 0, 0) = pixel.red; */
-    /*     image_.atXY(x, y, 0, 1) = pixel.green; */
-    /*     image_.atXY(x, y, 0, 2) = pixel.blue; */
-    /* } */
-
   private:
     cimg_library::CImg<T> image_;
 };
