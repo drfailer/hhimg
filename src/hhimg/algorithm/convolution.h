@@ -1,20 +1,19 @@
-#ifndef MASK_APPLIER_HPP
-#define MASK_APPLIER_HPP
+#ifndef CONVOLUTION_HPP
+#define CONVOLUTION_HPP
 #include "../abstract/abstract_algorithm.h"
 #include "../abstract/abstract_image_factory.h"
 #include "../concrete/data/mask.h"
 #include "../tools/perf_recorder.h"
-#include "../tools/utils.h"
 
 namespace hhimg {
 
 template <typename T, typename MaskType>
-class Convolute : public AbstractAlgorithm<T> {
+class Convolution : public AbstractAlgorithm<T> {
   public:
-    Convolute(std::shared_ptr<AbstractImageFactory<T>> imageFactory,
+    Convolution(std::shared_ptr<AbstractImageFactory<T>> imageFactory,
               Mask<MaskType> const &kernel, MaskType bias = 0)
         : imageFactory_(imageFactory), kernel_(kernel), bias_(bias) {}
-    ~Convolute() = default;
+    ~Convolution() = default;
 
     ImgData<T> operator()(ImgData<T> image) const override {
         utils::PerfRectorder::start("Convolute");

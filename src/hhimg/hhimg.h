@@ -8,7 +8,7 @@
 #include "./algorithm/non_maximum_suppression.h"
 #include "./algorithm/crop.h"
 #include "./algorithm/minus.h"
-#include "./algorithm/convolute.h"
+#include "./algorithm/convolution.h"
 #include "./tools/perf_recorder.h"
 #include "./tools/algorithm_operators.h"
 #include "./tools/utils.h"

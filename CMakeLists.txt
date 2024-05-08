@@ -42,7 +42,7 @@ set(hh_img_files
     src/hhimg/algorithm/non_maximum_suppression.h
     src/hhimg/algorithm/crop.h
     src/hhimg/algorithm/minus.h
-    src/hhimg/algorithm/convolute.h
+    src/hhimg/algorithm/convolution.h
     src/hhimg/tools/perf_recorder.h
     src/hhimg/tools/algorithm_operators.h
     src/hhimg/tools/utils.h

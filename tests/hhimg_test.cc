@@ -132,7 +132,7 @@ TEST(Algorithms, MultiplePipedOperation) {
     auto imgFactory = std::make_shared<TestImageFactory<PixelType>>();
 
     image |= hhimg::GrayScale<PixelType>() |
-             hhimg::Convolute<PixelType, double>(imgFactory, meanFilter) |
+             hhimg::Convolution<PixelType, double>(imgFactory, meanFilter) |
              hhimg::NonMaximumSuppression<PixelType>(20); // blk => value < 20
 
     ASSERT_EQ(image->width(), 1);

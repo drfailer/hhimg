@@ -21,7 +21,7 @@ void verticalBordersExtr(std::shared_ptr<CImgImage<PixelType>> image) {
     hhimg::utils::PerfRectorder::start("verticalBordersExtr");
     image |=
         hhimg::GrayScale<PixelType>() |
-        hhimg::Convolute<PixelType, double>(imageFactory, verticalBorders) |
+        hhimg::Convolution<PixelType, double>(imageFactory, verticalBorders) |
         hhimg::NonMaximumSuppression<PixelType>(50);
     hhimg::utils::PerfRectorder::end("verticalBordersExtr");
 }
@@ -33,7 +33,7 @@ void horizontalBordersExtr(std::shared_ptr<CImgImage<PixelType>> image) {
     hhimg::utils::PerfRectorder::start("horizontalBordersExtr");
     image |=
         hhimg::GrayScale<PixelType>() |
-        hhimg::Convolute<PixelType, double>(imageFactory, horizontalBorders) |
+        hhimg::Convolution<PixelType, double>(imageFactory, horizontalBorders) |
         hhimg::NonMaximumSuppression<PixelType>(50);
     hhimg::utils::PerfRectorder::end("horizontalBordersExtr");
 }
@@ -46,7 +46,7 @@ void detailExtr(std::shared_ptr<CImgImage<PixelType>> image) {
 
     hhimg::utils::PerfRectorder::start("detailExtr");
     secondImage |=
-        hhimg::Convolute<PixelType, double>(imageFactory, meanFilter);
+        hhimg::Convolution<PixelType, double>(imageFactory, meanFilter);
     image |= hhimg::Crop<PixelType>(imageFactory, 1, 1, secondImage->width(),
                                     secondImage->height()) |
              hhimg::Minus<PixelType>(secondImage) |
