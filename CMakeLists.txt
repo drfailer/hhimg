@@ -50,7 +50,6 @@ set(hh_img_files
     src/hhimg/abstract/abstract_algorithm.h
     src/hhimg/abstract/abstract_image_factory.h
     src/hhimg/abstract/data/abstract_image.h
-    src/impl/cimg/cimg_pixel.h
     src/impl/cimg/cimg_image_factory.h
     src/impl/cimg/cimg_image.h
     )
