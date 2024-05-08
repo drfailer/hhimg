@@ -57,12 +57,26 @@ void detailExtr(std::shared_ptr<CImgImage<PixelType>> image) {
 
 void generateRainbow() {
     auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
-    auto computeRed = [](size_t x, size_t) { return 255 - x; };
-    auto computeGreen = [](size_t, size_t y) { return y; };
-    auto computeBlue = [](size_t x, size_t) { return x; };
+    auto computeRed = [](auto, size_t x, size_t) { return 255 - x; };
+    auto computeGreen = [](auto, size_t, size_t y) { return y; };
+    auto computeBlue = [](auto, size_t x, size_t) { return x; };
     auto image = imageFactory->get(255, 255);
 
-    image |= hhimg::RGBMapMutate<PixelType>(computeRed, computeGreen, computeBlue);
+    image |=
+        hhimg::RGBMapMutate<PixelType>(computeRed, computeGreen, computeBlue);
+    displayCImgImage(std::dynamic_pointer_cast<CImgImage<PixelType>>(image));
+}
+
+void redFilter(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
+    auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
+    auto computeRed = [image](auto, size_t x, size_t y) {
+        return image->at(x, y).red;
+    };
+    auto computeGreen = [image](auto, size_t, size_t) { return 0; };
+    auto computeBlue = [image](auto, size_t, size_t) { return 0; };
+
+    image |=
+        hhimg::RGBMapMutate<PixelType>(computeRed, computeGreen, computeBlue);
     displayCImgImage(std::dynamic_pointer_cast<CImgImage<PixelType>>(image));
 }
 
@@ -83,6 +97,9 @@ void run(Config config) {
         break;
     case Rainbow:
         generateRainbow();
+        break;
+    case RedFilter:
+        redFilter(image);
         break;
     }
 

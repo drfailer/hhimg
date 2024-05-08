@@ -7,12 +7,10 @@
 namespace hhimg {
 
 template <typename T> struct RGBMap : public AbstractAlgorithm<T> {
-    RGBMap(
-        std::shared_ptr<AbstractImageFactory<T>> imageFactory,
-        std::function<T(ImgData<T> const &, size_t, size_t)> const &computeRed,
-        std::function<T(ImgData<T> const &, size_t, size_t)> const
-            &computeGreen,
-        std::function<T(ImgData<T> const &, size_t, size_t)> const &computeBlue)
+    using ComputeValueFn = std::function<T(ImgData<T> const &, size_t, size_t)>;
+    RGBMap(std::shared_ptr<AbstractImageFactory<T>> imageFactory,
+           ComputeValueFn const &computeRed, ComputeValueFn const &computeGreen,
+           ComputeValueFn const &computeBlue)
         : imageFactory_(imageFactory), computeRed_(computeRed),
           computeGreen_(computeGreen), computeBlue_(computeBlue) {}
 
@@ -34,9 +32,9 @@ template <typename T> struct RGBMap : public AbstractAlgorithm<T> {
 
   private:
     std::shared_ptr<AbstractImageFactory<T>> imageFactory_ = nullptr;
-    std::function<T(ImgData<T> const &, size_t, size_t)> computeRed_;
-    std::function<T(ImgData<T> const &, size_t, size_t)> computeGreen_;
-    std::function<T(ImgData<T> const &, size_t, size_t)> computeBlue_;
+    ComputeValueFn computeRed_;
+    ComputeValueFn computeGreen_;
+    ComputeValueFn computeBlue_;
 };
 
 } // namespace hhimg
