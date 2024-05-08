@@ -21,6 +21,11 @@ Pixel<Out> pixelCast(Pixel<In> const &pixel) {
     return {(Out)pixel.red, (Out)pixel.green, (Out)pixel.blue};
 }
 
+template <typename T>
+bool operator==(Pixel<T> const &lhs, Pixel<T> const &rhs) {
+    return lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue;
+}
+
 #define PixelOpPixel(Op)                                                       \
     template <typename T>                                                      \
     Pixel<T> operator Op(Pixel<T> const &lhs, Pixel<T> const &rhs) {           \

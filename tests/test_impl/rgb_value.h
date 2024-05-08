@@ -2,6 +2,7 @@
 #define RGB_VALUE_HPP
 #include <cstddef>
 #include <random>
+#include <hhimg/hhimg.h>
 
 template <typename T> struct RGBValue {
     T red;
@@ -23,6 +24,11 @@ template <typename T> struct RGBValue {
 
 template <typename T>
 bool operator==(RGBValue<T> const &lhs, RGBValue<T> const &rhs) {
+    return lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue;
+}
+
+template <typename T>
+bool operator==(hhimg::Pixel<T> const &lhs, RGBValue<T> const &rhs) {
     return lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue;
 }
 

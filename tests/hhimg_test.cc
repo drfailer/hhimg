@@ -20,12 +20,8 @@ TEST(Images, ReadAccessor) {
     // access to pixels
     for (size_t y = 0; y < height; ++y) {
         for (size_t x = 0; x < width; ++x) {
-            ASSERT_EQ(image.red(x, y), mem[y * width + x].red);
-            ASSERT_EQ(image.green(x, y), mem[y * width + x].green);
-            ASSERT_EQ(image.blue(x, y), mem[y * width + x].blue);
-            ASSERT_EQ(constImage.red(x, y), constMem[y * width + x].red);
-            ASSERT_EQ(constImage.green(x, y), constMem[y * width + x].green);
-            ASSERT_EQ(constImage.blue(x, y), constMem[y * width + x].blue);
+            ASSERT_EQ(image.at(x, y), mem[y * width + x]);
+            ASSERT_EQ(constImage.at(x, y), constMem[y * width + x]);
         }
     }
 
@@ -91,12 +87,9 @@ TEST(Algorithms, MultiplePipedOperation) {
              hhimg::Convolute<PixelType, double>(imgFactory, meanFilter) |
              hhimg::NonMaximumSuppression<PixelType>(20); // blk => value < 20
 
-    std::cout << (int)image->red(0, 0) << std::endl;
     ASSERT_EQ(image->width(), 1);
     ASSERT_EQ(image->height(), 1);
-    ASSERT_EQ(image->red(0, 0), wht.red);
-    ASSERT_EQ(image->green(0, 0), wht.green);
-    ASSERT_EQ(image->blue(0, 0), wht.blue);
+    ASSERT_EQ(image->at(0, 0), wht);
 }
 
 TEST(Algorithms, Minus) {
@@ -127,13 +120,9 @@ TEST(Algorithms, Minus) {
 
     for (size_t i = 0; i < width * height; ++i) {
         if (i % 2 == 0) {
-            ASSERT_EQ(image1->red(i), wht.red);
-            ASSERT_EQ(image1->green(i), wht.green);
-            ASSERT_EQ(image1->blue(i), wht.blue);
+            ASSERT_EQ(image1->at(i), wht);
         } else {
-            ASSERT_EQ(image1->red(i), blk.red);
-            ASSERT_EQ(image1->green(i), blk.green);
-            ASSERT_EQ(image1->blue(i), blk.blue);
+            ASSERT_EQ(image1->at(i), blk);
         }
     }
 
@@ -142,13 +131,9 @@ TEST(Algorithms, Minus) {
     // nothing has changed
     for (size_t i = 0; i < width * height; ++i) {
         if (i % 2 == 0) {
-            ASSERT_EQ(image1->red(i), wht.red);
-            ASSERT_EQ(image1->green(i), wht.green);
-            ASSERT_EQ(image1->blue(i), wht.blue);
+            ASSERT_EQ(image1->at(i), wht);
         } else {
-            ASSERT_EQ(image1->red(i), blk.red);
-            ASSERT_EQ(image1->green(i), blk.green);
-            ASSERT_EQ(image1->blue(i), blk.blue);
+            ASSERT_EQ(image1->at(i), blk);
         }
     }
 
@@ -156,9 +141,7 @@ TEST(Algorithms, Minus) {
 
     // everything is black
     for (size_t i = 0; i < width * height; ++i) {
-        ASSERT_EQ(image1->red(i), blk.red);
-        ASSERT_EQ(image1->green(i), blk.green);
-        ASSERT_EQ(image1->blue(i), blk.blue);
+            ASSERT_EQ(image1->at(i), blk);
     }
 }
 
@@ -181,9 +164,7 @@ TEST(Algorithms, Crop) {
 
     ASSERT_EQ(image->width(), 1);
     ASSERT_EQ(image->height(), 1);
-    ASSERT_EQ(image->red(0, 0), wht.red);
-    ASSERT_EQ(image->green(0, 0), wht.green);
-    ASSERT_EQ(image->blue(0, 0), wht.blue);
+    ASSERT_EQ(image->at(0, 0), wht);
 }
 
 int main(int argc, char **argv) {

@@ -34,16 +34,18 @@ template <typename T> class TestImage : public hhimg::AbstractImage<T> {
         std::swap(this->image_, otherI->image_);
     }
 
-    T &red(size_t offset) override { return image_[offset].red; }
-    T &green(size_t offset) override { return image_[offset].green; }
-    T &blue(size_t offset) override { return image_[offset].blue; }
-    T red(size_t offset) const override { return image_[offset].red; }
-    T green(size_t offset) const override { return image_[offset].green; }
-    T blue(size_t offset) const override { return image_[offset].blue; }
+    hhimg::Pixel<T> at(size_t offset) const override {
+        RGBValue<T> value = image_[offset];
+        return {value.red, value.green, value.blue};
+    }
 
-    using hhimg::AbstractImage<T>::red;
-    using hhimg::AbstractImage<T>::green;
-    using hhimg::AbstractImage<T>::blue;
+    void set(size_t offset, hhimg::Pixel<T> const &pixel) override {
+        image_[offset].red = pixel.red;
+        image_[offset].green = pixel.green;
+        image_[offset].blue = pixel.blue;
+    }
+
+    using hhimg::AbstractImage<T>::at;
     using hhimg::AbstractImage<T>::set;
 
     friend bool operator==(std::shared_ptr<TestImage<T>> lhs,
