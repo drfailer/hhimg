@@ -2,7 +2,6 @@
 #define GRAY_SCALE_HPP
 #include "../abstract/abstract_algorithm.h"
 #include "../tools/perf_recorder.h"
-#undef GrayScale // fuck you X11
 
 namespace hhimg {
 

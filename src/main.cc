@@ -1,8 +1,6 @@
 #include <hedgehog/hedgehog.h>
 #include "config.h"
-#include "impl/cimg/cimg_image.h"
-#include "impl/cimg/cimg_image_factory.h"
-#include <CImg/CImg.h>
+#include "impl/cimg/cimg.h"
 #include <hhimg/hhimg.h>
 
 using PixelType = unsigned char;

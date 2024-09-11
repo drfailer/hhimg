@@ -1,6 +1,6 @@
 #ifndef CIMG_IMAGE_HPP
 #define CIMG_IMAGE_HPP
-#include <CImg/CImg.h>
+#include "safe_cimg.h"
 #include <hhimg/hhimg.h>
 
 template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
