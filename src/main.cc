@@ -1,5 +1,6 @@
 #include <hedgehog/hedgehog.h>
 #include "config.h"
+#include "hhimg/algorithm/contrast_brightness.h"
 #include "impl/cimg/cimg.h"
 #include <hhimg/hhimg.h>
 
@@ -55,7 +56,7 @@ void generateRainbow() {
 
     image |=
         hhimg::RGBMapMutate<PixelType>(computeRed, computeGreen, computeBlue);
-    displayCImgImage(std::dynamic_pointer_cast<CImgImage<PixelType>>(image));
+    displayCImgImage(std::static_pointer_cast<CImgImage<PixelType>>(image));
 }
 
 void redFilter(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
@@ -68,7 +69,12 @@ void redFilter(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
 
     image |=
         hhimg::RGBMapMutate<PixelType>(computeRed, computeGreen, computeBlue);
-    displayCImgImage(std::dynamic_pointer_cast<CImgImage<PixelType>>(image));
+}
+
+void contrast(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
+  /* image |= hhimg::ContrastBrightness<PixelType>(0.5); */
+  image |= hhimg::ContrastBrightness<PixelType>(1.5);
+  /* image |= hhimg::ContrastBrightness<PixelType>(1); */
 }
 
 void run(Config config) {
@@ -91,6 +97,9 @@ void run(Config config) {
         break;
     case RedFilter:
         redFilter(image);
+        break;
+    case Contrast:
+        contrast(image);
         break;
     }
 

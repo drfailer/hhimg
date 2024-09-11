@@ -10,6 +10,7 @@ enum Algorithms {
     Detail,
     Rainbow,
     RedFilter,
+    Contrast,
 };
 
 struct Config {
@@ -57,6 +58,8 @@ inline void parseCmdArgs(int argc, char **argv, Config &config) {
             config.algorithm = Detail;
         } else if (algoArg.getValue() == "rf") {
             config.algorithm = RedFilter;
+        } else if (algoArg.getValue() == "contrast") {
+            config.algorithm = Contrast;
         } else {
             std::cout << "rainbow" << std::endl;
             config.algorithm = Rainbow;
