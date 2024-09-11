@@ -10,6 +10,11 @@
 namespace hhimg::utils {
 
 class PerfRectorder {
+  private:
+    static constexpr auto milliseconds(auto chrono) {
+        return std::chrono::duration_cast<std::chrono::milliseconds>(chrono)
+            .count();
+    }
   public:
     PerfRectorder() = delete;
 
@@ -31,14 +36,15 @@ class PerfRectorder {
             if (elt.second.size() > 1) {
                 report(elt.first, elt.second);
             } else {
-                std::cout << elt.first << ": " << elt.second.at(0)
-                          << std::endl;
+                std::cout << elt.first << ": " << milliseconds(elt.second.at(0))
+                          << "ms" << std::endl;
             }
         }
     }
 
   private:
-    static inline std::map<std::string, std::chrono::time_point<std::chrono::system_clock>>
+    static inline std::map<std::string,
+                           std::chrono::time_point<std::chrono::system_clock>>
         timers_;
     static inline std::map<std::string,
                            std::vector<std::chrono::duration<double>>>
@@ -48,16 +54,16 @@ class PerfRectorder {
                        std::vector<std::chrono::duration<double>> times) {
         double avg = avgTime(times);
         double stddev = stdDev(times, avg);
-        double min = minTime(times);
-        double max = maxTime(times);
+        long min = minTime(times);
+        long max = maxTime(times);
         std::cout << desc << ": " << avg << "s +- " << stddev
                   << "s (min: " << min << "s, " << max << "s)" << std::endl;
     }
 
     static double avgTime(std::vector<std::chrono::duration<double>> times) {
-        double avg = std::accumulate(times.begin(), times.end(),
-                                     std::chrono::duration<double>().zero())
-                         .count() /
+        double avg = (double)milliseconds(std::accumulate(
+                         times.begin(), times.end(),
+                         std::chrono::duration<double>().zero())) /
                      times.size();
         return avg;
     }
@@ -66,29 +72,29 @@ class PerfRectorder {
                          double avg) {
         double result = 0;
         std::for_each(times.begin(), times.end(), [&](auto elt) {
-            auto diff = elt.count() - avg;
+            auto diff = (double)milliseconds(elt) - avg;
             result += diff * diff;
         });
         return std::sqrt(result / times.size());
     }
 
-    static double maxTime(std::vector<std::chrono::duration<double>> times) {
-        double max = times.at(0).count();
+    static long maxTime(std::vector<std::chrono::duration<double>> times) {
+        long max = times.at(0).count();
 
         for (auto time : times) {
             if (time.count() > max) {
-                max = time.count();
+                max = milliseconds(time);
             }
         }
         return max;
     }
 
-    static double minTime(std::vector<std::chrono::duration<double>> times) {
-        double min = times.at(0).count();
+    static long minTime(std::vector<std::chrono::duration<double>> times) {
+        long min = milliseconds(times.at(0));
 
         for (auto time : times) {
             if (time.count() < min) {
-                min = time.count();
+                min = milliseconds(time);
             }
         }
         return min;
