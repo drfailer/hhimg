@@ -7,9 +7,9 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(TEST_HHIMG ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules")
 
-set(Hedgehog_INCLUDE_DIR ./lib/AtomicHedeghog/)
+set(Hedgehog_INCLUDE_DIR ./lib/hedgehog/)
 
 # added tclap
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/

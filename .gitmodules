@@ -1,6 +1,6 @@
-[submodule "lib/AtomicHedeghog"]
-	path = lib/AtomicHedeghog
-	url = git@github.com:ABardakoff/AtomicHedeghog.git
 [submodule "lib/CImg"]
 	path = lib/CImg
 	url = https://github.com/GreycLab/CImg.git
+[submodule "lib/hedgehog"]
+	path = lib/hedgehog
+	url = https://github.com/usnistgov/hedgehog.git
