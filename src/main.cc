@@ -5,14 +5,6 @@
 
 using PixelType = unsigned char;
 
-void displayCImgImage(std::shared_ptr<CImgImage<PixelType>> image) {
-    cimg_library::CImgDisplay main_disp(image->image(), "Click a point");
-
-    while (!main_disp.is_closed()) {
-        main_disp.wait();
-    }
-}
-
 void verticalBordersExtr(std::shared_ptr<CImgImage<PixelType>> image) {
     hhimg::Mask<double> verticalBorders({-1, 0, 1}, 3, 1);
     auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
