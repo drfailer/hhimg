@@ -17,18 +17,16 @@ template <typename T> class Mask {
     }
 
   public:
-    Mask(std::vector<T> mask, size_t width, size_t height)
+    Mask(std::vector<T> kernel, size_t width, size_t height)
         : Mask(width, height) {
         for (size_t i = 0; i < height * width; ++i) {
-            mask_.push_back(std::vector<T>(3, mask[i]));
+            kernel_.push_back(Pixel<T>{kernel[i], kernel[i], kernel[i]});
         }
     }
 
-    Mask(std::vector<std::vector<T>> mask, size_t width, size_t height)
+    Mask(std::vector<Pixel<T>> kernel, size_t width, size_t height)
         : Mask(width, height) {
-        for (size_t i = 0; i < height * width; ++i) {
-            mask_.emplace_back(mask[i]);
-        }
+        kernel_ = std::move(kernel);
     }
 
     virtual ~Mask() {}
@@ -36,17 +34,31 @@ template <typename T> class Mask {
     size_t width() const { return width_; }
     size_t height() const { return height_; }
 
-    // TODO: need red / green / blue functions
     T get(size_t mx, size_t my, size_t colorIdx = 0) const {
-        return mask_[my * width_ + mx][colorIdx];
+        switch (colorIdx) {
+        case 0:
+            return kernel_[my * width_ + mx].red;
+        case 1:
+            return kernel_[my * width_ + mx].green;
+        case 2:
+            return kernel_[my * width_ + mx].blue;
+        }
     }
+
+    T red(size_t mx, size_t my) const { return kernel_[my * width_ + mx].red; }
+    T green(size_t mx, size_t my) const {
+        return kernel_[my * width_ + mx].green;
+    }
+    T blue(size_t mx, size_t my) const {
+        return kernel_[my * width_ + mx].blue;
+    }
+
     Pixel<T> at(size_t mx, size_t my) const {
-        return {mask_[my * width_ + mx][0], mask_[my * width_ + mx][1],
-                mask_[my * width_ + mx][2]};
+        return kernel_[my * width_ + mx];
     }
 
   private:
-    std::vector<std::vector<T>> mask_ = {};
+    std::vector<Pixel<T>> kernel_ = {};
     size_t width_ = 0;
     size_t height_ = 0;
 };
