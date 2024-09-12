@@ -2,7 +2,7 @@
 #define ALGORITHM_OPERATORS_HPP
 #include "../abstract/abstract_algorithm.h"
 #include "../abstract/abstract_tile_algorithm.h"
-#include "../abstract/hedgehog_algorithm.h"
+#include "../abstract/abstract_hh_algorithm.h"
 #include "../concrete/chain_algorithm.h"
 #include "hhimg/algorithm/tile/split.h"
 #include <memory>
@@ -33,12 +33,12 @@ operator|(hhimg::AbstractAlgorithm<T> const &algorithm1,
 template <typename Img, typename T>
 std::shared_ptr<Img>
 operator|=(std::shared_ptr<Img> image,
-           std::shared_ptr<hhimg::HedgehogAlgorithm<T>> algorithm) {
+           std::shared_ptr<hhimg::AbstractHHAlgorithm<T>> algorithm) {
   return std::dynamic_pointer_cast<Img>(algorithm->operator()(image));
 }
 
 template <typename T>
-std::shared_ptr<hhimg::HedgehogAlgorithm<T>>
+std::shared_ptr<hhimg::AbstractHHAlgorithm<T>>
 operator|(std::shared_ptr<hhimg::Split<T>> split,
           std::shared_ptr<hhimg::AbstractTileAlgorithm<T>> algorithm) {
     split->push_back(algorithm);
@@ -46,17 +46,17 @@ operator|(std::shared_ptr<hhimg::Split<T>> split,
 }
 
 template <typename T>
-std::shared_ptr<hhimg::HedgehogAlgorithm<T>>
-operator|(std::shared_ptr<hhimg::HedgehogAlgorithm<T>> hhAlgo,
+std::shared_ptr<hhimg::AbstractHHAlgorithm<T>>
+operator|(std::shared_ptr<hhimg::AbstractHHAlgorithm<T>> hhAlgo,
           std::shared_ptr<hhimg::AbstractTileAlgorithm<T>> algorithm) {
     hhAlgo->push_back(algorithm);
     return hhAlgo;
 }
 
 template <typename T>
-std::shared_ptr<hhimg::HedgehogAlgorithm<T>>
+std::shared_ptr<hhimg::AbstractHHAlgorithm<T>>
 operator|(std::shared_ptr<hhimg::AbstractTileAlgorithm<T>> algorithm,
-          std::shared_ptr<hhimg::HedgehogAlgorithm<T>> hhAlgo) {
+          std::shared_ptr<hhimg::AbstractHHAlgorithm<T>> hhAlgo) {
     hhAlgo->push_front(algorithm);
     return hhAlgo;
 }

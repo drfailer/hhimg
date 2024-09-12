@@ -1,12 +1,11 @@
 #ifndef SPLIT_H
 #define SPLIT_H
-#include "../../abstract/abstract_algorithm.h"
-#include "../../abstract/hedgehog_algorithm.h"
+#include "../../abstract/abstract_hh_algorithm.h"
 #include "hhimg/abstract/abstract_tile_factory.h"
 
 namespace hhimg {
 
-template <typename T> struct Split : HedgehogAlgorithm<T> {
+template <typename T> struct Split : AbstractHHAlgorithm<T> {
     // todo: ghost values
     Split(size_t tileSize, std::shared_ptr<AbstractTileFactory<T>> tileFactory)
         : tileFactory(tileFactory), tileSize(tileSize) {}

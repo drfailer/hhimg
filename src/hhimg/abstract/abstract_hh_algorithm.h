@@ -6,13 +6,13 @@
 
 namespace hhimg {
 
-template <typename T> struct HedgehogAlgorithm {
+template <typename T> struct AbstractHHAlgorithm {
     using GraphType = hh::Graph<1, AbstractTile<T>, AbstractTile<T>>;
 
-    HedgehogAlgorithm(std::string graphName = "unamed")
+    AbstractHHAlgorithm(std::string graphName = "unamed")
         : graph_(std::make_shared<GraphType>(std::move(graphName))) {}
     /* HedgehogAlgorithm(HedgehogAlgorithm) {} */
-    virtual ~HedgehogAlgorithm() {}
+    virtual ~AbstractHHAlgorithm() {}
 
     virtual ImgData<T> operator()(ImgData<T> image) = 0;
 
