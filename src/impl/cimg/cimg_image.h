@@ -34,7 +34,7 @@ template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
     }
 
     void set(std::shared_ptr<hhimg::AbstractImage<T>> &&other) override {
-        auto i = std::static_pointer_cast<CImgImage<T>>(other);
+        auto i = std::dynamic_pointer_cast<CImgImage<T>>(other);
         this->filename(other->filename());
         image_.swap(i->image());
     }

@@ -1,7 +1,6 @@
 #include <hedgehog/hedgehog.h>
 #include "config.h"
 #include "hhimg/algorithm/contrast_brightness.h"
-#include "hhimg/concrete/hedgehog_algorithm.h"
 #include "impl/cimg/cimg.h"
 #include "impl/cimg/cimg_tile_factory.h"
 #include <hhimg/hhimg.h>
@@ -85,7 +84,7 @@ void run(Config config) {
     hhimg::utils::PerfRectorder::end("Image load");
     auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
 
-    image |= std::make_shared<hhimg::Split<PixelType>>(512, tileFactory) |
+    image |= std::make_shared<hhimg::Split<PixelType>>(256, tileFactory) |
              std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
                  std::make_shared<hhimg::GrayScale<PixelType>>());
 

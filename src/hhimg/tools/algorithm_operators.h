@@ -34,15 +34,8 @@ template <typename Img, typename T>
 std::shared_ptr<Img>
 operator|=(std::shared_ptr<Img> image,
            std::shared_ptr<hhimg::HedgehogAlgorithm<T>> algorithm) {
-  return std::dynamic_pointer_cast<Img>(algorithm->operator()(std::static_pointer_cast<hhimg::AbstractImage<T>>(image)));
+  return std::dynamic_pointer_cast<Img>(algorithm->operator()(image));
 }
-
-/* template <typename T> */
-/* std::shared_ptr<hhimg::HedgehogAlgorithm<T>> */
-/* operator|(std::shared_ptr<hhimg::Split<T>> split, */
-/*           std::shared_ptr<hhimg::HedgehogAlgorithm<T>> hhAlgo) { */
-/*   split->push_back(hhAlgo); */
-/* } */
 
 template <typename T>
 std::shared_ptr<hhimg::HedgehogAlgorithm<T>>
