@@ -6,21 +6,19 @@
 
 namespace hhimg {
 
-template <typename T> struct AbstractHHAlgorithm {
-    using GraphType = hh::Graph<1, AbstractTile<T>, AbstractTile<T>>;
+template <typename T>
+using GraphType = hh::Graph<1, AbstractTile<T>, AbstractTile<T>>;
 
+template <typename T> struct AbstractHHAlgorithm : GraphType<T> {
     AbstractHHAlgorithm(std::string graphName = "unamed")
-        : graph_(std::make_shared<GraphType>(std::move(graphName))) {}
-    /* HedgehogAlgorithm(HedgehogAlgorithm) {} */
+        : GraphType<T>(graphName) {}
     virtual ~AbstractHHAlgorithm() {}
 
     virtual ImgData<T> operator()(ImgData<T> image) = 0;
 
-    std::shared_ptr<GraphType> graph() { return graph_; }
-
     void compile() {
-        graph_->inputs(firstTask_);
-        graph_->outputs(lastTask_);
+        this->inputs(firstTask_);
+        this->outputs(lastTask_);
     }
 
     void push_front(std::shared_ptr<AbstractTileAlgorithm<T>> algo) {
@@ -28,7 +26,7 @@ template <typename T> struct AbstractHHAlgorithm {
             firstTask_ = algo;
             lastTask_ = algo;
         } else {
-            graph_->edges(algo, firstTask_);
+            this->edges(algo, firstTask_);
             firstTask_ = algo;
         }
     }
@@ -38,13 +36,12 @@ template <typename T> struct AbstractHHAlgorithm {
             firstTask_ = algo;
             lastTask_ = algo;
         } else {
-            graph_->edges(lastTask_, algo);
+            this->edges(lastTask_, algo);
             lastTask_ = algo;
         }
     }
 
   private:
-    std::shared_ptr<GraphType> graph_ = nullptr;
     std::shared_ptr<hh::AbstractTask<1, AbstractTile<T>, AbstractTile<T>>>
         firstTask_ = nullptr;
     std::shared_ptr<hh::AbstractTask<1, AbstractTile<T>, AbstractTile<T>>>

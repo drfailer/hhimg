@@ -22,17 +22,17 @@ template <typename T> struct Split : AbstractHHAlgorithm<T> {
 
         this->compile();
         // todo: the graph is not reusable yet
-        this->graph()->executeGraph();
+        this->executeGraph();
 
         for (size_t i = 0; i < nbTilesRows; ++i) {
             for (size_t j = 0; j < nbTilesCols; ++j) {
                 size_t x = j * tileSize;
                 size_t y = i * tileSize;
-                this->graph()->pushData(tileFactory->get(x, y));
+                this->pushData(tileFactory->get(x, y));
             }
         }
-        this->graph()->finishPushingData();
-        this->graph()->waitForTermination();
+        this->finishPushingData();
+        this->waitForTermination();
         return image;
     }
 
