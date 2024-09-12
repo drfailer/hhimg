@@ -11,7 +11,7 @@ struct GrayScale : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
     GrayScale() = default;
     ~GrayScale() = default;
 
-    void grayScale(auto &image) const {
+    void compute(auto &image) const {
         for (size_t y = 0; y < image->height(); ++y) {
             for (size_t x = 0; x < image->width(); ++x) {
                 auto pixel = image->at(x, y);
@@ -23,14 +23,14 @@ struct GrayScale : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
 
     ImgData<T> operator()(ImgData<T> image) const override {
         utils::PerfRectorder::start("GrayScale");
-        grayScale(image);
+        compute(image);
         utils::PerfRectorder::end("GrayScale");
         return image;
     }
 
     void operator()(Tile<T> tile,
                     std::function<void(Tile<T>)> addResult) const override {
-        grayScale(tile);
+        compute(tile);
         addResult(tile);
     }
 };
