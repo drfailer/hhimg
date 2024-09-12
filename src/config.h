@@ -61,7 +61,6 @@ inline void parseCmdArgs(int argc, char **argv, Config &config) {
         } else if (algoArg.getValue() == "contrast") {
             config.algorithm = Contrast;
         } else {
-            std::cout << "rainbow" << std::endl;
             config.algorithm = Rainbow;
         }
         config.display = displayArg.getValue();
