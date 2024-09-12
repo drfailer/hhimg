@@ -8,7 +8,8 @@ namespace hhimg {
 
 template <typename T>
 struct GrayScale : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
-    GrayScale() = default;
+    GrayScale(size_t nbThreads = 1):
+      AbstractTileAlgorithm<T>("GrayScale", nbThreads) {}
     ~GrayScale() = default;
 
     void compute(auto &image) const {
@@ -28,10 +29,13 @@ struct GrayScale : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
         return image;
     }
 
-    void operator()(Tile<T> tile,
-                    std::function<void(Tile<T>)> addResult) const override {
+    void operator()(Tile<T> tile) override {
         compute(tile);
-        addResult(tile);
+        this->addResult(tile);
+    }
+
+    std::shared_ptr<TaskType<T>> copy() override {
+      return std::make_shared<GrayScale<T>>(this->numberThreads());
     }
 };
 

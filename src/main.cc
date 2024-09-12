@@ -1,8 +1,8 @@
-#include <hedgehog/hedgehog.h>
 #include "config.h"
 #include "hhimg/algorithm/contrast_brightness.h"
 #include "impl/cimg/cimg.h"
 #include "impl/cimg/cimg_tile_factory.h"
+#include <hedgehog/hedgehog.h>
 #include <hhimg/hhimg.h>
 
 using PixelType = unsigned char;
@@ -73,9 +73,9 @@ void redFilter(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
 }
 
 void contrast(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
-  /* image |= hhimg::ContrastBrightness<PixelType>(0.5); */
-  image |= hhimg::ContrastBrightness<PixelType>(1.5);
-  /* image |= hhimg::ContrastBrightness<PixelType>(1); */
+    /* image |= hhimg::ContrastBrightness<PixelType>(0.5); */
+    image |= hhimg::ContrastBrightness<PixelType>(1.5);
+    /* image |= hhimg::ContrastBrightness<PixelType>(1); */
 }
 
 void run(Config config) {
@@ -84,11 +84,17 @@ void run(Config config) {
     hhimg::utils::PerfRectorder::end("Image load");
     auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
 
-    image |= std::make_shared<hhimg::Split<PixelType>>(256, tileFactory) |
-             std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
-                 std::make_shared<hhimg::GrayScale<PixelType>>()) |
-             std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
-                 std::make_shared<hhimg::NonMaximumSuppression<PixelType>>(50));
+    hhimg::utils::PerfRectorder::start("run");
+    image |=
+        std::make_shared<hhimg::Split<PixelType>>(256, tileFactory) |
+        std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
+            std::make_shared<hhimg::GrayScale<PixelType>>(2)) |
+        std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
+            std::make_shared<hhimg::NonMaximumSuppression<PixelType>>(2, 50));
+
+    /* image |= hhimg::GrayScale<PixelType>() | */
+    /*          hhimg::NonMaximumSuppression<PixelType>(50); */
+    hhimg::utils::PerfRectorder::end("run");
 
     /* switch (config.algorithm) { */
     /* case VerticalBorders: */
