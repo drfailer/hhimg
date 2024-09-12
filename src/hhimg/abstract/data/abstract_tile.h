@@ -35,16 +35,16 @@ template <typename T> class AbstractTile {
 
     // acces with x,y coordinates (can be overrided for optimization)
     virtual Pixel<T> at(size_t x, size_t y) const {
-        return at(y * width() + x);
+        return at(y * this->image()->width() + x);
     }
     virtual void set(size_t x, size_t y, Pixel<T> const &pixel) {
-        set(y * width() + x, pixel);
+        set(y * this->image()->width() + x, pixel);
     }
 
     // set without pixel
     virtual void set(size_t offset, T r, T g, T b) { set(offset, {r, g, b}); }
     virtual void set(size_t x, size_t y, T r, T g, T b) {
-        set(y * width() + x, r, g, b);
+        set(y * this->image()->width() + x, r, g, b);
     }
 
     // for grayscaled images
@@ -52,8 +52,6 @@ template <typename T> class AbstractTile {
     void set(size_t x, size_t y, T v) { set(x, y, v, v, v); }
     T get(size_t offset) const { return at(offset).red; }
     T get(size_t x, size_t y) const { return at(x, y).red; }
-
-    size_t size() const { return width() * height(); }
 
     // type
     using type = T;

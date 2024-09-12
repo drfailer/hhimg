@@ -85,7 +85,7 @@ void run(Config config) {
     hhimg::utils::PerfRectorder::end("Image load");
     auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
 
-    image |= std::make_shared<hhimg::Split<PixelType>>(256, tileFactory) |
+    image |= std::make_shared<hhimg::Split<PixelType>>(512, tileFactory) |
              std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
                  std::make_shared<hhimg::GrayScale<PixelType>>());
 
@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
     Config config;
 
     parseCmdArgs(argc, argv, config);
-    /* run(config); */
+    run(config);
     hhimg::utils::PerfRectorder::report();
     return 0;
 }

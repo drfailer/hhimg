@@ -28,9 +28,10 @@ struct GrayScale : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
         return image;
     }
 
-    void operator()(Tile<T> tile, std::function<void(Tile<T>)> addResult) const override {
-      grayScale(tile);
-      addResult(tile);
+    void operator()(Tile<T> tile,
+                    std::function<void(Tile<T>)> addResult) const override {
+        grayScale(tile);
+        addResult(tile);
     }
 };
 
