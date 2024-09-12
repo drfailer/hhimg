@@ -1,38 +1,57 @@
 #ifndef CONTRAST_BRIGHTNESS_H
 #define CONTRAST_BRIGHTNESS_H
 #include "../abstract/abstract_algorithm.h"
+#include "../abstract/abstract_tile_algorithm.h"
 #include "../tools/perf_recorder.h"
 
 namespace hhimg {
 
-template <typename T> struct ContrastBrightness : public AbstractAlgorithm<T> {
-    ContrastBrightness(double contrast, double brightness = 1)
-        : contrast(contrast), brightness(brightness) {}
+template <typename T>
+struct ContrastBrightness : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
+    ContrastBrightness(size_t nbThreads, double contrast, double brightness)
+        : AbstractTileAlgorithm<T>("ContrastBrightness", nbThreads),
+          contrast(contrast), brightness(brightness) {}
+    ContrastBrightness(double contrast, double brightness)
+        : ContrastBrightness(1, contrast, brightness) {}
     ~ContrastBrightness() = default;
 
     T computeContrast(T value) const {
-      double result = contrast * (value - 128.0) + 128.0 + brightness;
+        double result = contrast * (value - 128.0) + 128.0 + brightness;
 
-      if (result < 0) {
-        return 0;
-      } else if (result > 255) {
-        return 255;
-      }
-      return T(result);
+        if (result < 0) {
+            return 0;
+        } else if (result > 255) {
+            return 255;
+        }
+        return T(result);
+    }
+
+    void compute(auto elt) const {
+        for (size_t y = 0; y < elt->height(); ++y) {
+            for (size_t x = 0; x < elt->width(); ++x) {
+                auto pixel = elt->at(x, y);
+                elt->set(x, y, computeContrast(pixel.red),
+                         computeContrast(pixel.green),
+                         computeContrast(pixel.blue));
+            }
+        }
     }
 
     ImgData<T> operator()(ImgData<T> image) const override {
         utils::PerfRectorder::start("ContrastBrightness");
-        for (size_t y = 0; y < image->height(); ++y) {
-            for (size_t x = 0; x < image->width(); ++x) {
-                auto pixel = image->at(x, y);
-                image->set(x, y, computeContrast(pixel.red),
-                           computeContrast(pixel.green),
-                           computeContrast(pixel.blue));
-            }
-        }
+        compute(image);
         utils::PerfRectorder::end("ContrastBrightness");
         return image;
+    }
+
+    void operator()(Tile<T> tile) override {
+        compute(tile);
+        this->addResult(tile);
+    }
+
+    std::shared_ptr<TaskType<T>> copy() override {
+        return std::make_shared<ContrastBrightness<T>>(this->numberThreads(),
+                                                       contrast, brightness);
     }
 
     double contrast = 1;

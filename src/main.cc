@@ -74,7 +74,7 @@ void redFilter(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
 
 void contrast(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
     /* image |= hhimg::ContrastBrightness<PixelType>(0.5); */
-    image |= hhimg::ContrastBrightness<PixelType>(1.5);
+    image |= hhimg::ContrastBrightness<PixelType>(1.5, 1);
     /* image |= hhimg::ContrastBrightness<PixelType>(1); */
 }
 
@@ -85,37 +85,43 @@ void run(Config config) {
     auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
 
     hhimg::utils::PerfRectorder::start("run");
-    image |=
-        std::make_shared<hhimg::Split<PixelType>>(256, tileFactory) |
-        std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
-            std::make_shared<hhimg::GrayScale<PixelType>>(2)) |
-        std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
-            std::make_shared<hhimg::NonMaximumSuppression<PixelType>>(2, 50));
+
+    /* image |= */
+    /*     std::make_shared<hhimg::Split<PixelType>>(256, tileFactory) | */
+    /*     std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
+    /*         std::make_shared<hhimg::GrayScale<PixelType>>(2)) | */
+    /*     std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
+    /*         std::make_shared<hhimg::ContrastBrightness<PixelType>>(2, 1.5, 10)) | */
+    /*     std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
+    /*         std::make_shared<hhimg::NonMaximumSuppression<PixelType>>(2, 50)) ; */
 
     /* image |= hhimg::GrayScale<PixelType>() | */
+    /*          hhimg::ContrastBrightness<PixelType>(1.5, 10) | */
     /*          hhimg::NonMaximumSuppression<PixelType>(50); */
-    hhimg::utils::PerfRectorder::end("run");
 
-    /* switch (config.algorithm) { */
-    /* case VerticalBorders: */
-    /*     verticalBordersExtr(image); */
-    /*     break; */
-    /* case HorizontalBorders: */
-    /*     horizontalBordersExtr(image); */
-    /*     break; */
-    /* case Detail: */
-    /*     detailExtr(image); */
-    /*     break; */
-    /* case Rainbow: */
-    /*     generateRainbow(); */
-    /*     break; */
-    /* case RedFilter: */
-    /*     redFilter(image); */
-    /*     break; */
-    /* case Contrast: */
-    /*     contrast(image); */
-    /*     break; */
-    /* } */
+
+    switch (config.algorithm) {
+    case VerticalBorders:
+        verticalBordersExtr(image);
+        break;
+    case HorizontalBorders:
+        horizontalBordersExtr(image);
+        break;
+    case Detail:
+        detailExtr(image);
+        break;
+    case Rainbow:
+        generateRainbow();
+        break;
+    case RedFilter:
+        redFilter(image);
+        break;
+    case Contrast:
+        contrast(image);
+        break;
+    }
+
+    hhimg::utils::PerfRectorder::end("run");
 
     std::cout << "image size: " << image->width() << "x" << image->height()
               << std::endl;
