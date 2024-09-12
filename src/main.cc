@@ -86,8 +86,9 @@ void run(Config config) {
 
     image |= std::make_shared<hhimg::Split<PixelType>>(256, tileFactory) |
              std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
-                 std::make_shared<hhimg::GrayScale<PixelType>>());
-
+                 std::make_shared<hhimg::GrayScale<PixelType>>()) |
+             std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
+                 std::make_shared<hhimg::NonMaximumSuppression<PixelType>>(50));
 
     /* switch (config.algorithm) { */
     /* case VerticalBorders: */
