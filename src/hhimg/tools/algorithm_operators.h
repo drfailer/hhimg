@@ -4,7 +4,7 @@
 #include "../abstract/abstract_tile_algorithm.h"
 #include "../abstract/abstract_hh_algorithm.h"
 #include "../concrete/chain_algorithm.h"
-#include "hhimg/algorithm/tile/split.h"
+#include "../algorithm/tile/split.h"
 #include <memory>
 
 /******************************************************************************/

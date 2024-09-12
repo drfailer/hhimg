@@ -1,7 +1,7 @@
 #ifndef SPLIT_H
 #define SPLIT_H
 #include "../../abstract/abstract_hh_algorithm.h"
-#include "hhimg/abstract/abstract_tile_factory.h"
+#include "../../abstract/abstract_tile_factory.h"
 
 namespace hhimg {
 
