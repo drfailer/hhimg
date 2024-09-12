@@ -1,7 +1,9 @@
 #include <hedgehog/hedgehog.h>
 #include "config.h"
 #include "hhimg/algorithm/contrast_brightness.h"
+#include "hhimg/concrete/hedgehog_algorithm.h"
 #include "impl/cimg/cimg.h"
+#include "impl/cimg/cimg_tile_factory.h"
 #include <hhimg/hhimg.h>
 
 using PixelType = unsigned char;
@@ -81,27 +83,33 @@ void run(Config config) {
     hhimg::utils::PerfRectorder::start("Image load");
     auto image = std::make_shared<CImgImage<PixelType>>(config.filename);
     hhimg::utils::PerfRectorder::end("Image load");
+    auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
 
-    switch (config.algorithm) {
-    case VerticalBorders:
-        verticalBordersExtr(image);
-        break;
-    case HorizontalBorders:
-        horizontalBordersExtr(image);
-        break;
-    case Detail:
-        detailExtr(image);
-        break;
-    case Rainbow:
-        generateRainbow();
-        break;
-    case RedFilter:
-        redFilter(image);
-        break;
-    case Contrast:
-        contrast(image);
-        break;
-    }
+    image |= std::make_shared<hhimg::Split<PixelType>>(256, tileFactory) |
+             std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
+                 std::make_shared<hhimg::GrayScale<PixelType>>());
+
+
+    /* switch (config.algorithm) { */
+    /* case VerticalBorders: */
+    /*     verticalBordersExtr(image); */
+    /*     break; */
+    /* case HorizontalBorders: */
+    /*     horizontalBordersExtr(image); */
+    /*     break; */
+    /* case Detail: */
+    /*     detailExtr(image); */
+    /*     break; */
+    /* case Rainbow: */
+    /*     generateRainbow(); */
+    /*     break; */
+    /* case RedFilter: */
+    /*     redFilter(image); */
+    /*     break; */
+    /* case Contrast: */
+    /*     contrast(image); */
+    /*     break; */
+    /* } */
 
     std::cout << "image size: " << image->width() << "x" << image->height()
               << std::endl;
@@ -114,7 +122,7 @@ int main(int argc, char **argv) {
     Config config;
 
     parseCmdArgs(argc, argv, config);
-    run(config);
+    /* run(config); */
     hhimg::utils::PerfRectorder::report();
     return 0;
 }
