@@ -2,8 +2,8 @@
 #define ALGORITHM_OPERATORS_HPP
 #include "../abstract/abstract_algorithm.h"
 #include "../abstract/abstract_tile_algorithm.h"
+#include "../abstract/hedgehog_algorithm.h"
 #include "../concrete/chain_algorithm.h"
-#include "../concrete/hedgehog_algorithm.h"
 #include "hhimg/algorithm/tile/split.h"
 #include <memory>
 
