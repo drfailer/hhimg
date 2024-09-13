@@ -76,6 +76,14 @@ if (TEST_HHIMG)
     gtest_discover_tests(hhimg_test)
 endif (TEST_HHIMG)
 
+add_library(cimg
+  src/impl/cimg/cimg.cc
+  src/impl/cimg/cimg_image.cc
+  src/impl/cimg/cimg_tile.cc
+)
+
 # main executable
-add_executable(hh-img src/main.cc ${hh_img_files})
-target_link_libraries(hh-img ${X11_LIBRARIES})
+add_executable(
+  hh-img src/main.cc
+  ${hh_img_files})
+target_link_libraries(hh-img cimg ${X11_LIBRARIES})

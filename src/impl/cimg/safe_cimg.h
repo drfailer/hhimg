@@ -5,4 +5,6 @@
 #undef GrayScale // fuck you X11
 #undef Status
 
+using PixelType = unsigned char;
+
 #endif
