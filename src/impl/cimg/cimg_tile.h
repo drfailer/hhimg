@@ -8,22 +8,24 @@ template <typename T> class CImgTile : public hhimg::AbstractTile<T> {
     CImgTile(size_t x, size_t y, size_t tileSize,
              std::shared_ptr<CImgImage<T>> image)
         : hhimg::AbstractTile<T>(x, y, tileSize, image),
-          data_(&image->image()._data[y * image->width() + x]), image_(image) {}
+          dataRed_(&image->image()._data[y * image->width() + x]),
+          dataBlue_(&image->image()._data[y * image->width() + x +
+                                          image->width() * image->height() *
+                                              image->image().depth()]),
+          dataGreen_(
+              &image->image()._data[y * image->width() + x +
+                                    2 * image->width() * image->height() *
+                                        image->image().depth()]),
+          image_(image) {}
 
     hhimg::Pixel<T> at(size_t offset) const override {
-        return {data_[offset],
-                data_[offset + image_->width() * image_->height() *
-                                   image_->image().depth()],
-                data_[offset + 2 * image_->width() * image_->height() *
-                                   image_->image().depth()]};
+        return {dataRed_[offset], dataGreen_[offset], dataBlue_[offset]};
     }
 
     void set(size_t offset, hhimg::Pixel<T> const &pixel) override {
-        data_[offset] = pixel.red;
-        data_[offset + image_->width() * image_->height() *
-                           image_->image().depth()] = pixel.green;
-        data_[offset + 2 * image_->width() * image_->height() *
-                           image_->image().depth()] = pixel.blue;
+        dataRed_[offset] = pixel.red;
+        dataGreen_[offset] = pixel.green;
+        dataBlue_[offset] = pixel.blue;
     }
 
     std::shared_ptr<hhimg::AbstractImage<T>> image() const override {
@@ -31,7 +33,9 @@ template <typename T> class CImgTile : public hhimg::AbstractTile<T> {
     }
 
   private:
-    T *data_ = nullptr;
+    T *dataRed_ = nullptr;
+    T *dataBlue_ = nullptr;
+    T *dataGreen_ = nullptr;
     std::shared_ptr<CImgImage<T>> image_ = nullptr;
 };
 
