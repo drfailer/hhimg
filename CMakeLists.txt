@@ -19,14 +19,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/
 # hedgehog
 find_package(Hedgehog REQUIRED)
 find_package(X11 QUIET)
-find_package(CUDA QUIET)
-find_package(NVTX QUIET)
-
-if (CUDA_FOUND)
-	message(STATUS "CUDA found")
-	set(CUDA_PROPAGATE_HOST_FLAGS OFF)
-	set(CUDA_NVCC_FLAGS_RELEASE -O3; -DNDEBUG)
-endif (CUDA_FOUND)
 
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${Hedgehog_CXX_FLAGS})
 
