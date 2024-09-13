@@ -3,6 +3,7 @@
 #include "../abstract/abstract_algorithm.h"
 #include "../abstract/abstract_tile_algorithm.h"
 #include "../tools/perf_recorder.h"
+#include "../tools/concepts.h"
 
 namespace hhimg {
 
@@ -12,7 +13,7 @@ struct GrayScale : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
       AbstractTileAlgorithm<T>("GrayScale", nbThreads) {}
     ~GrayScale() = default;
 
-    void compute(auto &image) const {
+    void compute(ImgData auto &image) const {
         for (size_t y = 0; y < image->height(); ++y) {
             for (size_t x = 0; x < image->width(); ++x) {
                 auto pixel = image->at(x, y);
@@ -22,7 +23,7 @@ struct GrayScale : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
         }
     }
 
-    ImgData<T> operator()(ImgData<T> image) const override {
+    Image<T> operator()(Image<T> image) const override {
         utils::PerfRectorder::start("GrayScale");
         compute(image);
         utils::PerfRectorder::end("GrayScale");

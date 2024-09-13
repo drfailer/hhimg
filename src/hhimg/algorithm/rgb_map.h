@@ -7,14 +7,14 @@
 namespace hhimg {
 
 template <typename T> struct RGBMap : public AbstractAlgorithm<T> {
-    using ComputeValueFn = std::function<T(ImgData<T> const &, size_t, size_t)>;
+    using ComputeValueFn = std::function<T(Image<T> const &, size_t, size_t)>;
     RGBMap(std::shared_ptr<AbstractImageFactory<T>> imageFactory,
            ComputeValueFn const &computeRed, ComputeValueFn const &computeGreen,
            ComputeValueFn const &computeBlue)
         : imageFactory_(imageFactory), computeRed_(computeRed),
           computeGreen_(computeGreen), computeBlue_(computeBlue) {}
 
-    ImgData<T> operator()(ImgData<T> image) const override {
+    Image<T> operator()(Image<T> image) const override {
         auto result = imageFactory_->get(image->width(), image->height());
 
         for (size_t y = 0; y < image->height(); ++y) {

@@ -53,8 +53,8 @@ template <typename T> class AbstractTile {
     T get(size_t offset) const { return at(offset).red; }
     T get(size_t x, size_t y) const { return at(x, y).red; }
 
-    // type
-    using type = T;
+    // pixel type
+    using PixelType = T;
 
   protected:
     size_t x_ = 0;

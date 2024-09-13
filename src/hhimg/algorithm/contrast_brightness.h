@@ -3,6 +3,7 @@
 #include "../abstract/abstract_algorithm.h"
 #include "../abstract/abstract_tile_algorithm.h"
 #include "../tools/perf_recorder.h"
+#include "../tools/concepts.h"
 
 namespace hhimg {
 
@@ -26,7 +27,7 @@ struct ContrastBrightness : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
         return T(result);
     }
 
-    void compute(auto elt) const {
+    void compute(ImgData auto elt) const {
         for (size_t y = 0; y < elt->height(); ++y) {
             for (size_t x = 0; x < elt->width(); ++x) {
                 auto pixel = elt->at(x, y);
@@ -37,7 +38,7 @@ struct ContrastBrightness : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
         }
     }
 
-    ImgData<T> operator()(ImgData<T> image) const override {
+    Image<T> operator()(Image<T> image) const override {
         utils::PerfRectorder::start("ContrastBrightness");
         compute(image);
         utils::PerfRectorder::end("ContrastBrightness");

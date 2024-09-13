@@ -11,7 +11,7 @@ template <typename T> struct Split : AbstractHHAlgorithm<T> {
         : tileFactory(tileFactory), tileSize(tileSize) {}
     ~Split() = default;
 
-    ImgData<T> operator()(ImgData<T> image) override {
+    Image<T> operator()(Image<T> image) override {
         // setup the factory with the image
         tileFactory->tileSize(tileSize);
         tileFactory->image(image);

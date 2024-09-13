@@ -17,7 +17,7 @@ template <typename T> class Crop : public AbstractAlgorithm<T> {
           imageFactory_(imageFactory) {}
     ~Crop() = default;
 
-    ImgData<T> operator()(ImgData<T> image) const override {
+    Image<T> operator()(Image<T> image) const override {
         utils::PerfRectorder::start("Crop");
         auto output = imageFactory_->get(width_, height_);
 

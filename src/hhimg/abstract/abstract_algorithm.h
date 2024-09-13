@@ -6,13 +6,13 @@
 namespace hhimg {
 
 template <typename T> class AbstractImage;
-template <typename T> using ImgData = std::shared_ptr<AbstractImage<T>>;
+template <typename T> using Image = std::shared_ptr<AbstractImage<T>>;
 
 template <typename T> struct AbstractAlgorithm {
     AbstractAlgorithm() = default;
     virtual ~AbstractAlgorithm() {}
 
-    virtual ImgData<T> operator()(ImgData<T> image) const = 0;
+    virtual Image<T> operator()(Image<T> image) const = 0;
 };
 
 } // namespace hhimg

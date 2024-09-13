@@ -7,11 +7,11 @@ namespace hhimg {
 
 template <typename T> class Minus : public AbstractAlgorithm<T> {
   public:
-    Minus(ImgData<T> const &imageToSubstract)
+    Minus(Image<T> const &imageToSubstract)
         : imageToSubstract_(imageToSubstract) {}
     ~Minus() = default;
 
-    ImgData<T> operator()(ImgData<T> image) const override {
+    Image<T> operator()(Image<T> image) const override {
         utils::PerfRectorder::start("Minus");
         if (image->width() != imageToSubstract_->width() ||
             image->height() != imageToSubstract_->height()) {
@@ -30,7 +30,7 @@ template <typename T> class Minus : public AbstractAlgorithm<T> {
     }
 
   private:
-    ImgData<T> imageToSubstract_ = nullptr;
+    Image<T> imageToSubstract_ = nullptr;
 };
 
 }; // namespace hhimg

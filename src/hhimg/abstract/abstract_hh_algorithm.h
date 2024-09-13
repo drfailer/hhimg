@@ -14,7 +14,7 @@ template <typename T> struct AbstractHHAlgorithm : GraphType<T> {
         : GraphType<T>(graphName) {}
     virtual ~AbstractHHAlgorithm() {}
 
-    virtual ImgData<T> operator()(ImgData<T> image) = 0;
+    virtual Image<T> operator()(Image<T> image) = 0;
 
     void compile() {
         this->inputs(firstTask_);

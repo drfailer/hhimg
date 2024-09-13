@@ -15,7 +15,7 @@ class Convolution : public AbstractAlgorithm<T> {
         : imageFactory_(imageFactory), kernel_(kernel), bias_(bias) {}
     ~Convolution() = default;
 
-    ImgData<T> operator()(ImgData<T> image) const override {
+    Image<T> operator()(Image<T> image) const override {
         utils::PerfRectorder::start("Convolute");
         size_t halfWidth = kernel_.width() / 2;
         size_t halfHeight = kernel_.height() / 2;
@@ -41,7 +41,7 @@ class Convolution : public AbstractAlgorithm<T> {
     Mask<MaskType> kernel_;
     MaskType bias_ = 0;
 
-    Pixel<MaskType> computeValue(size_t x, size_t y, ImgData<T> image) const {
+    Pixel<MaskType> computeValue(size_t x, size_t y, Image<T> image) const {
         int halfWidth = kernel_.width() / 2;
         int halfHeight = kernel_.height() / 2;
         Pixel<MaskType> result = {0, 0, 0};

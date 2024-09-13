@@ -9,7 +9,7 @@ template <typename T> struct ChainAlgorithm : public AbstractAlgorithm<T> {
                    AbstractAlgorithm<T> const &algorithm2)
         : algorithm1_(algorithm1), algorithm2_(algorithm2) {}
 
-    ImgData<T> operator()(ImgData<T> image) const override {
+    Image<T> operator()(Image<T> image) const override {
         return algorithm2_(algorithm1_(image));
     }
 

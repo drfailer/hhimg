@@ -54,8 +54,8 @@ template <typename T> class AbstractImage {
     const std::string &filename() const { return filename_; }
     void filename(std::string const &filename) { filename_ = filename; }
 
-    // type
-    using type = T;
+    // pixel type
+    using PixelType = T;
 
   private:
     std::string filename_ = "";
