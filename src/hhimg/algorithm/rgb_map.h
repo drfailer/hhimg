@@ -19,12 +19,9 @@ template <typename T> struct RGBMap : public AbstractAlgorithm<T> {
 
         for (size_t y = 0; y < image->height(); ++y) {
             for (size_t x = 0; x < image->width(); ++x) {
-                Pixel<T> value = {
-                    computeRed_(image, x, y),
-                    computeGreen_(image, x, y),
-                    computeBlue_(image, x, y),
-                };
-                result->set(x, y, value);
+                result->set(x, y, computeRed_(image, x, y),
+                            computeGreen_(image, x, y),
+                            computeBlue_(image, x, y));
             }
         }
         return result;
