@@ -8,69 +8,42 @@ namespace hhimg {
 
 template <typename T>
 struct RGBMapMutate : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
-    using ComputeImagePixel =
-        std::function<T(Image<T>, size_t, size_t)>;
-    using ComputeTilePixel = std::function<T(Tile<T>, size_t, size_t)>;
+    using ComputePixel = std::function<T(
+        std::shared_ptr<AbstractPixelContainer<T>>, size_t, size_t)>;
 
     // for images
-    RGBMapMutate(ComputeImagePixel &&computeRed,
-                 ComputeImagePixel &&computeGreen,
-                 ComputeImagePixel &&computeBlue)
-        : computeImageRed_(computeRed), computeImageGreen_(computeGreen),
-          computeImageBlue_(computeBlue) {}
+    RGBMapMutate(ComputePixel &&computeRed, ComputePixel &&computeGreen,
+                 ComputePixel &&computeBlue)
+        : computeRed_(computeRed), computeGreen_(computeGreen),
+          computeBlue_(computeBlue) {}
 
-    // for tiles
-    RGBMapMutate(ComputeTilePixel &&computeRed,
-                 ComputeTilePixel &&computeGreen,
-                 ComputeTilePixel &&computeBlue)
-        : computeTileRed_(computeRed), computeTileGreen_(computeGreen),
-          computeTileBlue_(computeBlue) {}
-
-    Image<T> operator()(Image<T> image) const override {
-        for (size_t y = 0; y < image->height(); ++y) {
-            for (size_t x = 0; x < image->width(); ++x) {
+    void compute(std::shared_ptr<AbstractPixelContainer<T>> elt) const {
+        for (size_t y = 0; y < elt->height(); ++y) {
+            for (size_t x = 0; x < elt->width(); ++x) {
                 Pixel<T> value = {
-                    computeImageRed_(image, x, y),
-                    computeImageGreen_(image, x, y),
-                    computeImageBlue_(image, x, y),
+                    computeRed_(elt, x, y),
+                    computeGreen_(elt, x, y),
+                    computeBlue_(elt, x, y),
                 };
-                image->set(x, y, value);
+                elt->set(x, y, value);
             }
         }
+    }
+
+    Image<T> operator()(Image<T> image) const override {
+        compute(image);
         return image;
     }
 
     void operator()(Tile<T> tile) override {
-        for (size_t y = 0; y < tile->height(); ++y) {
-            for (size_t x = 0; x < tile->width(); ++x) {
-                Pixel<T> value = {
-                    computeTileRed_(tile, x, y),
-                    computeTileGreen_(tile, x, y),
-                    computeTileBlue_(tile, x, y),
-                };
-                tile->set(x, y, value);
-            }
-        }
+        compute(tile);
         this->addResult(tile);
     }
 
   private:
-    struct ComputePixelDefault {
-      T operator()(auto, size_t, size_t) {
-        throw std::bad_function_call();
-        return 0;
-      }
-    };
-
-    // images
-    ComputeImagePixel computeImageRed_ = ComputePixelDefault();
-    ComputeImagePixel computeImageGreen_ = ComputePixelDefault();
-    ComputeImagePixel computeImageBlue_ = ComputePixelDefault();
-
-    // tiles
-    ComputeTilePixel computeTileRed_ = ComputePixelDefault();
-    ComputeTilePixel computeTileGreen_ = ComputePixelDefault();
-    ComputeTilePixel computeTileBlue_ = ComputePixelDefault();
+    ComputePixel computeRed_;
+    ComputePixel computeGreen_;
+    ComputePixel computeBlue_;
 };
 
 } // namespace hhimg

@@ -1,13 +1,12 @@
 #ifndef ABSTRACT_TILE_HPP
 #define ABSTRACT_TILE_HPP
-#include "../../concrete/data/pixel.h"
 #include "abstract_image.h"
-#include <cstddef>
+#include "abstract_pixel_container.h"
 #include <memory>
 
 namespace hhimg {
 
-template <typename T> class AbstractTile {
+template <typename T> class AbstractTile : public AbstractPixelContainer<T> {
   public:
     AbstractTile(size_t x, size_t y, size_t tileSize,
                  std::shared_ptr<AbstractImage<T>> image)
@@ -23,38 +22,13 @@ template <typename T> class AbstractTile {
     size_t y() const { return y_; }
 
     // tile size
-    size_t width() const { return width_; }
-    size_t height() const { return height_; }
+    size_t width() const override { return width_; }
+    size_t fullWidth() const override { return this->image()->width(); }
+    size_t height() const override { return height_; }
     size_t tileSize() const { return tileSize_; }
 
-    /* virtual void set(std::shared_ptr<AbstractTile<T>> &&other) = 0; */
-
-    // access to the image
-    virtual Pixel<T> at(size_t offset) const = 0;
-    virtual void set(size_t offset, Pixel<T> const &pixel) = 0;
-
-    // acces with x,y coordinates (can be overrided for optimization)
-    virtual Pixel<T> at(size_t x, size_t y) const {
-        return at(y * this->image()->width() + x);
-    }
-    virtual void set(size_t x, size_t y, Pixel<T> const &pixel) {
-        set(y * this->image()->width() + x, pixel);
-    }
-
-    // set without pixel
-    virtual void set(size_t offset, T r, T g, T b) { set(offset, {r, g, b}); }
-    virtual void set(size_t x, size_t y, T r, T g, T b) {
-        set(y * this->image()->width() + x, r, g, b);
-    }
-
-    // for grayscaled images
-    void set(size_t offset, T v) { set(offset, v, v, v); }
-    void set(size_t x, size_t y, T v) { set(x, y, v, v, v); }
-    T get(size_t offset) const { return at(offset).red; }
-    T get(size_t x, size_t y) const { return at(x, y).red; }
-
-    // pixel type
-    using PixelType = T;
+    using AbstractPixelContainer<T>::set;
+    using AbstractPixelContainer<T>::at;
 
   protected:
     size_t x_ = 0;

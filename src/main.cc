@@ -50,9 +50,9 @@ void detailExtr(std::shared_ptr<CImgImage<PixelType>> image) {
 
 void generateRainbow() {
     auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
-    auto computeRed = [](hhimg::Image<PixelType>, size_t x, size_t) { return 255 - x; };
-    auto computeGreen = [](hhimg::Image<PixelType>, size_t, size_t y) { return y; };
-    auto computeBlue = [](hhimg::Image<PixelType>, size_t x, size_t) { return x; };
+    auto computeRed = [](auto, size_t x, size_t) { return 255 - x; };
+    auto computeGreen = [](auto, size_t, size_t y) { return y; };
+    auto computeBlue = [](auto, size_t x, size_t) { return x; };
     auto image = imageFactory->get(255, 255);
 
     image |=
@@ -62,11 +62,11 @@ void generateRainbow() {
 
 void redFilter(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
     auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
-    auto computeRed = [image](hhimg::Image<PixelType>, size_t x, size_t y) {
+    auto computeRed = [image](auto, size_t x, size_t y) {
         return image->at(x, y).red;
     };
-    auto computeGreen = [image](hhimg::Image<PixelType>, size_t, size_t) { return 0; };
-    auto computeBlue = [image](hhimg::Image<PixelType>, size_t, size_t) { return 0; };
+    auto computeGreen = [image](auto, size_t, size_t) { return 0; };
+    auto computeBlue = [image](auto, size_t, size_t) { return 0; };
 
     image |=
         hhimg::RGBMapMutate<PixelType>(computeRed, computeGreen, computeBlue);
@@ -86,25 +86,25 @@ void run(Config config) {
 
     hhimg::utils::PerfRectorder::start("run");
 
-    image |=
-        std::make_shared<hhimg::Split<PixelType>>(128, tileFactory) |
-        std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
-            std::make_shared<hhimg::GrayScale<PixelType>>(10)) |
-        std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
-            std::make_shared<hhimg::ContrastBrightness<PixelType>>(10, 1.5,
-                                                                   10)) |
-        std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
-            std::make_shared<hhimg::NonMaximumSuppression<PixelType>>(10, 50));
+    /* image |= */
+    /*     std::make_shared<hhimg::Split<PixelType>>(128, tileFactory) | */
+    /*     std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
+    /*         std::make_shared<hhimg::GrayScale<PixelType>>(10)) | */
+    /*     std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
+    /*         std::make_shared<hhimg::ContrastBrightness<PixelType>>(10, 1.5, */
+    /*                                                                10)) | */
+    /*     std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
+    /*         std::make_shared<hhimg::NonMaximumSuppression<PixelType>>(10, 50)); */
 
-    /* auto computeRed = [](hhimg::Tile<PixelType> tile, size_t x, size_t y) { */
-    /*     return tile->at(x, y).red; */
-    /* }; */
-    /* auto computeGreen = [](hhimg::Tile<PixelType>, size_t, size_t) { return 0; }; */
-    /* auto computeBlue = [](hhimg::Tile<PixelType>, size_t, size_t) { return 0; }; */
-    /* image |= std::make_shared<hhimg::Split<PixelType>>(128, tileFactory) | */
-    /*          std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
-    /*              std::make_shared<hhimg::RGBMapMutate<PixelType>>( */
-    /*                  computeRed, computeGreen, computeBlue)); */
+    auto computeRed = [](auto tile, size_t x, size_t y) {
+        return tile->at(x, y).red;
+    };
+    auto computeGreen = [](auto, size_t, size_t) { return 0; };
+    auto computeBlue = [](auto, size_t, size_t) { return 0; };
+    image |= std::make_shared<hhimg::Split<PixelType>>(128, tileFactory) |
+             std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
+                 std::make_shared<hhimg::RGBMapMutate<PixelType>>(
+                     computeRed, computeGreen, computeBlue));
 
     /* image |= hhimg::GrayScale<PixelType>() | */
     /*          hhimg::ContrastBrightness<PixelType>(1.5, 10) | */
