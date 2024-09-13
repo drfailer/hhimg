@@ -7,6 +7,8 @@ template <typename T> class CImgTile : public hhimg::AbstractTile<T> {
   public:
     CImgTile(size_t x, size_t y, size_t tileSize,
              std::shared_ptr<CImgImage<T>> image);
+    CImgTile(size_t x, size_t y, size_t tileSize, size_t ghostTileSize,
+             std::shared_ptr<CImgImage<T>> image);
 
     hhimg::Pixel<T> at(size_t offset) const override;
     void set(size_t offset, hhimg::Pixel<T> const &pixel) override;
