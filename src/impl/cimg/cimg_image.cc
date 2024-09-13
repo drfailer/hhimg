@@ -9,7 +9,7 @@ CImgImage<T>::CImgImage(std::string const &filename)
 template <typename T>
 CImgImage<T>::CImgImage(CImgImage const &other)
     : hhimg::AbstractImage<unsigned char>(other.filename()),
-      image_(other.image_) {}
+      image_(std::make_shared<cimg_library::CImg<T>>(*other.image_)) {}
 
 template <typename T>
 CImgImage<T>::CImgImage(size_t width, size_t height)
