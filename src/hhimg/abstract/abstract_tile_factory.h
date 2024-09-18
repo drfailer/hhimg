@@ -21,7 +21,8 @@ template <typename T> class AbstractTileFactory {
     virtual std::shared_ptr<AbstractImage<T>> image() const = 0;
     virtual void image(std::shared_ptr<AbstractImage<T>> image) = 0;
 
-    virtual std::shared_ptr<AbstractTile<T>> get(size_t x, size_t y) const = 0;
+    virtual std::shared_ptr<AbstractTile<T>>
+    get(size_t x, size_t y, size_t ghostRegionSize = 0) const = 0;
 
     size_t nbTileRows() const {
         return image()->height() / tileSize_ +

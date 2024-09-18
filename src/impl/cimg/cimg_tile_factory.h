@@ -2,14 +2,15 @@
 #define CIMG_TILE_FACTORY_HPP
 #include "cimg_image.h"
 #include "cimg_tile.h"
-#include <hhimg/hhimg.h>
+#include "hhimg/abstract/abstract_tile_factory.h"
 
 template <typename T>
 class CImgTileFactory : public hhimg::AbstractTileFactory<T> {
   public:
     std::shared_ptr<hhimg::AbstractTile<T>> get(size_t x,
-                                                size_t y) const override {
-        return std::make_shared<CImgTile<T>>(x, y, this->tileSize_, image_);
+                                                size_t y,
+                                                size_t ghostRegionSize) const override {
+        return std::make_shared<CImgTile<T>>(x, y, this->tileSize_, ghostRegionSize, image_);
     }
 
     std::shared_ptr<hhimg::AbstractImage<T>> image() const override {
