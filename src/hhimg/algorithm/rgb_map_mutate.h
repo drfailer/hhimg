@@ -11,11 +11,15 @@ struct RGBMapMutate : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
     using ComputePixel = std::function<T(
         std::shared_ptr<AbstractPixelContainer<T>>, size_t, size_t)>;
 
-    // for images
-    RGBMapMutate(ComputePixel &&computeRed, ComputePixel &&computeGreen,
-                 ComputePixel &&computeBlue)
-        : computeRed_(computeRed), computeGreen_(computeGreen),
+    RGBMapMutate(size_t nbThreads, ComputePixel computeRed,
+                 ComputePixel computeGreen, ComputePixel computeBlue)
+        : AbstractTileAlgorithm<T>("RGBMapMutate", nbThreads),
+          computeRed_(computeRed), computeGreen_(computeGreen),
           computeBlue_(computeBlue) {}
+
+    RGBMapMutate(ComputePixel computeRed, ComputePixel computeGreen,
+                 ComputePixel computeBlue)
+        : hhimg::RGBMapMutate<T>(1, computeRed, computeGreen, computeBlue) {}
 
     void compute(std::shared_ptr<AbstractPixelContainer<T>> elt) const {
         for (size_t y = 0; y < elt->height(); ++y) {
@@ -34,6 +38,11 @@ struct RGBMapMutate : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
     void operator()(Tile<T> tile) override {
         compute(tile);
         this->addResult(tile);
+    }
+
+    std::shared_ptr<TaskType<T>> copy() override {
+        return std::make_shared<RGBMapMutate<T>>(
+            this->numberThreads(), computeRed_, computeGreen_, computeBlue_);
     }
 
   private:
