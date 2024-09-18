@@ -45,11 +45,15 @@ template <typename T> class SyncGhostRegions : public GhostRegionState<T> {
         size_t y = pair->first->y() / pair->first->tileSize();
         pairsAt(x, y) = pair;
 
+        if (pairValid(x, y)) {
+          this->addResult(pair);
+        }
+
         for (auto [modx, mody] : mods) {
             size_t x2 = x + modx;
             size_t y2 = y + mody;
             if (x2 < nbTileCols_ && y2 < nbTileRows_ && pairValid(x2, y2)) {
-                this->addResult(pairsAt(x + modx, y + mody));
+                this->addResult(pairsAt(x2, y2));
             }
         }
     }
