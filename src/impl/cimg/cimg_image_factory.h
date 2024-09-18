@@ -1,7 +1,7 @@
 #ifndef CIMG_FACTORY_HPP
 #define CIMG_FACTORY_HPP
 #include "impl/cimg/cimg_image.h"
-#include <hhimg/hhimg.h>
+#include "hhimg/abstract/abstract_image_factory.h"
 
 template <typename T>
 class CImgImageFactory : public hhimg::AbstractImageFactory<T> {
