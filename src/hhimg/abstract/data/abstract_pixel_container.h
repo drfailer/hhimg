@@ -4,8 +4,7 @@
 
 namespace hhimg {
 
-template <typename T>
-struct AbstractPixelContainer {
+template <typename T> struct AbstractPixelContainer {
     virtual size_t width() const = 0;
     virtual size_t height() const = 0;
     virtual size_t fullWidth() const { return width(); }
@@ -26,12 +25,12 @@ struct AbstractPixelContainer {
     // set without pixel
     virtual void set(size_t offset, T r, T g, T b) { set(offset, {r, g, b}); }
     virtual void set(size_t x, size_t y, T r, T g, T b) {
-        set(y * fullWidth() + x, r, g, b);
+        set(x, y, {r, g, b});
     }
 
     // for grayscaled images
     void set(size_t offset, T v) { set(offset, v, v, v); }
-    void set(size_t x, size_t y, T v) { set(x, y, v, v, v); }
+    void set(size_t x, size_t y, T v) { set(x, y, {v, v, v}); }
     T get(size_t offset) const { return at(offset).red; }
     T get(size_t x, size_t y) const { return at(x, y).red; }
 
