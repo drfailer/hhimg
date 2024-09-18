@@ -66,5 +66,8 @@ std::shared_ptr<hhimg::AbstractImage<T>> CImgImage<T>::copy() const {
     return std::make_shared<CImgImage<T>>(*this);
 }
 
+template <typename T>
+size_t CImgImage<T>::fullWidth() const { return this->image_->width(); }
+
 // force template generation
 template class CImgImage<PixelType>;

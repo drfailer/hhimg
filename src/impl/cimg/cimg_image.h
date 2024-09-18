@@ -1,6 +1,6 @@
 #ifndef CIMG_IMAGE_HPP
 #define CIMG_IMAGE_HPP
-#include <hhimg/hhimg.h>
+#include "hhimg/abstract/data/abstract_image.h"
 
 namespace cimg_library {
 template <typename T> class CImg;
@@ -17,6 +17,7 @@ template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
 
     size_t width() const override;
     size_t height() const override;
+    size_t fullWidth() const override;
 
     void load(std::string const &filename) override;
     void save(std::string const &filename) override;
