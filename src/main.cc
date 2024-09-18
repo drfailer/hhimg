@@ -91,20 +91,47 @@ void run(Config config) {
     /*     std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
     /*         std::make_shared<hhimg::GrayScale<PixelType>>(10)) | */
     /*     std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
-    /*         std::make_shared<hhimg::ContrastBrightness<PixelType>>(10, 1.5, */
+    /*         std::make_shared<hhimg::ContrastBrightness<PixelType>>(10, 1.5,
+     */
     /*                                                                10)) | */
     /*     std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
-    /*         std::make_shared<hhimg::NonMaximumSuppression<PixelType>>(10, 50)); */
+    /*         std::make_shared<hhimg::NonMaximumSuppression<PixelType>>(10,
+     * 50)); */
 
     auto computeRed = [](auto tile, size_t x, size_t y) {
-        return tile->at(x, y).red;
+        /* return tile->at(x, y).red; */
+        return 0;
     };
-    auto computeGreen = [](auto, size_t, size_t) { return 0; };
-    auto computeBlue = [](auto, size_t, size_t) { return 0; };
-    image |= std::make_shared<hhimg::Split<PixelType>>(128, tileFactory) |
-             std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
-                 std::make_shared<hhimg::RGBMapMutate<PixelType>>(
-                     computeRed, computeGreen, computeBlue));
+    auto computeGreen = [](auto tile, size_t x, size_t y) {
+        return tile->at(x, y).green;
+        /* return 0; */
+    };
+    auto computeBlue = [](auto tile, size_t x, size_t y) {
+        return tile->at(x, y).blue;
+    };
+    std::vector<double> v(9, 1.0 / 9);
+    /* std::vector<double> v(9, 2.0); */
+    hhimg::Mask<double> meanFilter(v, 3, 3);
+    image |=
+        std::static_pointer_cast<hhimg::AbstractHHAlgorithm<PixelType>>(
+            std::make_shared<hhimg::Split<PixelType>>(128, tileFactory)) |
+        std::static_pointer_cast<hhimg::AbstractPairTileAlgorithm<PixelType>>(
+            std::make_shared<hhimg::Convolution<PixelType, double>>(
+                40, meanFilter)) |
+        std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
+            std::make_shared<hhimg::RGBMapMutate<PixelType>>(
+                40, computeRed, computeGreen, computeBlue));
+
+    /* image |= std::make_shared<hhimg::Split<PixelType>>(128, tileFactory) | */
+    /*          std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
+     */
+    /*              std::make_shared<hhimg::Convolution<PixelType, double>>(40,
+     * meanFilter)); */
+    /* image |= std::make_shared<hhimg::Split<PixelType>>(128, tileFactory) | */
+    /*          std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
+     */
+    /*              std::make_shared<hhimg::RGBMapMutate<PixelType>>( */
+    /*                  20, computeRed, computeGreen, computeBlue)); */
 
     /* image |= hhimg::GrayScale<PixelType>() | */
     /*          hhimg::ContrastBrightness<PixelType>(1.5, 10) | */
