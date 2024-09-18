@@ -19,6 +19,9 @@ template <typename T> struct AbstractTileAlgorithm : TaskType<T> {
     void execute(Tile<T> tile) override { this->operator()(tile); }
 
     virtual void operator()(Tile<T> tile) = 0;
+
+    // can be overriden if a ghost region is required
+    virtual size_t ghostRegionSize() const { return 0; }
 };
 
 } // namespace hhimg
