@@ -1,6 +1,6 @@
 #ifndef ABSTRACT_TILE_FACTORY_HPP
 #define ABSTRACT_TILE_FACTORY_HPP
-#include "./data/abstract_tile.h"
+#include "../concrete/data/pixel_tile.h"
 #include <cstddef>
 #include <memory>
 
@@ -21,7 +21,7 @@ template <typename T> class AbstractTileFactory {
     virtual std::shared_ptr<AbstractImage<T>> image() const = 0;
     virtual void image(std::shared_ptr<AbstractImage<T>> image) = 0;
 
-    virtual std::shared_ptr<AbstractTile<T>>
+    virtual std::shared_ptr<PixelTile<T>>
     get(size_t x, size_t y, size_t ghostRegionSize = 0) const = 0;
 
     size_t nbTileRows() const {

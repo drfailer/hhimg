@@ -28,7 +28,8 @@ template <typename T> struct Split : AbstractHHAlgorithm<T> {
             for (size_t j = 0; j < nbTilesCols; ++j) {
                 size_t x = j * tileSize;
                 size_t y = i * tileSize;
-                this->pushData(tileFactory->get(x, y, this->ghostRegionSize()));
+                auto tile = tileFactory->get(x, y, this->ghostRegionSize());
+                this->pushData(std::static_pointer_cast<AbstractTile<T>>(tile));
             }
         }
         this->finishPushingData();
