@@ -8,6 +8,7 @@
 #include "../algorithm/tile/make_pair.h"
 #include "../algorithm/tile/split.h"
 #include "../concrete/chain_algorithm.h"
+#include "hhimg/algorithm/tile/pair_graph.h"
 #include "hhimg/algorithm/tile/wire.h"
 #include <memory>
 #include <type_traits>
@@ -71,24 +72,8 @@ operator|(std::shared_ptr<hhimg::AbstractHHAlgorithm<T>> hhAlgo,
     if (hhAlgo->ghostRegionSize() < algorithm->ghostRegionSize()) {
         hhAlgo->ghostRegionSize(algorithm->ghostRegionSize());
     }
-    auto makePairTask =
-        std::make_shared<hhimg::MakePair<T>>(1);
-    auto ghostRegionState = std::make_shared<hhimg::SyncGhostRegions<T>>();
-    auto ghostRegionsStateManager = std::make_shared<
-        hh::StateManager<1, std::pair<hhimg::Tile<T>, hhimg::Tile<T>>,
-                         std::pair<hhimg::Tile<T>, hhimg::Tile<T>>>>(
-        ghostRegionState);
-    auto wire = std::make_shared<hhimg::Wire<T>>(algorithm->numberThreads());
-
-    if (!hhAlgo->lastTask()) {
-      hhAlgo->inputs(makePairTask);
-    } else {
-      hhAlgo->edges(hhAlgo->lastTask(), makePairTask);
-    }
-    hhAlgo->edges(makePairTask, ghostRegionsStateManager);
-    hhAlgo->edges(ghostRegionsStateManager, algorithm);
-    hhAlgo->edges(algorithm, wire);
-    hhAlgo->lastTask(wire);
+    auto pairGraph = std::make_shared<hhimg::PairGraph<T>>(algorithm);
+    hhAlgo->push_back(pairGraph);
     return hhAlgo;
 }
 
