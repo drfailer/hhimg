@@ -16,10 +16,18 @@ template <typename T> struct MakePair : MakePairTaskType<T> {
     ~MakePair() = default;
 
     void execute(Tile<T> tile) override {
-        this->addResult(std::make_shared<std::pair<Tile<T>, Tile<T>>>(
-            std::move(tile), std::make_shared<PixelTile<T>>(
-                                 tile->x(), tile->y(), tile->tileSize(),
-                                 tile->ghostRegionSize(), tile->image())));
+        auto newTile = std::make_shared<PixelTile<T>>(
+            tile->x(), tile->y(), tile->tileSize(), tile->ghostRegionSize(),
+            tile->image());
+
+        if (auto pixelTile = std::dynamic_pointer_cast<PixelTile<T>>(tile)) {
+            size_t size =
+                sizeof(Pixel<T>) * tile->ghostWidth() * tile->ghostHeight();
+            memcpy(newTile->data(), pixelTile->data(), size);
+        }
+
+        this->addResult(
+            std::make_shared<std::pair<Tile<T>, Tile<T>>>(tile, newTile));
     }
 
     std::shared_ptr<MakePairTaskType<T>> copy() override {
