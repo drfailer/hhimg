@@ -50,26 +50,23 @@ void detailExtr(std::shared_ptr<CImgImage<PixelType>> image) {
 
 void generateRainbow() {
     auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
-    auto computeRed = [](auto, size_t x, size_t) { return 255 - x; };
-    auto computeGreen = [](auto, size_t, size_t y) { return y; };
-    auto computeBlue = [](auto, size_t x, size_t) { return x; };
+    auto compute = [](auto, size_t x, size_t y) {
+        return hhimg::Pixel<PixelType>{PixelType(255 - x), (PixelType)y,
+                                       (PixelType)x};
+    };
     auto image = imageFactory->get(255, 255);
 
-    image |=
-        hhimg::RGBMapMutate<PixelType>(computeRed, computeGreen, computeBlue);
+    image |= hhimg::MapMutate<PixelType>(compute);
     displayCImgImage(std::static_pointer_cast<CImgImage<PixelType>>(image));
 }
 
 void redFilter(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
     auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
-    auto computeRed = [image](auto, size_t x, size_t y) {
-        return image->at(x, y).red;
+    auto compute = [](auto image, size_t x, size_t y) {
+        return hhimg::Pixel<PixelType>{image->at(x, y).red, 0, 0};
     };
-    auto computeGreen = [image](auto, size_t, size_t) { return 0; };
-    auto computeBlue = [image](auto, size_t, size_t) { return 0; };
 
-    image |=
-        hhimg::RGBMapMutate<PixelType>(computeRed, computeGreen, computeBlue);
+    image |= hhimg::MapMutate<PixelType>(compute);
 }
 
 void contrast(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
@@ -91,21 +88,15 @@ void run(Config config) {
     /*     std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
     /*         std::make_shared<hhimg::GrayScale<PixelType>>(40)) | */
     /*     std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
-    /*         std::make_shared<hhimg::ContrastBrightness<PixelType>>(40, 1.5, */
+    /*         std::make_shared<hhimg::ContrastBrightness<PixelType>>(40, 1.5,
+     */
     /*                                                                10)) | */
     /*     std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
-    /*         std::make_shared<hhimg::NonMaximumSuppression<PixelType>>(40, 50)); */
+    /*         std::make_shared<hhimg::NonMaximumSuppression<PixelType>>(40,
+     * 50)); */
 
-    auto computeRed = [](auto tile, size_t x, size_t y) {
-        /* return tile->at(x, y).red; */
-        return 0;
-    };
-    auto computeGreen = [](auto tile, size_t x, size_t y) {
-        return tile->at(x, y).green;
-        /* return 0; */
-    };
-    auto computeBlue = [](auto tile, size_t x, size_t y) {
-        return tile->at(x, y).blue;
+    auto compute = [](auto tile, size_t x, size_t y) {
+        return hhimg::Pixel<PixelType>{0, 0, tile->at(x, y).blue};
     };
     /* std::vector<double> v(9, 1.0 / 9); */
     std::vector<double> v(9, 2.0);
@@ -117,14 +108,16 @@ void run(Config config) {
             std::make_shared<hhimg::Convolution<PixelType, double>>(
                 40, meanFilter)) |
         std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
-            std::make_shared<hhimg::RGBMapMutate<PixelType>>(
-                40, computeRed, computeGreen, computeBlue));
+            std::make_shared<hhimg::MapMutate<PixelType>>(40, compute));
 
     /* image |= std::make_shared<hhimg::Split<PixelType>>(128, tileFactory) | */
-    /*          std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
-    /*              std::make_shared<hhimg::Convolution<PixelType, double>>(40, meanFilter)); */
+    /*          std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
+     */
+    /*              std::make_shared<hhimg::Convolution<PixelType, double>>(40,
+     * meanFilter)); */
     /* image |= std::make_shared<hhimg::Split<PixelType>>(128, tileFactory) | */
-    /*          std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
+    /*          std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
+     */
     /*              std::make_shared<hhimg::RGBMapMutate<PixelType>>( */
     /*                  20, computeRed, computeGreen, computeBlue)); */
 
