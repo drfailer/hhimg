@@ -20,12 +20,7 @@ template <typename T> struct MakePair : MakePairTaskType<T> {
             tile->x(), tile->y(), tile->tileSize(), tile->ghostRegionSize(),
             tile->image());
 
-        if (auto pixelTile = std::dynamic_pointer_cast<PixelTile<T>>(tile)) {
-            size_t size =
-                sizeof(Pixel<T>) * tile->ghostWidth() * tile->ghostHeight();
-            memcpy(newTile->data(), pixelTile->data(), size);
-        }
-
+        newTile->copy(tile);
         this->addResult(
             std::make_shared<std::pair<Tile<T>, Tile<T>>>(tile, newTile));
     }

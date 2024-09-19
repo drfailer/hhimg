@@ -87,6 +87,16 @@ template <typename T> class AbstractTile : public AbstractPixelContainer<T> {
     T ghostGet(size_t offset) const { return ghostAt(offset).red; }
     T ghostGet(size_t x, size_t y) const { return ghostAt(x, y).red; }
 
+    /* copy *******************************************************************/
+
+    virtual void copy(std::shared_ptr<AbstractTile<T>> other) {
+      for (size_t y = 0; y < ghostHeight_; ++y) {
+        for (size_t x = 0; x < ghostWidth_; ++x) {
+          this->ghostSet(x, y, other->ghostGet(x, y));
+        }
+      }
+    }
+
   protected:
     size_t x_ = 0;
     size_t y_ = 0;

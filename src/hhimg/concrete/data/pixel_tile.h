@@ -1,6 +1,7 @@
 #ifndef HHIMG_PIXEL_TILE_H
 #define HHIMG_PIXEL_TILE_H
 #include "../../abstract/data/abstract_tile.h"
+#include <cstring>
 #include <memory>
 
 namespace hhimg {
@@ -10,7 +11,7 @@ template <typename T> class PixelTile : public AbstractTile<T> {
     PixelTile(size_t x, size_t y, size_t tileSize, size_t ghostRegionSize,
               std::shared_ptr<AbstractImage<T>> image)
         : AbstractTile<T>(x, y, tileSize, ghostRegionSize, image),
-          data_(new Pixel<T>[this->ghostWidth() * this->ghostHeight()]) { }
+          data_(new Pixel<T>[this->ghostWidth() * this->ghostHeight()]) {}
     ~PixelTile() { delete[] data_; }
 
     size_t fullWidth() const override { return this->ghostWidth_; }
@@ -31,6 +32,16 @@ template <typename T> class PixelTile : public AbstractTile<T> {
     using AbstractTile<T>::ghostSet;
 
     Pixel<T> *data() { return data_; }
+
+    void copy(std::shared_ptr<AbstractTile<T>> other) override {
+        if (auto pixelTile = std::dynamic_pointer_cast<PixelTile<T>>(other)) {
+            size_t size =
+                sizeof(Pixel<T>) * this->ghostWidth() * this->ghostHeight();
+            memcpy(data_, pixelTile->data(), size);
+        } else {
+            this->template AbstractTile<T>::copy(other);
+        }
+    }
 
   private:
     Pixel<T> *data_ = nullptr;

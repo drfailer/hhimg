@@ -96,10 +96,10 @@ void run(Config config) {
      * 50)); */
 
     auto compute = [](auto tile, size_t x, size_t y) {
-        return hhimg::Pixel<PixelType>{0, 0, tile->at(x, y).blue};
+        return hhimg::Pixel<PixelType>{0, tile->at(x, y).green, 0};
     };
-    /* std::vector<double> v(9, 1.0 / 9); */
-    std::vector<double> v(9, 2.0);
+    std::vector<double> v(9, 1.0 / 9);
+    /* std::vector<double> v(9, 2.0); */
     hhimg::Mask<double> meanFilter(v, 3, 3);
     image |=
         std::static_pointer_cast<hhimg::AbstractHHAlgorithm<PixelType>>(
