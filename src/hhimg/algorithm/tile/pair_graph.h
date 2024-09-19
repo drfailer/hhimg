@@ -9,7 +9,7 @@ namespace hhimg {
 
 template <typename T> struct PairGraph : GraphType<T> {
     PairGraph(std::shared_ptr<AbstractPairTileAlgorithm<T>> task)
-        : GraphType<T>("Convolution") {
+        : GraphType<T>(task->name()) {
         auto makePairTask = std::make_shared<hhimg::MakePair<T>>(1);
         auto ghostRegionState = std::make_shared<hhimg::SyncGhostRegions<T>>();
         auto ghostRegionsStateManager = std::make_shared<
