@@ -72,7 +72,7 @@ operator|(std::shared_ptr<hhimg::AbstractHHAlgorithm<T>> hhAlgo,
         hhAlgo->ghostRegionSize(algorithm->ghostRegionSize());
     }
     auto makePairTask =
-        std::make_shared<hhimg::MakePair<T>>(algorithm->numberThreads());
+        std::make_shared<hhimg::MakePair<T>>(1);
     auto ghostRegionState = std::make_shared<hhimg::SyncGhostRegions<T>>();
     auto ghostRegionsStateManager = std::make_shared<
         hh::StateManager<1, std::pair<hhimg::Tile<T>, hhimg::Tile<T>>,

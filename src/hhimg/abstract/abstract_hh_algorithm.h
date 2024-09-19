@@ -2,6 +2,7 @@
 #define HEDGEHOG_ALGORITHM_H
 #include "../abstract/abstract_algorithm.h"
 #include "../abstract/abstract_tile_algorithm.h"
+#include "../algorithm/tile/copy.h"
 #include <hedgehog/hedgehog.h>
 
 namespace hhimg {
@@ -16,7 +17,11 @@ template <typename T> struct AbstractHHAlgorithm : GraphType<T> {
 
     virtual Image<T> operator()(Image<T> image) = 0;
 
-    void compile() { this->outputs(lastTask_); }
+    void compile() {
+      auto copy = std::make_shared<Copy<T>>(1);
+      this->edges(lastTask_, copy);
+      this->outputs(copy);
+    }
 
     void push_back(auto algo) {
         if (lastTask_ == nullptr) {
@@ -38,6 +43,7 @@ template <typename T> struct AbstractHHAlgorithm : GraphType<T> {
     }
 
   private:
+    // todo: use a variant Task<tile, tile> / Graph<tile, tile>
     std::shared_ptr<TaskType<T>> lastTask_ = nullptr;
     size_t ghostRegionSize_ = 0;
 };
