@@ -33,6 +33,8 @@ template <typename T> struct Split : AbstractHHAlgorithm<T> {
         }
         this->finishPushingData();
         this->waitForTermination();
+        this->createDotFile("graph.dot", hh::ColorScheme::EXECUTION,
+                            hh::StructureOptions::QUEUE);
         return image;
     }
 

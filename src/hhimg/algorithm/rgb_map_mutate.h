@@ -24,8 +24,9 @@ struct RGBMapMutate : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
     void compute(std::shared_ptr<AbstractPixelContainer<T>> elt) const {
         for (size_t y = 0; y < elt->height(); ++y) {
             for (size_t x = 0; x < elt->width(); ++x) {
-                elt->set(x, y, computeRed_(elt, x, y), computeGreen_(elt, x, y),
-                         computeBlue_(elt, x, y));
+                elt->set(x, y,
+                         {computeRed_(elt, x, y), computeGreen_(elt, x, y),
+                          computeBlue_(elt, x, y)});
             }
         }
     }
