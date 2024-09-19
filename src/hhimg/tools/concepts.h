@@ -18,10 +18,10 @@ template <typename T> using clear_t = typename clear<T>::type;
 
 template <typename Type>
 concept ImgData =
-    std::is_base_of_v<clear_t<Type>,
-                      AbstractImage<typename clear_t<Type>::PixelType>> ||
-    std::is_same_v<clear_t<Type>,
-                   AbstractTile<typename clear_t<Type>::PixelType>>;
+    std::is_base_of_v<AbstractImage<typename clear_t<Type>::PixelType>,
+                      clear_t<Type>> ||
+    std::is_base_of_v<AbstractTile<typename clear_t<Type>::PixelType>,
+                      clear_t<Type>>;
 
 } // end namespace hhimg
 
