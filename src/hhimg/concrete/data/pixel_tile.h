@@ -10,13 +10,7 @@ template <typename T> class PixelTile : public AbstractTile<T> {
     PixelTile(size_t x, size_t y, size_t tileSize, size_t ghostRegionSize,
               std::shared_ptr<AbstractImage<T>> image)
         : AbstractTile<T>(x, y, tileSize, ghostRegionSize, image),
-          data_(new Pixel<T>[this->ghostWidth() * this->ghostHeight()]) {
-        for (size_t i = 0; i < this->ghostHeight(); ++i) {
-            for (size_t j = 0; j < this->ghostWidth(); ++j) {
-                data_[i * this->ghostWidth() + j] = image->at(x + j, y + i);
-            }
-        }
-    }
+          data_(new Pixel<T>[this->ghostWidth() * this->ghostHeight()]) { }
     ~PixelTile() { delete[] data_; }
 
     size_t fullWidth() const override { return this->ghostWidth_; }
@@ -35,6 +29,8 @@ template <typename T> class PixelTile : public AbstractTile<T> {
     using AbstractTile<T>::set;
     using AbstractTile<T>::ghostAt;
     using AbstractTile<T>::ghostSet;
+
+    Pixel<T> *data() { return data_; }
 
   private:
     Pixel<T> *data_ = nullptr;
