@@ -28,6 +28,9 @@ template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
 
     std::shared_ptr<hhimg::AbstractImage<T>> copy() const override;
 
+    using hhimg::AbstractImage<T>::at;
+    using hhimg::AbstractImage<T>::set;
+
   private:
     std::shared_ptr<cimg_library::CImg<T>> image_;
 };
