@@ -100,7 +100,7 @@ class Convolution : public AbstractAlgorithm<T>,
             for (size_t mx = 0; mx < kernel_.width(); ++mx) {
                 size_t ix = x + mx - halfWidth + tile->ghostRegionSize();
                 size_t iy = y + my - halfHeight + tile->ghostRegionSize();
-                if (ix < tile->ghostWidth() && iy < tile->ghostWidth()) {
+                if (ix < tile->ghostWidth() && iy < tile->ghostHeight()) {
                     result += pixelCast<MaskType>(tile->ghostAt(ix, iy)) *
                               kernel_.at(mx, my);
                 }
