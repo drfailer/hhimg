@@ -70,39 +70,19 @@ void redFilter(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
 }
 
 void contrast(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
-    /* image |= hhimg::ContrastBrightness<PixelType>(0.5); */
     image |= hhimg::ContrastBrightness<PixelType>(1.5, 1);
-    /* image |= hhimg::ContrastBrightness<PixelType>(1); */
 }
 
-void run(Config config) {
-    hhimg::utils::PerfRectorder::start("Image load");
-    auto image = std::make_shared<CImgImage<PixelType>>(config.filename);
-    hhimg::utils::PerfRectorder::end("Image load");
+void testHedgehog(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
     auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
-
-    hhimg::utils::PerfRectorder::start("run");
-
-    /* image |= */
-    /*     std::make_shared<hhimg::Split<PixelType>>(512, tileFactory) | */
-    /*     std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
-    /*         std::make_shared<hhimg::GrayScale<PixelType>>(40)) | */
-    /*     std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
-    /*         std::make_shared<hhimg::ContrastBrightness<PixelType>>(40, 1.5,
-     */
-    /*                                                                10)) | */
-    /*     std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>( */
-    /*         std::make_shared<hhimg::NonMaximumSuppression<PixelType>>(40,
-     * 50)); */
-
+    std::vector<double> v(9, 1.0 / 9);
+    /* std::vector<double> v(9, 2.0); */
+    hhimg::Mask<double> meanFilter(v, 3, 3);
     auto compute = [](auto tile, size_t x, size_t y) {
         return hhimg::Pixel<PixelType>{tile->at(x, y).red, 0,
                                        tile->at(x, y).blue};
     };
-    std::vector<double> v(9, 1.0 / 9);
-    /* std::vector<double> v(9, 2.0); */
-    hhimg::Mask<double> meanFilter(v, 3, 3);
-    // todo: the split shouldn't be instantiated here
+
     image |=
         std::make_shared<hhimg::HedgehogPipeline<PixelType>>(256, tileFactory,
                                                              "my algorithm") |
@@ -111,36 +91,32 @@ void run(Config config) {
                 32, meanFilter)) |
         std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
             std::make_shared<hhimg::MapMutate<PixelType>>(32, compute));
+}
 
-    /* // halide blur */
-    /* hhimg::Mask<double> blurX({1./3., 1./3., 1./3.}, 1, 3); */
-    /* hhimg::Mask<double> blurY({1./3., 1./3., 1./3.}, 3, 1); */
-    /* image |= */
-    /*     std::static_pointer_cast<hhimg::AbstractHHAlgorithm<PixelType>>( */
-    /*         std::make_shared<hhimg::Split<PixelType>>(256, tileFactory)) | */
-    /*     std::static_pointer_cast<hhimg::AbstractPairTileAlgorithm<PixelType>>(
-     */
-    /*         std::make_shared<hhimg::Convolution<PixelType, double>>( */
-    /*             16, blurX)) | */
-    /*     std::static_pointer_cast<hhimg::AbstractPairTileAlgorithm<PixelType>>(
-     */
-    /*         std::make_shared<hhimg::Convolution<PixelType, double>>( */
-    /*             16, blurY)); */
+void halideBlur(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
+    auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
+    hhimg::Mask<double> blurX({1. / 3., 1. / 3., 1. / 3.}, 1, 3);
+    hhimg::Mask<double> blurY({1. / 3., 1. / 3., 1. / 3.}, 3, 1);
 
-    /* image |= std::make_shared<hhimg::Split<PixelType>>(128, tileFactory) | */
-    /*          std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
-     */
-    /*              std::make_shared<hhimg::Convolution<PixelType, double>>(40,
-     * meanFilter)); */
-    /* image |= std::make_shared<hhimg::Split<PixelType>>(128, tileFactory) | */
-    /*          std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
-     */
-    /*              std::make_shared<hhimg::RGBMapMutate<PixelType>>( */
-    /*                  20, computeRed, computeGreen, computeBlue)); */
+    image |=
+        std::make_shared<hhimg::HedgehogPipeline<PixelType>>(256, tileFactory,
+                                                             "Halide blur") |
+        std::static_pointer_cast<hhimg::AbstractPairTileAlgorithm<PixelType>>(
+            std::make_shared<hhimg::Convolution<PixelType, double>>(16,
+                                                                    blurX)) |
+        std::static_pointer_cast<hhimg::AbstractPairTileAlgorithm<PixelType>>(
+            std::make_shared<hhimg::Convolution<PixelType, double>>(16, blurY));
+}
 
-    /* image |= hhimg::GrayScale<PixelType>() | */
-    /*          hhimg::ContrastBrightness<PixelType>(1.5, 10) | */
-    /*          hhimg::NonMaximumSuppression<PixelType>(50); */
+void run(Config config) {
+    hhimg::utils::PerfRectorder::start("Image load");
+    auto image = std::make_shared<CImgImage<PixelType>>(config.filename);
+    hhimg::utils::PerfRectorder::end("Image load");
+
+    hhimg::utils::PerfRectorder::start("run");
+
+    /* testHedgehog(image); */
+    halideBlur(image);
 
     /* switch (config.algorithm) { */
     /* case VerticalBorders: */

@@ -1,13 +1,9 @@
 #ifndef ALGORITHM_OPERATORS_HPP
 #define ALGORITHM_OPERATORS_HPP
 #include "../abstract/abstract_algorithm.h"
-#include "../abstract/hh/abstract_hh_algorithm.h"
 #include "../abstract/hh/abstract_pair_tile_algorithm.h"
 #include "../abstract/hh/abstract_tile_algorithm.h"
-#include "../algorithm/tile/ghost_region_state.h"
-#include "../algorithm/tile/make_pair.h"
 #include "../algorithm/tile/pair_graph.h"
-#include "../algorithm/tile/split.h"
 #include "../concrete/chain_algorithm.h"
 #include "../concrete/hedgehog_pipeline.h"
 #include <memory>

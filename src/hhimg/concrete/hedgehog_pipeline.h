@@ -22,7 +22,7 @@ template <typename T> struct HedgehogPipeline : TilePipeline<T> {
                      std::shared_ptr<AbstractTileFactory<T>> tileFactory,
                      std::string graphName = "unamed pipeline")
         : split_(std::make_shared<Split<T>>(tileSize, tileFactory)),
-          graph_(std::make_shared<TilePipeline<T>>(graphName)) {
+          graph_(std::make_shared<TilePipeline<T>>(std::move(graphName))) {
         graph_->inputs(split_);
     }
 
