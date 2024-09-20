@@ -9,23 +9,21 @@ template <typename T>
 struct Split : hh::AbstractTask<1, AbstractImage<T>, AbstractTile<T>> {
     // todo: ghost values
     Split(size_t tileSize, std::shared_ptr<AbstractTileFactory<T>> tileFactory)
-        : hh::AbstractTask<1, AbstractImage<T>, AbstractTile<T>>("Split", 1),  tileSize(tileSize), tileFactory(tileFactory) {}
+        : hh::AbstractTask<1, AbstractImage<T>, AbstractTile<T>>("Split"),
+          tileSize(tileSize), tileFactory(tileFactory) {}
     ~Split() = default;
 
     void execute(std::shared_ptr<AbstractImage<T>> image) override {
-        // setup the factory with the image
-        tileFactory->tileSize(tileSize);
-        tileFactory->image(image);
-
-        // get the number of tiles
-        size_t nbTilesRows = tileFactory->nbTileRows();
-        size_t nbTilesCols = tileFactory->nbTileColumns();
+        size_t nbTilesRows = tileFactory->nbTileRows(image->height(), tileSize);
+        size_t nbTilesCols =
+            tileFactory->nbTileColumns(image->width(), tileSize);
 
         for (size_t i = 0; i < nbTilesRows; ++i) {
             for (size_t j = 0; j < nbTilesCols; ++j) {
                 size_t x = j * tileSize;
                 size_t y = i * tileSize;
-                auto tile = tileFactory->get(x, y, ghostRegionSize);
+                auto tile =
+                    tileFactory->get(x, y, tileSize, ghostRegionSize, image);
                 this->addResult(
                     std::static_pointer_cast<AbstractTile<T>>(tile));
             }

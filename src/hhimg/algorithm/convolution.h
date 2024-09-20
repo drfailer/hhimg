@@ -47,12 +47,11 @@ class Convolution : public AbstractAlgorithm<T>,
 
     void operator()(std::shared_ptr<PairTile<T>> tiles) override {
         auto tile = tiles->first;
-        auto ghost = tiles->second;
+        auto origin = tiles->second;
 
-        // apply the mask
         for (size_t y = 0; y < tile->height(); ++y) {
             for (size_t x = 0; x < tile->width(); ++x) {
-                auto value = computeValue(x, y, ghost);
+                auto value = computeValue(x, y, origin);
                 tile->set(x, y, pixelValidCast<T>(value + bias_));
             }
         }
