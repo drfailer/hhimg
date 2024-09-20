@@ -19,8 +19,7 @@ template <typename T> struct MakePair : MakePairTaskType<T> {
             tile->x(), tile->y(), tile->tileSize(), tile->ghostRegionSize(),
             tile->image());
 
-        newTile->copy(tile);
-        this->addResult(std::make_shared<PairTile<T>>(tile, newTile));
+        this->addResult(std::make_shared<PairTile<T>>(newTile, tile));
     }
 
     std::shared_ptr<MakePairTaskType<T>> copy() override {

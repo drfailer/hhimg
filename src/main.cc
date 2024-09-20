@@ -95,8 +95,8 @@ void testHedgehog(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
 
 void halideBlur(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
     auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
-    hhimg::Mask<double> blurX({1. / 3., 1. / 3., 1. / 3.}, 1, 3);
-    hhimg::Mask<double> blurY({1. / 3., 1. / 3., 1. / 3.}, 3, 1);
+    hhimg::Mask<double> blurX({1. / 3., 1. / 3., 1. / 3.}, 3, 1);
+    hhimg::Mask<double> blurY({1. / 3., 1. / 3., 1. / 3.}, 1, 3);
 
     image |=
         std::make_shared<hhimg::HedgehogPipeline<PixelType>>(256, tileFactory,
