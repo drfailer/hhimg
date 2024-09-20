@@ -12,7 +12,7 @@ struct MapMutate : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
         std::shared_ptr<AbstractPixelContainer<T>> const&, size_t, size_t)>;
 
     MapMutate(size_t nbThreads, ComputePixel compute)
-        : AbstractTileAlgorithm<T>("RGBMapMutate", nbThreads),
+        : AbstractTileAlgorithm<T>("MapMutate", nbThreads),
           compute_(compute) {}
 
     MapMutate(ComputePixel compute) : hhimg::MapMutate<T>(1, compute) {}
