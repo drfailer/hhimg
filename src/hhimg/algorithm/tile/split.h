@@ -8,10 +8,8 @@ namespace hhimg {
 template <typename T>
 struct Split : hh::AbstractTask<1, AbstractImage<T>, AbstractTile<T>> {
     // todo: ghost values
-    Split(size_t tileSize, size_t ghostRegionSize,
-          std::shared_ptr<AbstractTileFactory<T>> tileFactory)
-        : tileSize(tileSize), ghostRegionSize(ghostRegionSize),
-          tileFactory(tileFactory) {}
+    Split(size_t tileSize, std::shared_ptr<AbstractTileFactory<T>> tileFactory)
+        : hh::AbstractTask<1, AbstractImage<T>, AbstractTile<T>>("Split", 1),  tileSize(tileSize), tileFactory(tileFactory) {}
     ~Split() = default;
 
     void execute(std::shared_ptr<AbstractImage<T>> image) override {
