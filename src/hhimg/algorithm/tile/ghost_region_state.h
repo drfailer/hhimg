@@ -1,20 +1,20 @@
 #ifndef GHOST_REGION_STATE_H
 #define GHOST_REGION_STATE_H
-#include "../../abstract/abstract_tile_algorithm.h"
+#include "../../abstract/hh/abstract_pair_tile_algorithm.h"
+#include "../../abstract/hh/abstract_tile_algorithm.h"
 #include <hedgehog/hedgehog.h>
 #include <vector>
 
 namespace hhimg {
 
 template <typename T>
-using GhostRegionState = hh::AbstractState<1, std::pair<Tile<T>, Tile<T>>,
-                                           std::pair<Tile<T>, Tile<T>>>;
+using GhostRegionState = hh::AbstractState<1, PairTile<T>, PairTile<T>>;
 
 template <typename T> class SyncGhostRegions : public GhostRegionState<T> {
   public:
     SyncGhostRegions() : GhostRegionState<T>() {}
 
-    void initPairs(Tile<T> tile) {
+    void initPairs(std::shared_ptr<AbstractTile<T>> tile) {
         nbTileRows_ = tile->image()->height() / tile->tileSize() +
                       (tile->image()->height() % tile->tileSize() == 0 ? 0 : 1);
         nbTileCols_ = tile->image()->width() / tile->tileSize() +
@@ -22,8 +22,7 @@ template <typename T> class SyncGhostRegions : public GhostRegionState<T> {
         pairs_.resize(nbTileRows_ * nbTileCols_, {false, nullptr});
     }
 
-    std::pair<bool, std::shared_ptr<std::pair<Tile<T>, Tile<T>>>> &
-    pairsAt(size_t x, size_t y) {
+    std::pair<bool, std::shared_ptr<PairTile<T>>> &pairsAt(size_t x, size_t y) {
         return pairs_[y * nbTileCols_ + x];
     }
 
@@ -46,7 +45,7 @@ template <typename T> class SyncGhostRegions : public GhostRegionState<T> {
         return true;
     }
 
-    void execute(std::shared_ptr<std::pair<Tile<T>, Tile<T>>> pair) override {
+    void execute(std::shared_ptr<PairTile<T>> pair) override {
         if (pairs_.empty()) {
             initPairs(pair->first);
         }
@@ -67,7 +66,8 @@ template <typename T> class SyncGhostRegions : public GhostRegionState<T> {
   private:
     size_t nbTileRows_ = 0;
     size_t nbTileCols_ = 0;
-    std::vector<std::pair<bool, std::shared_ptr<std::pair<Tile<T>, Tile<T>>>>>
+    std::vector<std::pair<
+        bool, std::shared_ptr<PairTile<T>>>>
         pairs_ = {};
     static constexpr std::pair<int, int> mods[9]{
         {-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 0},

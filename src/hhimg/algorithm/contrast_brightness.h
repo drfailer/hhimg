@@ -1,16 +1,16 @@
 #ifndef CONTRAST_BRIGHTNESS_H
 #define CONTRAST_BRIGHTNESS_H
 #include "../abstract/abstract_algorithm.h"
-#include "../abstract/abstract_tile_algorithm.h"
-#include "../tools/perf_recorder.h"
+#include "../abstract/hh/abstract_tile_algorithm.h"
 #include "../tools/concepts.h"
+#include "../tools/perf_recorder.h"
 
 namespace hhimg {
 
 template <typename T>
 struct ContrastBrightness : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
     ContrastBrightness(size_t nbThreads, double contrast, double brightness)
-        : AbstractTileAlgorithm<T>("ContrastBrightness", nbThreads),
+        : AbstractTileAlgorithm<T>(nbThreads, "ContrastBrightness"),
           contrast(contrast), brightness(brightness) {}
     ContrastBrightness(double contrast, double brightness)
         : ContrastBrightness(1, contrast, brightness) {}
@@ -45,12 +45,13 @@ struct ContrastBrightness : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
         return image;
     }
 
-    void operator()(Tile<T> tile) override {
+    void operator()(std::shared_ptr<AbstractTile<T>> tile) override {
         compute(tile);
         this->addResult(tile);
     }
 
-    std::shared_ptr<TaskType<T>> copy() override {
+    std::shared_ptr<typename AbstractTileAlgorithm<T>::TaskType>
+    copy() override {
         return std::make_shared<ContrastBrightness<T>>(this->numberThreads(),
                                                        contrast, brightness);
     }

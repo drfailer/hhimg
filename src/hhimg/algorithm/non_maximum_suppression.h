@@ -1,9 +1,9 @@
 #ifndef NON_MAXIMUM_SUPPRESSION_HPP
 #define NON_MAXIMUM_SUPPRESSION_HPP
 #include "../abstract/abstract_algorithm.h"
-#include "../abstract/abstract_tile_algorithm.h"
-#include "../tools/perf_recorder.h"
+#include "../abstract/hh/abstract_tile_algorithm.h"
 #include "../tools/concepts.h"
+#include "../tools/perf_recorder.h"
 
 namespace hhimg {
 
@@ -12,7 +12,7 @@ class NonMaximumSuppression : public AbstractAlgorithm<T>,
                               public AbstractTileAlgorithm<T> {
   public:
     NonMaximumSuppression(size_t nbThreads, T max, T lowValue, T highValue)
-        : AbstractTileAlgorithm<T>("NonMaximumSuppression", nbThreads),
+        : AbstractTileAlgorithm<T>(nbThreads, "NonMaximumSuppression"),
           max_(max), lowValue_(lowValue), highValue_(highValue) {}
     NonMaximumSuppression(T max, T lowValue, T highValue)
         : NonMaximumSuppression(1, max, lowValue, highValue) {}
@@ -39,12 +39,13 @@ class NonMaximumSuppression : public AbstractAlgorithm<T>,
         return image;
     }
 
-    void operator()(Tile<T> tile) override {
+    void operator()(std::shared_ptr<AbstractTile<T>> tile) override {
         compute(tile);
         this->addResult(tile);
     }
 
-    std::shared_ptr<TaskType<T>> copy() override {
+    std::shared_ptr<typename AbstractTileAlgorithm<T>::TaskType>
+    copy() override {
         return std::make_shared<NonMaximumSuppression<T>>(
             this->numberThreads(), max_, lowValue_, highValue_);
     }

@@ -96,19 +96,34 @@ void run(Config config) {
      * 50)); */
 
     auto compute = [](auto tile, size_t x, size_t y) {
-        return hhimg::Pixel<PixelType>{0, tile->at(x, y).green, 0};
+        return hhimg::Pixel<PixelType>{tile->at(x, y).red, tile->at(x, y).green, 0};
     };
     std::vector<double> v(9, 1.0 / 9);
     /* std::vector<double> v(9, 2.0); */
     hhimg::Mask<double> meanFilter(v, 3, 3);
+    //todo: the split shouldn't be instantiated here
     image |=
-        std::static_pointer_cast<hhimg::AbstractHHAlgorithm<PixelType>>(
-            std::make_shared<hhimg::Split<PixelType>>(128, tileFactory)) |
+        std::make_shared<hhimg::Split<PixelType>>(256, 1, tileFactory) |
         std::static_pointer_cast<hhimg::AbstractPairTileAlgorithm<PixelType>>(
             std::make_shared<hhimg::Convolution<PixelType, double>>(
-                40, meanFilter)) |
+                32, meanFilter)) |
         std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
-            std::make_shared<hhimg::MapMutate<PixelType>>(40, compute));
+            std::make_shared<hhimg::MapMutate<PixelType>>(32, compute));
+
+    /* // halide blur */
+    /* hhimg::Mask<double> blurX({1./3., 1./3., 1./3.}, 1, 3); */
+    /* hhimg::Mask<double> blurY({1./3., 1./3., 1./3.}, 3, 1); */
+    /* image |= */
+    /*     std::static_pointer_cast<hhimg::AbstractHHAlgorithm<PixelType>>( */
+    /*         std::make_shared<hhimg::Split<PixelType>>(256, tileFactory)) | */
+    /*     std::static_pointer_cast<hhimg::AbstractPairTileAlgorithm<PixelType>>(
+     */
+    /*         std::make_shared<hhimg::Convolution<PixelType, double>>( */
+    /*             16, blurX)) | */
+    /*     std::static_pointer_cast<hhimg::AbstractPairTileAlgorithm<PixelType>>(
+     */
+    /*         std::make_shared<hhimg::Convolution<PixelType, double>>( */
+    /*             16, blurY)); */
 
     /* image |= std::make_shared<hhimg::Split<PixelType>>(128, tileFactory) | */
     /*          std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
@@ -154,7 +169,9 @@ void run(Config config) {
         displayCImgImage(image);
     }
     // save image for test
+    hhimg::utils::PerfRectorder::start("Image save");
     image->save("../img/save.png");
+    hhimg::utils::PerfRectorder::end("Image save");
 }
 
 int main(int argc, char **argv) {

@@ -2,8 +2,7 @@
 #define CONVOLUTION_HPP
 #include "../abstract/abstract_algorithm.h"
 #include "../abstract/abstract_image_factory.h"
-#include "../abstract/abstract_pair_tile_algorithm.h"
-#include "../abstract/abstract_tile_algorithm.h"
+#include "../abstract/hh/abstract_pair_tile_algorithm.h"
 #include "../concrete/data/mask.h"
 #include "../tools/perf_recorder.h"
 
@@ -15,7 +14,7 @@ class Convolution : public AbstractAlgorithm<T>,
   public:
     Convolution(size_t nbThreads, Mask<MaskType> const &kernel,
                 MaskType bias = 0)
-        : AbstractPairTileAlgorithm<T>("Convolution", nbThreads),
+        : AbstractPairTileAlgorithm<T>(nbThreads, "Convolution"),
           kernel_(kernel), bias_(bias) {}
     Convolution(std::shared_ptr<AbstractImageFactory<T>> imageFactory,
                 Mask<MaskType> const &kernel, MaskType bias = 0)
@@ -46,8 +45,7 @@ class Convolution : public AbstractAlgorithm<T>,
         return result;
     }
 
-    void
-    operator()(std::shared_ptr<std::pair<Tile<T>, Tile<T>>> tiles) override {
+    void operator()(std::shared_ptr<PairTile<T>> tiles) override {
         auto tile = tiles->first;
         auto ghost = tiles->second;
 
@@ -65,7 +63,8 @@ class Convolution : public AbstractAlgorithm<T>,
         return std::max(kernel_.width() / 2, kernel_.height() / 2);
     }
 
-    std::shared_ptr<PairTaskType<T>> copy() override {
+    std::shared_ptr<typename AbstractPairTileAlgorithm<T>::TaskType>
+    copy() override {
         return std::make_shared<Convolution<T, MaskType>>(this->numberThreads(),
                                                           kernel_, bias_);
     }
@@ -91,7 +90,8 @@ class Convolution : public AbstractAlgorithm<T>,
         return result;
     }
 
-    Pixel<MaskType> computeValue(size_t x, size_t y, Tile<T> tile) const {
+    Pixel<MaskType> computeValue(size_t x, size_t y,
+                                 std::shared_ptr<AbstractTile<T>> tile) const {
         int halfWidth = kernel_.width() / 2;
         int halfHeight = kernel_.height() / 2;
         Pixel<MaskType> result = {0, 0, 0};

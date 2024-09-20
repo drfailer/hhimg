@@ -1,21 +1,21 @@
 #ifndef HHIMG_PAIR_GRAPH_H
 #define HHIMG_PAIR_GRAPH_H
-#include "../../abstract/abstract_hh_algorithm.h"
-#include "../../abstract/abstract_pair_tile_algorithm.h"
+#include "../../abstract/hh/abstract_pair_tile_algorithm.h"
 #include "../../algorithm/tile/make_pair.h"
 #include "./ghost_region_state.h"
+#include <hedgehog/hedgehog.h>
 
 namespace hhimg {
 
-template <typename T> struct PairGraph : GraphType<T> {
+template <typename T>
+struct PairGraph : hh::Graph<1, AbstractTile<T>, AbstractTile<T>> {
     PairGraph(std::shared_ptr<AbstractPairTileAlgorithm<T>> task)
-        : GraphType<T>(task->name()) {
+        : hh::Graph<1, AbstractTile<T>, AbstractTile<T>>(task->name()) {
         auto makePairTask = std::make_shared<hhimg::MakePair<T>>(1);
         auto ghostRegionState = std::make_shared<hhimg::SyncGhostRegions<T>>();
-        auto ghostRegionsStateManager = std::make_shared<
-            hh::StateManager<1, std::pair<hhimg::Tile<T>, hhimg::Tile<T>>,
-                             std::pair<hhimg::Tile<T>, hhimg::Tile<T>>>>(
-            ghostRegionState);
+        auto ghostRegionsStateManager =
+            std::make_shared<hh::StateManager<1, PairTile<T>, PairTile<T>>>(
+                ghostRegionState);
 
         this->inputs(makePairTask);
         this->edges(makePairTask, ghostRegionsStateManager);

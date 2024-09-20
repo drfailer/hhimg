@@ -1,17 +1,20 @@
 #ifndef SPLIT_H
 #define SPLIT_H
-#include "../../abstract/abstract_hh_algorithm.h"
 #include "../../abstract/abstract_tile_factory.h"
+#include <hedgehog/hedgehog.h>
 
 namespace hhimg {
 
-template <typename T> struct Split : AbstractHHAlgorithm<T> {
+template <typename T>
+struct Split : hh::AbstractTask<1, AbstractImage<T>, AbstractTile<T>> {
     // todo: ghost values
-    Split(size_t tileSize, std::shared_ptr<AbstractTileFactory<T>> tileFactory)
-        : tileFactory(tileFactory), tileSize(tileSize) {}
+    Split(size_t tileSize, size_t ghostRegionSize,
+          std::shared_ptr<AbstractTileFactory<T>> tileFactory)
+        : tileSize(tileSize), ghostRegionSize(ghostRegionSize),
+          tileFactory(tileFactory) {}
     ~Split() = default;
 
-    Image<T> operator()(Image<T> image) override {
+    void execute(std::shared_ptr<AbstractImage<T>> image) override {
         // setup the factory with the image
         tileFactory->tileSize(tileSize);
         tileFactory->image(image);
@@ -20,27 +23,20 @@ template <typename T> struct Split : AbstractHHAlgorithm<T> {
         size_t nbTilesRows = tileFactory->nbTileRows();
         size_t nbTilesCols = tileFactory->nbTileColumns();
 
-        this->compile();
-        // todo: the graph is not reusable yet
-        this->executeGraph();
-
         for (size_t i = 0; i < nbTilesRows; ++i) {
             for (size_t j = 0; j < nbTilesCols; ++j) {
                 size_t x = j * tileSize;
                 size_t y = i * tileSize;
-                auto tile = tileFactory->get(x, y, this->ghostRegionSize());
-                this->pushData(std::static_pointer_cast<AbstractTile<T>>(tile));
+                auto tile = tileFactory->get(x, y, ghostRegionSize);
+                this->addResult(
+                    std::static_pointer_cast<AbstractTile<T>>(tile));
             }
         }
-        this->finishPushingData();
-        this->waitForTermination();
-        this->createDotFile("graph.dot", hh::ColorScheme::EXECUTION,
-                            hh::StructureOptions::QUEUE);
-        return image;
     }
 
-    std::shared_ptr<AbstractTileFactory<T>> tileFactory = nullptr;
     size_t tileSize = 0;
+    size_t ghostRegionSize = 0;
+    std::shared_ptr<AbstractTileFactory<T>> tileFactory = nullptr;
 };
 
 } // end namespace hhimg

@@ -1,7 +1,7 @@
 #ifndef MAP_MUTATE_HPP
 #define MAP_MUTATE_HPP
 #include "../abstract/abstract_algorithm.h"
-#include "../abstract/abstract_tile_algorithm.h"
+#include "../abstract/hh/abstract_tile_algorithm.h"
 #include <functional>
 
 namespace hhimg {
@@ -9,11 +9,10 @@ namespace hhimg {
 template <typename T>
 struct MapMutate : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
     using ComputePixel = std::function<Pixel<T>(
-        std::shared_ptr<AbstractPixelContainer<T>> const&, size_t, size_t)>;
+        std::shared_ptr<AbstractPixelContainer<T>> const &, size_t, size_t)>;
 
     MapMutate(size_t nbThreads, ComputePixel compute)
-        : AbstractTileAlgorithm<T>("MapMutate", nbThreads),
-          compute_(compute) {}
+        : AbstractTileAlgorithm<T>(nbThreads, "MapMutate"), compute_(compute) {}
 
     MapMutate(ComputePixel compute) : hhimg::MapMutate<T>(1, compute) {}
 
@@ -30,12 +29,13 @@ struct MapMutate : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
         return image;
     }
 
-    void operator()(Tile<T> tile) override {
+    void operator()(std::shared_ptr<AbstractTile<T>> tile) override {
         compute(tile);
         this->addResult(tile);
     }
 
-    std::shared_ptr<TaskType<T>> copy() override {
+    std::shared_ptr<typename AbstractTileAlgorithm<T>::TaskType>
+    copy() override {
         return std::make_shared<MapMutate<T>>(this->numberThreads(), compute_);
     }
 
