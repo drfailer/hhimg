@@ -3,6 +3,7 @@
 #include "../abstract/abstract_algorithm.h"
 #include "../abstract/data/abstract_tile.h"
 #include "../algorithm/tile/copy.h"
+#include "../algorithm/tile/split.h"
 #include <hedgehog/hedgehog.h>
 
 namespace hhimg {
@@ -17,12 +18,16 @@ template <typename T>
 using TaskType = hh::AbstractTask<1, AbstractTile<T>, AbstractTile<T>>;
 
 template <typename T> struct HedgehogPipeline : TilePipeline<T> {
-    HedgehogPipeline(std::string graphName = "unamed pipeline")
-        : graph_(std::make_shared<TilePipeline<T>>(graphName)) {}
-    ~HedgehogPipeline() {}
+    HedgehogPipeline(size_t tileSize,
+                     std::shared_ptr<AbstractTileFactory<T>> tileFactory,
+                     std::string graphName = "unamed pipeline")
+        : split_(std::make_shared<Split<T>>(tileSize, tileFactory)),
+          graph_(std::make_shared<TilePipeline<T>>(graphName)) {
+        graph_->inputs(split_);
+    }
 
     Image<T> operator()(Image<T> image) {
-        compile();
+        setupGraph();
         graph_->pushData(image);
         graph_->finishPushingData();
         graph_->waitForTermination();
@@ -31,11 +36,19 @@ template <typename T> struct HedgehogPipeline : TilePipeline<T> {
         return image;
     }
 
-    void compile() {
-        auto copy = std::make_shared<Copy<T>>(1);
-        createEdge(copy);
-        graph_->outputs(copy);
-        graph_->executeGraph();
+    void setupGraph() {
+        if (!graphCompleted_) {
+            // input
+            split_->ghostRegionSize = ghostRegionSize_;
+            // output
+            auto copy = std::make_shared<Copy<T>>(1);
+            createEdge(copy);
+            graph_->outputs(copy);
+            graph_->executeGraph();
+            graphCompleted_ = true;
+        } else {
+            graph_->cleanGraph();
+        }
     }
 
     void push_back(auto algo) {
@@ -46,8 +59,10 @@ template <typename T> struct HedgehogPipeline : TilePipeline<T> {
     void createEdge(auto algo) {
         if (lastTask_.taskTileTile) {
             graph_->edges(lastTask_.taskTileTile, algo);
-        } else {
+        } else if (lastTask_.graphTileTile) {
             graph_->edges(lastTask_.graphTileTile, algo);
+        } else {
+            graph_->edges(split_, algo);
         }
     }
 
@@ -79,8 +94,10 @@ template <typename T> struct HedgehogPipeline : TilePipeline<T> {
     };
 
   private:
+    bool graphCompleted_ = false;
     Tasks lastTask_;
     size_t ghostRegionSize_ = 0;
+    std::shared_ptr<Split<T>> split_ = nullptr;
     std::shared_ptr<TilePipeline<T>> graph_ = nullptr;
 };
 

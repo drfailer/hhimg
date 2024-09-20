@@ -96,14 +96,16 @@ void run(Config config) {
      * 50)); */
 
     auto compute = [](auto tile, size_t x, size_t y) {
-        return hhimg::Pixel<PixelType>{tile->at(x, y).red, tile->at(x, y).green, 0};
+        return hhimg::Pixel<PixelType>{tile->at(x, y).red, 0,
+                                       tile->at(x, y).blue};
     };
     std::vector<double> v(9, 1.0 / 9);
     /* std::vector<double> v(9, 2.0); */
     hhimg::Mask<double> meanFilter(v, 3, 3);
-    //todo: the split shouldn't be instantiated here
+    // todo: the split shouldn't be instantiated here
     image |=
-        std::make_shared<hhimg::Split<PixelType>>(256, 1, tileFactory) |
+        std::make_shared<hhimg::HedgehogPipeline<PixelType>>(256, tileFactory,
+                                                             "my algorithm") |
         std::static_pointer_cast<hhimg::AbstractPairTileAlgorithm<PixelType>>(
             std::make_shared<hhimg::Convolution<PixelType, double>>(
                 32, meanFilter)) |
