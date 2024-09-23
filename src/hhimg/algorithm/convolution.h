@@ -18,7 +18,7 @@ class Convolution : public AbstractAlgorithm<T>,
           kernel_(kernel), bias_(bias) {}
     Convolution(std::shared_ptr<AbstractImageFactory<T>> imageFactory,
                 Mask<MaskType> const &kernel, MaskType bias = 0)
-        : Convolution(0, kernel, bias) {
+        : Convolution(1, kernel, bias) {
         imageFactory_ = imageFactory;
     }
     ~Convolution() = default;
