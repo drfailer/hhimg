@@ -49,14 +49,14 @@ void CImgImage<T>::set(std::shared_ptr<hhimg::AbstractImage<T>> &&other) {
 }
 
 template <typename T>
-hhimg::Pixel<T> CImgImage<T>::at(size_t x, size_t y) const {
-    return {image_->atXY(x, y, 0, 0),
-            image_->atXY(x, y, 0, 1),
+hhimg::Pixel<T> CImgImage<T>::at(signed int x, signed int y) const {
+    return {image_->atXY(x, y, 0, 0), image_->atXY(x, y, 0, 1),
             image_->atXY(x, y, 0, 2)};
 }
 
 template <typename T>
-void CImgImage<T>::set(size_t x, size_t y, hhimg::Pixel<T> const &pixel) {
+void CImgImage<T>::set(signed int x, signed int y,
+                       hhimg::Pixel<T> const &pixel) {
     image_->atXY(x, y, 0, 0) = pixel.red;
     image_->atXY(x, y, 0, 1) = pixel.green;
     image_->atXY(x, y, 0, 2) = pixel.blue;

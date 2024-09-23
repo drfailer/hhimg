@@ -73,36 +73,17 @@ class Convolution : public AbstractAlgorithm<T>,
     Mask<MaskType> kernel_;
     MaskType bias_ = 0;
 
-    Pixel<MaskType> computeValue(size_t x, size_t y, Image<T> image) const {
+    Pixel<MaskType> computeValue(size_t x, size_t y, auto elt) const {
         int halfWidth = kernel_.width() / 2;
         int halfHeight = kernel_.height() / 2;
         Pixel<MaskType> result = {0, 0, 0};
 
         for (size_t my = 0; my < kernel_.height(); ++my) {
             for (size_t mx = 0; mx < kernel_.width(); ++mx) {
-                size_t ix = x + mx - halfWidth;
-                size_t iy = y + my - halfHeight;
+                int ix = (int)x + (int)mx - halfWidth;
+                int iy = (int)y + (int)my - halfHeight;
                 result +=
-                    pixelCast<MaskType>(image->at(ix, iy)) * kernel_.at(mx, my);
-            }
-        }
-        return result;
-    }
-
-    Pixel<MaskType> computeValue(size_t x, size_t y,
-                                 std::shared_ptr<AbstractTile<T>> tile) const {
-        int halfWidth = kernel_.width() / 2;
-        int halfHeight = kernel_.height() / 2;
-        Pixel<MaskType> result = {0, 0, 0};
-
-        for (size_t my = 0; my < kernel_.height(); ++my) {
-            for (size_t mx = 0; mx < kernel_.width(); ++mx) {
-                size_t ix = x + mx - halfWidth + tile->ghostRegionSize();
-                size_t iy = y + my - halfHeight + tile->ghostRegionSize();
-                if (ix < tile->ghostWidth() && iy < tile->ghostHeight()) {
-                    result += pixelCast<MaskType>(tile->ghostAt(ix, iy)) *
-                              kernel_.at(mx, my);
-                }
+                    pixelCast<MaskType>(elt->at(ix, iy)) * kernel_.at(mx, my);
             }
         }
         return result;

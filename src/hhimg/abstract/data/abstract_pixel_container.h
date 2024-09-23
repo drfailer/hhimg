@@ -11,17 +11,17 @@ template <typename T> struct AbstractPixelContainer {
     size_t size() const { return width() * height(); }
 
     // acces with x,y coordinates (can be overrided for optimization)
-    virtual Pixel<T> at(size_t x, size_t y) const = 0;
-    virtual void set(size_t x, size_t y, Pixel<T> const &pixel) = 0;
+    virtual Pixel<T> at(signed int x, signed int y) const = 0;
+    virtual void set(signed int x, signed int y, Pixel<T> const &pixel) = 0;
 
     // set without pixel
-    virtual void set(size_t x, size_t y, T r, T g, T b) {
+    virtual void set(signed int x, signed int y, T r, T g, T b) {
         set(x, y, {r, g, b});
     }
 
     // for grayscaled images
-    void set(size_t x, size_t y, T v) { set(x, y, {v, v, v}); }
-    T get(size_t x, size_t y) const { return at(x, y).red; }
+    void set(signed int x, signed int y, T v) { set(x, y, {v, v, v}); }
+    T get(signed int x, signed int y) const { return at(x, y).red; }
 
     // pixel type
     using PixelType = T;

@@ -24,8 +24,8 @@ template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
 
     void set(std::shared_ptr<hhimg::AbstractImage<T>> &&other) override;
 
-    hhimg::Pixel<T> at(size_t x, size_t y) const override;
-    void set(size_t x, size_t y, hhimg::Pixel<T> const &pixel) override;
+    hhimg::Pixel<T> at(signed int x, signed int y) const override;
+    void set(signed int x, signed int y, hhimg::Pixel<T> const &pixel) override;
 
     std::shared_ptr<hhimg::AbstractImage<T>> copy() const override;
 

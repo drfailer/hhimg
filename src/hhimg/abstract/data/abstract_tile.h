@@ -38,12 +38,12 @@ template <typename T> class AbstractTile : public AbstractPixelContainer<T> {
     using AbstractPixelContainer<T>::set;
     using AbstractPixelContainer<T>::at;
 
-    Pixel<T> at(size_t x, size_t y) const override {
+    Pixel<T> at(signed int x, signed int y) const override {
         y += ghostRegionSize();
         x += ghostRegionSize();
         return ghostAt(x, y);
     }
-    void set(size_t x, size_t y, Pixel<T> const &pixel) override {
+    void set(signed int x, signed int y, Pixel<T> const &pixel) override {
         y += ghostRegionSize();
         x += ghostRegionSize();
         ghostSet(x, y, pixel);
