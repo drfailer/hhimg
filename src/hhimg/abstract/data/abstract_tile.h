@@ -12,16 +12,18 @@ template <typename T> class AbstractTile : public AbstractPixelContainer<T> {
                  std::shared_ptr<AbstractImage<T>> image)
         : x_(x), y_(y), width_(std::min(tileSize, image->width() - x)),
           height_(std::min(tileSize, image->height() - y)), tileSize_(tileSize),
-          ghostTileSize_(tileSize + 2 * ghostRegionSize),
+          padding_(ghostRegionSize),
           ghostX_(std::max((int)(x - ghostRegionSize), 0)),
           ghostY_(std::max((int)(y - ghostRegionSize), 0)),
-          ghostWidth_(std::min(ghostTileSize_, image->width() - ghostX_)),
-          ghostHeight_(std::min(ghostTileSize_, image->height() - ghostY_)),
+          ghostWidth_(std::min(tileSize + 2 * ghostRegionSize,
+                               image->width() - ghostX_)),
+          ghostHeight_(std::min(tileSize + 2 * ghostRegionSize,
+                                image->height() - ghostY_)),
           image_(image) {}
 
     // get the full image
     virtual std::shared_ptr<AbstractImage<T>> const image() const {
-      return image_;
+        return image_;
     }
 
     // tile position in the image
@@ -38,19 +40,19 @@ template <typename T> class AbstractTile : public AbstractPixelContainer<T> {
 
     Pixel<T> at(size_t x, size_t y) const override {
         if (ghostY_ > 0) {
-          y += ghostRegionSize();
+            y += ghostRegionSize();
         }
         if (ghostX_ > 0) {
-          x += ghostRegionSize();
+            x += ghostRegionSize();
         }
         return ghostAt(x, y);
     }
     void set(size_t x, size_t y, Pixel<T> const &pixel) override {
         if (ghostY_ > 0) {
-          y += ghostRegionSize();
+            y += ghostRegionSize();
         }
         if (ghostX_ > 0) {
-          x += ghostRegionSize();
+            x += ghostRegionSize();
         }
         ghostSet(x, y, pixel);
     }
@@ -61,40 +63,28 @@ template <typename T> class AbstractTile : public AbstractPixelContainer<T> {
     size_t ghostY() const { return ghostY_; }
     size_t ghostWidth() const { return ghostWidth_; }
     size_t ghostHeight() const { return ghostHeight_; }
-    size_t ghostTileSize() const { return ghostTileSize_; }
-    size_t ghostRegionSize() const { return (ghostTileSize_ - tileSize_) / 2; }
+    size_t ghostTileSize() const { return tileSize_ + 2 * padding_; }
+    size_t ghostRegionSize() const { return padding_; }
 
-    virtual Pixel<T> ghostAt(size_t) const = 0;
-    virtual void ghostSet(size_t, Pixel<T> const &) = 0;
+    virtual Pixel<T> ghostAt(size_t x, size_t y) const = 0;
+    virtual void ghostSet(size_t x, size_t y, Pixel<T> const &pixel) = 0;
 
-    virtual Pixel<T> ghostAt(size_t x, size_t y) const {
-        return ghostAt(y * this->fullWidth() + x);
-    }
-    virtual void ghostSet(size_t x, size_t y, Pixel<T> const &pixel) {
-        ghostSet(y * this->fullWidth() + x, pixel);
-    }
-
-    virtual void ghostSet(size_t offset, T r, T g, T b) {
-        ghostSet(offset, {r, g, b});
-    }
     virtual void ghostSet(size_t x, size_t y, T r, T g, T b) {
-        ghostSet(y * this->fullWidth() + x, r, g, b);
+        ghostSet(x, y, {r, g, b});
     }
 
     // for grayscaled images
-    void ghostSet(size_t offset, T v) { ghostSet(offset, v, v, v); }
     void ghostSet(size_t x, size_t y, T v) { ghostSet(x, y, v, v, v); }
-    T ghostGet(size_t offset) const { return ghostAt(offset).red; }
     T ghostGet(size_t x, size_t y) const { return ghostAt(x, y).red; }
 
     /* copy *******************************************************************/
 
     virtual void copy(std::shared_ptr<AbstractTile<T>> other) {
-      for (size_t y = 0; y < ghostHeight_; ++y) {
-        for (size_t x = 0; x < ghostWidth_; ++x) {
-          this->ghostSet(x, y, other->ghostGet(x, y));
+        for (size_t y = 0; y < ghostHeight_; ++y) {
+            for (size_t x = 0; x < ghostWidth_; ++x) {
+                this->ghostSet(x, y, other->ghostGet(x, y));
+            }
         }
-      }
     }
 
   protected:
@@ -103,9 +93,9 @@ template <typename T> class AbstractTile : public AbstractPixelContainer<T> {
     size_t width_ = 0;
     size_t height_ = 0;
     size_t tileSize_ = 0;
+    size_t padding_ = 0;
 
     // ghost region
-    size_t ghostTileSize_ = 0;
     size_t ghostX_ = 0;
     size_t ghostY_ = 0;
     size_t ghostWidth_ = 0;

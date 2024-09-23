@@ -41,12 +41,6 @@ template <typename T> void CImgImage<T>::save(std::string const &filename) {
     image_->save(filename.c_str());
 }
 
-template <typename T> hhimg::Pixel<T> CImgImage<T>::at(size_t offset) const {
-    return {image_->at(offset),
-            image_->at(offset + width() * height() * image_->depth()),
-            image_->at(offset + 2 * width() * height() * image_->depth())};
-}
-
 template <typename T>
 void CImgImage<T>::set(std::shared_ptr<hhimg::AbstractImage<T>> &&other) {
     auto i = std::dynamic_pointer_cast<CImgImage<T>>(other);
@@ -55,10 +49,17 @@ void CImgImage<T>::set(std::shared_ptr<hhimg::AbstractImage<T>> &&other) {
 }
 
 template <typename T>
-void CImgImage<T>::set(size_t offset, hhimg::Pixel<T> const &pixel) {
-    image_->at(offset) = pixel.red;
-    image_->at(offset + width() * height() * image_->depth()) = pixel.green;
-    image_->at(offset + 2 * width() * height() * image_->depth()) = pixel.blue;
+hhimg::Pixel<T> CImgImage<T>::at(size_t x, size_t y) const {
+    return {image_->atXY(x, y, 0, 0),
+            image_->atXY(x, y, 0, 1),
+            image_->atXY(x, y, 0, 2)};
+}
+
+template <typename T>
+void CImgImage<T>::set(size_t x, size_t y, hhimg::Pixel<T> const &pixel) {
+    image_->atXY(x, y, 0, 0) = pixel.red;
+    image_->atXY(x, y, 0, 1) = pixel.green;
+    image_->atXY(x, y, 0, 2) = pixel.blue;
 }
 
 template <typename T>
@@ -66,8 +67,9 @@ std::shared_ptr<hhimg::AbstractImage<T>> CImgImage<T>::copy() const {
     return std::make_shared<CImgImage<T>>(*this);
 }
 
-template <typename T>
-size_t CImgImage<T>::fullWidth() const { return this->image_->width(); }
+template <typename T> size_t CImgImage<T>::fullWidth() const {
+    return this->image_->width();
+}
 
 // force template generation
 template class CImgImage<PixelType>;

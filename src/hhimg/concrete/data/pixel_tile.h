@@ -16,14 +16,18 @@ template <typename T> class PixelTile : public AbstractTile<T> {
 
     size_t fullWidth() const override { return this->ghostWidth_; }
 
-    Pixel<T> at(size_t offset) const override { return data_[offset]; }
-    void set(size_t offset, Pixel<T> const &pixel) override {
-        data_[offset] = pixel;
+    Pixel<T> at(size_t x, size_t y) const override {
+        return data_[y * fullWidth() + x];
+    }
+    void set(size_t x, size_t y, Pixel<T> const &pixel) override {
+        data_[y * fullWidth() + x] = pixel;
     }
 
-    Pixel<T> ghostAt(size_t offset) const override { return data_[offset]; }
-    void ghostSet(size_t offset, Pixel<T> const &pixel) override {
-        data_[offset] = pixel;
+    Pixel<T> ghostAt(size_t x, size_t y) const override {
+        return data_[y * fullWidth() + x];
+    }
+    void ghostSet(size_t x, size_t y, Pixel<T> const &pixel) override {
+        data_[y * fullWidth() + x] = pixel;
     }
 
     using AbstractTile<T>::at;

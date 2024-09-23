@@ -22,9 +22,10 @@ template <typename T> class CImgImage : public hhimg::AbstractImage<T> {
     void load(std::string const &filename) override;
     void save(std::string const &filename) override;
 
-    hhimg::Pixel<T> at(size_t offset) const override;
     void set(std::shared_ptr<hhimg::AbstractImage<T>> &&other) override;
-    void set(size_t offset, hhimg::Pixel<T> const &pixel) override;
+
+    hhimg::Pixel<T> at(size_t x, size_t y) const override;
+    void set(size_t x, size_t y, hhimg::Pixel<T> const &pixel) override;
 
     std::shared_ptr<hhimg::AbstractImage<T>> copy() const override;
 
