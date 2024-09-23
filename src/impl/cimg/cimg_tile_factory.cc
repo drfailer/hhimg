@@ -16,10 +16,12 @@ CImgTileFactory<T>::get(size_t x, size_t y, size_t tileSize,
         &cimgImage->image().atXYZC(tile->ghostX(), tile->ghostY(), 0, 1);
     auto dataBlue =
         &cimgImage->image().atXYZC(tile->ghostX(), tile->ghostY(), 0, 2);
+    size_t tyBegin = tile->ghostY() == 0 ? tile->ghostRegionSize() : 0;
+    size_t txBegin = tile->ghostX() == 0 ? tile->ghostRegionSize() : 0;
 
-    for (size_t iy = 0; iy < tile->ghostHeight(); ++iy) {
-        for (size_t ix = 0; ix < tile->ghostWidth(); ++ix) {
-            tile->ghostSet(ix, iy,
+    for (size_t ty = tyBegin, iy = 0; ty < tile->ghostHeight(); ty++, ++iy) {
+        for (size_t tx = txBegin, ix = 0; tx < tile->ghostWidth(); tx++, ++ix) {
+            tile->ghostSet(tx, ty,
                            hhimg::Pixel<T>{
                                dataRed[ix + iy * image->fullWidth()],
                                dataGreen[ix + iy * image->fullWidth()],
