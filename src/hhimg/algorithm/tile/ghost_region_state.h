@@ -1,7 +1,6 @@
 #ifndef GHOST_REGION_STATE_H
 #define GHOST_REGION_STATE_H
 #include "../../abstract/hh/abstract_pair_tile_algorithm.h"
-#include "../../abstract/hh/abstract_tile_algorithm.h"
 #include <hedgehog/hedgehog.h>
 #include <vector>
 
