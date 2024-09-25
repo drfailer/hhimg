@@ -1,5 +1,5 @@
-#ifndef MAKE_PAIR_H
-#define MAKE_PAIR_H
+#ifndef HHIMG_CREATE_TMP_TILES_H
+#define HHIMG_CREATE_TMP_TILES_H
 #include "../../abstract/abstract_tile_factory.h"
 #include "../../abstract/hh/abstract_pair_tile_algorithm.h"
 #include "../../concrete/data/pixel_tile.h"
@@ -8,11 +8,12 @@
 namespace hhimg {
 
 template <typename T>
-using MakePairTaskType = hh::AbstractTask<1, AbstractTile<T>, PairTile<T>>;
+using CreateTmpTilesType = hh::AbstractTask<1, AbstractTile<T>, PairTile<T>>;
 
-template <typename T> struct MakePair : MakePairTaskType<T> {
-    MakePair(size_t nbThreads) : MakePairTaskType<T>("MakePair", nbThreads) {}
-    ~MakePair() = default;
+template <typename T> struct CreateTmpTiles : CreateTmpTilesType<T> {
+    CreateTmpTiles(size_t nbThreads)
+        : CreateTmpTilesType<T>("Create Temporary Tiles", nbThreads) {}
+    ~CreateTmpTiles() = default;
 
     void execute(std::shared_ptr<AbstractTile<T>> tile) override {
         auto newTile = std::make_shared<PixelTile<T>>(
@@ -22,8 +23,8 @@ template <typename T> struct MakePair : MakePairTaskType<T> {
         this->addResult(std::make_shared<PairTile<T>>(newTile, tile));
     }
 
-    std::shared_ptr<MakePairTaskType<T>> copy() override {
-        return std::make_shared<MakePair<T>>(this->numberThreads());
+    std::shared_ptr<CreateTmpTilesType<T>> copy() override {
+        return std::make_shared<CreateTmpTiles<T>>(this->numberThreads());
     }
 
     std::shared_ptr<AbstractTileFactory<T>> tileFactory = nullptr;
