@@ -41,31 +41,6 @@ operator|=(std::shared_ptr<Img> image,
 
 template <typename T>
 std::shared_ptr<hhimg::HedgehogPipeline<T>>
-operator|(std::shared_ptr<hhimg::Split<T>> split,
-          std::shared_ptr<hhimg::AbstractTileAlgorithm<T>> algorithm) {
-    auto pipeline = std::make_shared<hhimg::HedgehogPipeline<T>>("test");
-
-    pipeline->graph()->inputs(split);
-    pipeline->graph()->edges(split, algorithm);
-    pipeline->lastTask(algorithm);
-    return pipeline;
-}
-
-template <typename T>
-std::shared_ptr<hhimg::HedgehogPipeline<T>>
-operator|(std::shared_ptr<hhimg::Split<T>> split,
-          std::shared_ptr<hhimg::AbstractPairTileAlgorithm<T>> algorithm) {
-    auto pipeline = std::make_shared<hhimg::HedgehogPipeline<T>>("test");
-    auto pairGraph = std::make_shared<hhimg::TmpTilesGraph<T>>(algorithm);
-
-    pipeline->graph()->inputs(split);
-    pipeline->graph()->edges(split, pairGraph);
-    pipeline->lastTask(pairGraph);
-    return pipeline;
-}
-
-template <typename T>
-std::shared_ptr<hhimg::HedgehogPipeline<T>>
 operator|(std::shared_ptr<hhimg::HedgehogPipeline<T>> hhAlgo,
           std::shared_ptr<hhimg::AbstractTileAlgorithm<T>> algorithm) {
     if (hhAlgo->ghostRegionSize() < algorithm->ghostRegionSize()) {

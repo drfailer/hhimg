@@ -84,7 +84,7 @@ void testHedgehog(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
     };
 
     image |=
-        std::make_shared<hhimg::HedgehogPipeline<PixelType>>(256, tileFactory,
+        std::make_shared<hhimg::HedgehogPipeline<PixelType>>(256, 4, 4, tileFactory,
                                                              "my algorithm") |
         std::static_pointer_cast<hhimg::AbstractPairTileAlgorithm<PixelType>>(
             std::make_shared<hhimg::Convolution<PixelType, double>>(
@@ -101,7 +101,7 @@ void halideBlur(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
     /* hhimg::Mask<double> meanFilter(v, 3, 3); */
 
     image |=
-        std::make_shared<hhimg::HedgehogPipeline<PixelType>>(256, tileFactory,
+        std::make_shared<hhimg::HedgehogPipeline<PixelType>>(256, 4, 4, tileFactory,
                                                              "Halide blur") |
         std::static_pointer_cast<hhimg::AbstractPairTileAlgorithm<PixelType>>(
             std::make_shared<hhimg::Convolution<PixelType, double>>(16,
