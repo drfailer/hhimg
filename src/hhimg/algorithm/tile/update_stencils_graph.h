@@ -1,29 +1,30 @@
 #ifndef UPDATE_STENCILS_GRAPH_H
 #define UPDATE_STENCILS_GRAPH_H
-#include <hedgehog/hedgehog.h>
 #include "../../abstract/data/abstract_tile.h"
-#include "stencil_state.h"
-#include "stencil_state_manager.h"
-#include "update_stencil_task.h"
+#include "update_stencils_state.h"
+#include "update_stencils_state_manager.h"
+#include "update_stencils_task.h"
+#include <hedgehog/hedgehog.h>
 
 namespace hhimg {
 
 template <typename T>
 struct UpdateStencilsGraph : hh::Graph<1, AbstractTile<T>, AbstractTile<T>> {
-  UpdateStencilsGraph()
-    : hh::Graph<1, AbstractTile<T>, AbstractTile<T>>("Update Stencils") {
-        auto stencilState = std::make_shared<StencilState<T>>();
-        auto stencilStateManager =
-            std::make_shared<StencilStateManager<T>>(stencilState);
-        auto updateStencilTask = std::make_shared<UpdateStencilsTask<T>>(1);
+    UpdateStencilsGraph()
+        : hh::Graph<1, AbstractTile<T>, AbstractTile<T>>("Update Stencils") {
+        auto updateStencilsState = std::make_shared<UpdateStencilsState<T>>();
+        auto updateStencilsStateManager =
+            std::make_shared<UpdateStencilsStateManager<T>>(
+                updateStencilsState);
+        auto updateStencilsTask = std::make_shared<UpdateStencilsTask<T>>(1);
 
-        this->inputs(stencilStateManager);
-        this->edges(stencilStateManager, updateStencilTask);
-        this->edges(updateStencilTask, stencilStateManager);
-        this->outputs(stencilStateManager);
+        this->inputs(updateStencilsStateManager);
+        this->edges(updateStencilsStateManager, updateStencilsTask);
+        this->edges(updateStencilsTask, updateStencilsStateManager);
+        this->outputs(updateStencilsStateManager);
     }
 };
 
-}
+} // namespace hhimg
 
 #endif

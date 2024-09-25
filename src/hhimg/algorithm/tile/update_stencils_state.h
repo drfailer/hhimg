@@ -1,5 +1,5 @@
-#ifndef STENCIL_STATE_H
-#define STENCIL_STATE_H
+#ifndef HHIMG_UPDATE_STENCILS_STATE_H
+#define HHIMG_UPDATE_STENCILS_STATE_H
 #include "../../abstract/data/abstract_tile.h"
 #include "../../abstract/hh/abstract_pair_tile_algorithm.h"
 #include <hedgehog/hedgehog.h>
@@ -8,12 +8,14 @@
 namespace hhimg {
 
 template <typename T>
-using StencilStateType = hh::AbstractState<2, AbstractTile<T>, PairTile<T>,
-                                           PairTile<T>, AbstractTile<T>>;
+using UpdateStencilsStateType =
+    hh::AbstractState<2, AbstractTile<T>, PairTile<T>, PairTile<T>,
+                      AbstractTile<T>>;
 
-template <typename T> class StencilState : public StencilStateType<T> {
+template <typename T>
+class UpdateStencilsState : public UpdateStencilsStateType<T> {
   public:
-    StencilState() : StencilStateType<T>() {}
+    UpdateStencilsState() : UpdateStencilsStateType<T>() {}
 
     using TileType = std::pair<size_t, std::shared_ptr<AbstractTile<T>>>;
 
