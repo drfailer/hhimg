@@ -10,23 +10,18 @@ CImgTileFactory<T>::get(size_t x, size_t y, size_t tileSize,
     auto cimgImage = std::dynamic_pointer_cast<CImgImage<T>>(image);
     auto tile = std::make_shared<hhimg::PixelTile<T>>(x, y, tileSize,
                                                       ghostRegionSize, image);
-    auto dataRed =
-        &cimgImage->image().atXYZC(tile->ghostX(), tile->ghostY(), 0, 0);
-    auto dataGreen =
-        &cimgImage->image().atXYZC(tile->ghostX(), tile->ghostY(), 0, 1);
-    auto dataBlue =
-        &cimgImage->image().atXYZC(tile->ghostX(), tile->ghostY(), 0, 2);
-    size_t tyBegin = tile->ghostY() == 0 ? tile->ghostRegionSize() : 0;
-    size_t txBegin = tile->ghostX() == 0 ? tile->ghostRegionSize() : 0;
+    auto dataRed = &cimgImage->image().atXYZC(tile->x(), tile->y(), 0, 0);
+    auto dataGreen = &cimgImage->image().atXYZC(tile->x(), tile->y(), 0, 1);
+    auto dataBlue = &cimgImage->image().atXYZC(tile->x(), tile->y(), 0, 2);
 
-    for (size_t ty = tyBegin, iy = 0; ty < tile->ghostHeight(); ty++, ++iy) {
-        for (size_t tx = txBegin, ix = 0; tx < tile->ghostWidth(); tx++, ++ix) {
-            tile->ghostSet(tx, ty,
-                           hhimg::Pixel<T>{
-                               dataRed[ix + iy * image->fullWidth()],
-                               dataGreen[ix + iy * image->fullWidth()],
-                               dataBlue[ix + iy * image->fullWidth()],
-                           });
+    for (size_t y = 0; y < tile->height(); ++y) {
+        for (size_t x = 0; x < tile->width(); ++x) {
+            tile->set(x, y,
+                      hhimg::Pixel<T>{
+                          dataRed[x + y * image->fullWidth()],
+                          dataGreen[x + y * image->fullWidth()],
+                          dataBlue[x + y * image->fullWidth()],
+                      });
         }
     }
     return tile;
