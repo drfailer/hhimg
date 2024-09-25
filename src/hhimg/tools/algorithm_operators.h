@@ -6,6 +6,7 @@
 #include "../algorithm/tile/pair_graph.h"
 #include "../concrete/chain_algorithm.h"
 #include "../concrete/hedgehog_pipeline.h"
+#include "hhimg/algorithm/tile/update_stencils_graph.h"
 #include <memory>
 
 /******************************************************************************/
@@ -70,6 +71,9 @@ operator|(std::shared_ptr<hhimg::HedgehogPipeline<T>> hhAlgo,
     if (hhAlgo->ghostRegionSize() < algorithm->ghostRegionSize()) {
         hhAlgo->ghostRegionSize(algorithm->ghostRegionSize());
     }
+    if (algorithm->ghostRegionSize()) {
+      hhAlgo->push_back(std::make_shared<hhimg::UpdateStencilsGraph<T>>());
+    }
     hhAlgo->push_back(algorithm);
     return hhAlgo;
 }
@@ -80,6 +84,9 @@ operator|(std::shared_ptr<hhimg::HedgehogPipeline<T>> hhAlgo,
           std::shared_ptr<hhimg::AbstractPairTileAlgorithm<T>> algorithm) {
     if (hhAlgo->ghostRegionSize() < algorithm->ghostRegionSize()) {
         hhAlgo->ghostRegionSize(algorithm->ghostRegionSize());
+    }
+    if (algorithm->ghostRegionSize()) {
+      hhAlgo->push_back(std::make_shared<hhimg::UpdateStencilsGraph<T>>());
     }
     auto pairGraph = std::make_shared<hhimg::PairGraph<T>>(algorithm);
     hhAlgo->push_back(pairGraph);
