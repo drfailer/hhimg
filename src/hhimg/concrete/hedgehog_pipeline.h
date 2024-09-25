@@ -101,7 +101,7 @@ template <typename T> struct HedgehogPipeline : TilePipeline<T> {
     }
 
     void setOutput() {
-        auto copy = std::make_shared<Copy<T>>(copyThreads_);
+        auto copy = std::make_shared<Copy<T>>(copyThreads_, tileFactory_);
         createEdge(copy);
         graph_->outputs(copy);
     }

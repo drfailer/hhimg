@@ -15,6 +15,8 @@ template <typename T> class AbstractTileFactory {
     get(size_t x, size_t y, size_t tileSize, size_t ghostRegionSize,
         std::shared_ptr<hhimg::AbstractImage<T>> image) const = 0;
 
+    virtual void copy(std::shared_ptr<AbstractTile<T>> tile) const = 0;
+
     size_t nbTileRows(size_t imageHeight, size_t tileSize) const {
         return imageHeight / tileSize + (imageHeight % tileSize == 0 ? 0 : 1);
     }
