@@ -3,7 +3,7 @@
 #include "../abstract/abstract_algorithm.h"
 #include "../abstract/hh/abstract_pair_tile_algorithm.h"
 #include "../abstract/hh/abstract_tile_algorithm.h"
-#include "../algorithm/tile/pair_graph.h"
+#include "../algorithm/tile/tmp_tiles_graph.h"
 #include "../concrete/chain_algorithm.h"
 #include "../concrete/hedgehog_pipeline.h"
 #include "hhimg/algorithm/tile/update_stencils_graph.h"
@@ -56,7 +56,7 @@ std::shared_ptr<hhimg::HedgehogPipeline<T>>
 operator|(std::shared_ptr<hhimg::Split<T>> split,
           std::shared_ptr<hhimg::AbstractPairTileAlgorithm<T>> algorithm) {
     auto pipeline = std::make_shared<hhimg::HedgehogPipeline<T>>("test");
-    auto pairGraph = std::make_shared<hhimg::PairGraph<T>>(algorithm);
+    auto pairGraph = std::make_shared<hhimg::TmpTilesGraph<T>>(algorithm);
 
     pipeline->graph()->inputs(split);
     pipeline->graph()->edges(split, pairGraph);
@@ -88,7 +88,7 @@ operator|(std::shared_ptr<hhimg::HedgehogPipeline<T>> hhAlgo,
     if (algorithm->ghostRegionSize()) {
       hhAlgo->push_back(std::make_shared<hhimg::UpdateStencilsGraph<T>>());
     }
-    auto pairGraph = std::make_shared<hhimg::PairGraph<T>>(algorithm);
+    auto pairGraph = std::make_shared<hhimg::TmpTilesGraph<T>>(algorithm);
     hhAlgo->push_back(pairGraph);
     return hhAlgo;
 }

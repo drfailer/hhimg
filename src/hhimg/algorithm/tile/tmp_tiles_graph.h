@@ -1,5 +1,5 @@
-#ifndef HHIMG_PAIR_GRAPH_H
-#define HHIMG_PAIR_GRAPH_H
+#ifndef HHIMG_TMP_TILES_GRAPH_H
+#define HHIMG_TMP_TILES_GRAPH_H
 #include "../../abstract/hh/abstract_pair_tile_algorithm.h"
 #include "../../algorithm/tile/create_tmp_tiles.h"
 #include "ghost_region_state.h"
@@ -8,8 +8,8 @@
 namespace hhimg {
 
 template <typename T>
-struct PairGraph : hh::Graph<1, AbstractTile<T>, AbstractTile<T>> {
-    PairGraph(std::shared_ptr<AbstractPairTileAlgorithm<T>> task)
+struct TmpTilesGraph : hh::Graph<1, AbstractTile<T>, AbstractTile<T>> {
+    TmpTilesGraph(std::shared_ptr<AbstractPairTileAlgorithm<T>> task)
         : hh::Graph<1, AbstractTile<T>, AbstractTile<T>>(task->name()) {
         auto makePairTask = std::make_shared<hhimg::CreateTmpTiles<T>>(1);
         auto ghostRegionState = std::make_shared<hhimg::SyncGhostRegions<T>>();
