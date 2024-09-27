@@ -4,6 +4,7 @@
 #include "../abstract/data/abstract_tile.h"
 #include "../abstract/hh/abstract_pair_tile_algorithm.h"
 #include "../abstract/hh/abstract_tile_algorithm.h"
+#include "hedgehog/src/api/graph/graph.h"
 #include <type_traits>
 
 namespace hhimg {

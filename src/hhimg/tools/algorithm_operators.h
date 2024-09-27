@@ -31,34 +31,35 @@ operator|(hhimg::AbstractAlgorithm<T> const &algorithm1,
 /*                                   tiles                                    */
 /******************************************************************************/
 
-template <typename Img, typename T>
-std::shared_ptr<Img>
-operator|=(std::shared_ptr<Img> image,
-           std::shared_ptr<hhimg::HedgehogPipeline<T>> algorithm) {
-    return std::dynamic_pointer_cast<Img>(algorithm->operator()(image));
+template <typename Img, hhimg::HHPipeline Pipeline>
+std::shared_ptr<Img> operator|=(std::shared_ptr<Img> image, Pipeline pipeline) {
+    return std::dynamic_pointer_cast<Img>(pipeline->operator()(image));
 }
 
-// todo: The hedgehog pipeline should take the type of the "lastTask" as
-// template parameter.
-// todo: operators should use constexpr instead of types (more flexible).
 template <hhimg::HHPipeline Pipeline, hhimg::TileAlgorithms Algo>
-Pipeline operator|(Pipeline pipeline, Algo algorithm) {
+auto add(Pipeline pipeline, Algo algorithm) {
+    using PixelType = hhimg::pixel_type_t<Algo>;
+    if constexpr (hhimg::PairTileAlgorithm<Algo>) {
+        auto pairGraph =
+            std::make_shared<hhimg::TmpTilesGraph<PixelType>>(algorithm);
+        return pipeline->add(pairGraph);
+    } else {
+        return pipeline->add(algorithm);
+    }
+}
+
+template <hhimg::HHPipeline Pipeline, hhimg::TileAlgorithms Algo>
+auto operator|(Pipeline pipeline, Algo algorithm) {
     using PixelType = hhimg::pixel_type_t<Algo>;
     if (pipeline->ghostRegionSize() < algorithm->ghostRegionSize()) {
         pipeline->ghostRegionSize(algorithm->ghostRegionSize());
     }
     if (algorithm->ghostRegionSize()) {
-        pipeline->add(
-            std::make_shared<hhimg::UpdateStencilsGraph<PixelType>>());
+        auto updateStencils =
+            std::make_shared<hhimg::UpdateStencilsGraph<PixelType>>();
+        return add(pipeline->add(updateStencils), algorithm);
     }
-    if constexpr (hhimg::PairTileAlgorithm<Algo>) {
-        auto pairGraph =
-            std::make_shared<hhimg::TmpTilesGraph<PixelType>>(algorithm);
-        pipeline->add(pairGraph);
-    } else {
-        pipeline->add(algorithm);
-    }
-    return pipeline;
+    return add(pipeline, algorithm);
 }
 
 #endif
