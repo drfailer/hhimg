@@ -2,3 +2,8 @@ build
 .cache/clangd/index
 src/.cache/clangd/index
 src/compile_commands.json
+lib/jpegsrc.v9f/
+lib/libpng-1.6.43/
+lib/tiff-4.7.0.tar.gz
+lib/tiff-4.7.0/
+img/save.jpg
