@@ -15,6 +15,7 @@ struct AbstractPairTileAlgorithm
                               AbstractTile<T>>::AbstractHHAlgorithm;
     using TaskType =
         typename AbstractHHAlgorithm<PairTile<T>, AbstractTile<T>>::TaskType;
+    using PixelType = T;
 };
 
 } // namespace hhimg

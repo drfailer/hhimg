@@ -7,6 +7,7 @@
 #include "../concrete/chain_algorithm.h"
 #include "../concrete/hedgehog_pipeline.h"
 #include "hhimg/algorithm/tile/update_stencils_graph.h"
+#include "hhimg/tools/concepts.h"
 #include <memory>
 
 /******************************************************************************/
@@ -39,33 +40,27 @@ operator|=(std::shared_ptr<Img> image,
     return std::dynamic_pointer_cast<Img>(algorithm->operator()(image));
 }
 
-template <typename T>
-std::shared_ptr<hhimg::HedgehogPipeline<T>>
-operator|(std::shared_ptr<hhimg::HedgehogPipeline<T>> hhAlgo,
-          std::shared_ptr<hhimg::AbstractTileAlgorithm<T>> algorithm) {
-    if (hhAlgo->ghostRegionSize() < algorithm->ghostRegionSize()) {
-        hhAlgo->ghostRegionSize(algorithm->ghostRegionSize());
+// todo: The hedgehog pipeline should take the type of the "lastTask" as
+// template parameter.
+// todo: operators should use constexpr instead of types (more flexible).
+template <hhimg::HHPipeline Pipeline, hhimg::TileAlgorithms Algo>
+Pipeline operator|(Pipeline pipeline, Algo algorithm) {
+    using PixelType = hhimg::pixel_type_t<Algo>;
+    if (pipeline->ghostRegionSize() < algorithm->ghostRegionSize()) {
+        pipeline->ghostRegionSize(algorithm->ghostRegionSize());
     }
     if (algorithm->ghostRegionSize()) {
-      hhAlgo->push_back(std::make_shared<hhimg::UpdateStencilsGraph<T>>());
+        pipeline->push_back(
+            std::make_shared<hhimg::UpdateStencilsGraph<PixelType>>());
     }
-    hhAlgo->push_back(algorithm);
-    return hhAlgo;
-}
-
-template <typename T>
-std::shared_ptr<hhimg::HedgehogPipeline<T>>
-operator|(std::shared_ptr<hhimg::HedgehogPipeline<T>> hhAlgo,
-          std::shared_ptr<hhimg::AbstractPairTileAlgorithm<T>> algorithm) {
-    if (hhAlgo->ghostRegionSize() < algorithm->ghostRegionSize()) {
-        hhAlgo->ghostRegionSize(algorithm->ghostRegionSize());
+    if constexpr (hhimg::PairTileAlgorithm<Algo>) {
+        auto pairGraph =
+            std::make_shared<hhimg::TmpTilesGraph<PixelType>>(algorithm);
+        pipeline->push_back(pairGraph);
+    } else {
+        pipeline->push_back(algorithm);
     }
-    if (algorithm->ghostRegionSize()) {
-      hhAlgo->push_back(std::make_shared<hhimg::UpdateStencilsGraph<T>>());
-    }
-    auto pairGraph = std::make_shared<hhimg::TmpTilesGraph<T>>(algorithm);
-    hhAlgo->push_back(pairGraph);
-    return hhAlgo;
+    return pipeline;
 }
 
 #endif
