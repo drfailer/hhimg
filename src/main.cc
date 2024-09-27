@@ -83,14 +83,11 @@ void testHedgehog(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
                                        tile->at(x, y).blue};
     };
 
-    image |=
-        std::make_shared<hhimg::HedgehogPipeline<PixelType>>(256, 4, 4, tileFactory,
-                                                             "my algorithm") |
-        std::static_pointer_cast<hhimg::AbstractPairTileAlgorithm<PixelType>>(
-            std::make_shared<hhimg::Convolution<PixelType, double>>(
-                32, meanFilter)) |
-        std::static_pointer_cast<hhimg::AbstractTileAlgorithm<PixelType>>(
-            std::make_shared<hhimg::MapMutate<PixelType>>(32, compute));
+    image |= std::make_shared<hhimg::HedgehogPipeline<PixelType>>(
+                 256, 4, 4, tileFactory, "my algorithm") |
+             std::make_shared<hhimg::Convolution<PixelType, double>>(
+                 32, meanFilter) |
+             std::make_shared<hhimg::MapMutate<PixelType>>(32, compute);
 }
 
 void halideBlur(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
@@ -101,13 +98,10 @@ void halideBlur(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
     /* hhimg::Mask<double> meanFilter(v, 3, 3); */
 
     image |=
-        std::make_shared<hhimg::HedgehogPipeline<PixelType>>(256, 8, 8, tileFactory,
-                                                             "Halide blur") |
-        std::static_pointer_cast<hhimg::AbstractPairTileAlgorithm<PixelType>>(
-            std::make_shared<hhimg::Convolution<PixelType, double>>(20,
-                                                                    blurX)) |
-        std::static_pointer_cast<hhimg::AbstractPairTileAlgorithm<PixelType>>(
-            std::make_shared<hhimg::Convolution<PixelType, double>>(20, blurY));
+        std::make_shared<hhimg::HedgehogPipeline<PixelType>>(
+            256, 8, 8, tileFactory, "Halide blur") |
+        std::make_shared<hhimg::Convolution<PixelType, double>>(20, blurX) |
+        std::make_shared<hhimg::Convolution<PixelType, double>>(20, blurY);
     /* image |= */
     /*     std::make_shared<hhimg::HedgehogPipeline<PixelType>>(256, tileFactory, */
     /*                                                          "Halide blur") | */
