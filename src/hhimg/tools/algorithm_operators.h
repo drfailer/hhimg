@@ -1,8 +1,6 @@
 #ifndef ALGORITHM_OPERATORS_HPP
 #define ALGORITHM_OPERATORS_HPP
 #include "../abstract/abstract_algorithm.h"
-#include "../abstract/hh/abstract_pair_tile_algorithm.h"
-#include "../abstract/hh/abstract_tile_algorithm.h"
 #include "../algorithm/tile/tmp_tiles_graph.h"
 #include "../concrete/chain_algorithm.h"
 #include "../concrete/hedgehog_pipeline.h"
@@ -50,15 +48,15 @@ Pipeline operator|(Pipeline pipeline, Algo algorithm) {
         pipeline->ghostRegionSize(algorithm->ghostRegionSize());
     }
     if (algorithm->ghostRegionSize()) {
-        pipeline->push_back(
+        pipeline->add(
             std::make_shared<hhimg::UpdateStencilsGraph<PixelType>>());
     }
     if constexpr (hhimg::PairTileAlgorithm<Algo>) {
         auto pairGraph =
             std::make_shared<hhimg::TmpTilesGraph<PixelType>>(algorithm);
-        pipeline->push_back(pairGraph);
+        pipeline->add(pairGraph);
     } else {
-        pipeline->push_back(algorithm);
+        pipeline->add(algorithm);
     }
     return pipeline;
 }

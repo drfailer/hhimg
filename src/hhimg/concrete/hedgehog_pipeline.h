@@ -46,7 +46,7 @@ template <typename T> struct HedgehogPipeline : TilePipeline<T> {
         }
     }
 
-    void push_back(auto algo) {
+    void add(auto algo) {
         createEdge(algo);
         lastTask_ = algo;
     }

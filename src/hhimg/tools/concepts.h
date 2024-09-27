@@ -44,7 +44,7 @@ using pixel_type_t = typename clear_t<Type>::PixelType;
 template <typename Type>
 concept HHPipeline = requires(clear_t<Type> p) {
   p.ghostRegionSize();
-  p.push_back(std::declval<std::shared_ptr<AbstractTileAlgorithm<uint8_t>>>());
+  p.add(std::declval<std::shared_ptr<AbstractTileAlgorithm<uint8_t>>>());
 };
 
 } // end namespace hhimg
