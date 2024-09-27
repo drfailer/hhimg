@@ -89,3 +89,9 @@ add_executable(
   hh-img src/main.cc
   ${hh_img_files})
 target_link_libraries(hh-img PRIVATE cimg ${X11_LIBRARIES})
+
+# target for dependencies
+add_custom_target(depts
+  COMMAND ./build.sh
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib
+)

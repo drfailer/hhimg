@@ -16,4 +16,13 @@ build_tiff() {
   fi
 }
 
+build_hh() {
+  cd $LIB_DIR/hedgehog
+  mkdir build
+  cd build
+  cmake ..
+  make
+}
+
 build_tiff
+build_hh
