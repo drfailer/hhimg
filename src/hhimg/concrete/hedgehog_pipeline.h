@@ -19,7 +19,7 @@ template <typename T>
 using TaskType = hh::AbstractTask<1, AbstractTile<T>, AbstractTile<T>>;
 
 template <typename T, typename LastTask = NullType>
-struct HedgehogPipeline : TilePipeline<T> {
+struct HedgehogPipeline {
     HedgehogPipeline(size_t tileSize, size_t splitThreads, size_t copyThreads,
                      std::shared_ptr<AbstractTileFactory<T>> tileFactory,
                      std::string graphName = "unamed pipeline")
