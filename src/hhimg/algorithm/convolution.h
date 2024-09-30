@@ -5,6 +5,8 @@
 #include "../abstract/hh/abstract_pair_tile_algorithm.h"
 #include "../concrete/data/mask.h"
 #include "../tools/perf_recorder.h"
+#include "hhimg/algorithm/tile/tmp_tiles_graph.h"
+#include "hhimg/algorithm/tile/update_stencils_graph.h"
 
 namespace hhimg {
 
@@ -66,6 +68,12 @@ class Convolution : public AbstractAlgorithm<T>,
     copy() override {
         return std::make_shared<Convolution<T, MaskType>>(this->numberThreads(),
                                                           kernel_, bias_);
+    }
+
+    constexpr static auto setup(auto pipeline, auto self) {
+        auto updateStencils = std::make_shared<hhimg::UpdateStencilsGraph<T>>();
+        auto pairGraph = std::make_shared<hhimg::TmpTilesGraph<T>>(self);
+        return pipeline->add(updateStencils)->add(pairGraph);
     }
 
   private:

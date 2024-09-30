@@ -37,29 +37,14 @@ std::shared_ptr<Img> operator|=(std::shared_ptr<Img> image, Pipeline pipeline) {
 }
 
 template <hhimg::HHPipeline Pipeline, hhimg::TileAlgorithms Algo>
-auto add(Pipeline pipeline, Algo algorithm) {
-    using PixelType = hhimg::pixel_type_t<Algo>;
-    if constexpr (hhimg::PairTileAlgorithm<Algo>) {
-        auto pairGraph =
-            std::make_shared<hhimg::TmpTilesGraph<PixelType>>(algorithm);
-        return pipeline->add(pairGraph);
-    } else {
-        return pipeline->add(algorithm);
-    }
-}
-
-template <hhimg::HHPipeline Pipeline, hhimg::TileAlgorithms Algo>
+    requires(requires(Pipeline p, Algo a) {
+        hhimg::clear_t<Algo>::setup(p, a);
+    })
 auto operator|(Pipeline pipeline, Algo algorithm) {
-    using PixelType = hhimg::pixel_type_t<Algo>;
     if (pipeline->ghostRegionSize() < algorithm->ghostRegionSize()) {
         pipeline->ghostRegionSize(algorithm->ghostRegionSize());
     }
-    if (algorithm->ghostRegionSize()) {
-        auto updateStencils =
-            std::make_shared<hhimg::UpdateStencilsGraph<PixelType>>();
-        return add(pipeline->add(updateStencils), algorithm);
-    }
-    return add(pipeline, algorithm);
+    return hhimg::clear_t<Algo>::setup(pipeline, algorithm);
 }
 
 #endif

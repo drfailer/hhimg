@@ -56,6 +56,10 @@ struct ContrastBrightness : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
                                                        contrast, brightness);
     }
 
+    constexpr static auto setup(auto pipeline, auto self) {
+        return pipeline->add(self);
+    }
+
     double contrast = 1;
     double brightness = 0;
 };

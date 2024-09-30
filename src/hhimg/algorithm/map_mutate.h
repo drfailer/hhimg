@@ -39,6 +39,10 @@ struct MapMutate : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
         return std::make_shared<MapMutate<T>>(this->numberThreads(), compute_);
     }
 
+    constexpr static auto setup(auto pipeline, auto self) {
+        return pipeline->add(self);
+    }
+
   private:
     ComputePixel compute_;
 };

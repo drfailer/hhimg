@@ -39,6 +39,10 @@ struct GrayScale : AbstractAlgorithm<T>, AbstractTileAlgorithm<T> {
     copy() override {
         return std::make_shared<GrayScale<T>>(this->numberThreads());
     }
+
+    constexpr static auto setup(auto pipeline, auto self) {
+        return pipeline->add(self);
+    }
 };
 
 }; // namespace hhimg

@@ -50,6 +50,10 @@ class NonMaximumSuppression : public AbstractAlgorithm<T>,
             this->numberThreads(), max_, lowValue_, highValue_);
     }
 
+    constexpr static auto setup(auto pipeline, auto self) {
+        return pipeline->add(self);
+    }
+
   private:
     T max_ = 0;
     T lowValue_ = 0;
