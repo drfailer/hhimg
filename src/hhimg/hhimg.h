@@ -5,6 +5,8 @@
 #include "./concrete/chain_algorithm.h"
 #include "./concrete/hedgehog_pipeline.h"
 #include "./concrete/data/mask.h"
+#include "./concrete/fast_loader_pipeline.h"
+#include "./concrete/data/fl_img.h"
 #include "./algorithm/gray_scale.h"
 #include "./algorithm/non_maximum_suppression.h"
 #include "./algorithm/crop.h"

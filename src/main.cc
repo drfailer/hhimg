@@ -1,7 +1,10 @@
 #include "config.h"
 #include "hhimg/algorithm/contrast_brightness.h"
+#include "hhimg/algorithm/fast_loader/test_algorithm.h"
+#include "hhimg/concrete/fast_loader_pipeline.h"
 #include "impl/cimg/cimg.h"
 #include "impl/cimg/cimg_tile_factory.h"
+#include "impl/tiff_fl/grayscale_tiff_tile_loader.h"
 #include <hedgehog/hedgehog.h>
 #include <hhimg/hhimg.h>
 
@@ -117,8 +120,16 @@ void run(Config config) {
 
     hhimg::utils::PerfRectorder::start("run");
 
+    hhimg::FLImg<GrayscaleTiffTileLoader<PixelType>> flimg = {
+      std::make_shared<GrayscaleTiffTileLoader<PixelType>>(1, "../img/img_r022_c026_c1.ome.tif")
+    };
+
+    flimg |=
+        std::make_shared<hhimg::FastLoaderPipeline<PixelType>>(256, "test") |
+        std::make_shared<hhimg::TestAlgorithm<PixelType>>();
+
     /* testHedgehog(image); */
-    halideBlur(image);
+    /* halideBlur(image); */
 
     /* switch (config.algorithm) { */
     /* case VerticalBorders: */
