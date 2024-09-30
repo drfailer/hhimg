@@ -7,18 +7,28 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(TEST_HHIMG OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules")
+set(CMAKE_MODULE_PATH
+  ${CMAKE_MODULE_PATH}
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules"
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/FastLoader/cmake_modules"
+)
 
 set(Hedgehog_INCLUDE_DIR ./lib/hedgehog/)
+set(FastLoader_INCLUDE_DIR ./lib/FastLoader/)
 
 # added tclap
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/
-                    ${CMAKE_CURRENT_SOURCE_DIR}/src/)
+include_directories(
+  ${CMAKE_CURRENT_SOURCE_DIR}/lib/
+  ${CMAKE_CURRENT_SOURCE_DIR}/lib/tiff-4.7.0/lib/include/
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/)
+link_directories(
+  ${CMAKE_CURRENT_SOURCE_DIR}/lib/tiff-4.7.0/lib/lib/)
 
 # Need to defined variable Hedgehog_INCLUDE_DIR to the hedgehog path
 # hedgehog
 find_package(Hedgehog REQUIRED)
 find_package(X11 QUIET)
+find_package(FastLoader REQUIRED)
 
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${Hedgehog_CXX_FLAGS})
 
@@ -88,7 +98,9 @@ add_library(cimg SHARED
 add_executable(
   hh-img src/main.cc
   ${hh_img_files})
-target_link_libraries(hh-img PRIVATE cimg ${X11_LIBRARIES})
+target_link_libraries(hh-img
+  PRIVATE cimg tiff ${X11_LIBRARIES} ${FastLoader_LIBRARIES} ${Hedgehog_LIBRARIES})
+
 
 # target for dependencies
 add_custom_target(depts

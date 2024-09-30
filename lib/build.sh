@@ -8,12 +8,13 @@ build_tiff() {
     # download
     wget https://download.osgeo.org/libtiff/tiff-4.7.0.tar.gz
     tar xzvf tiff-4.7.0.tar.gz
-    # build
-    cd ./tiff-4.7.0/
-    mkdir lib
-    ./configure --prefix=$PWD/lib
-    make -j
   fi
+  # build
+  cd ./tiff-4.7.0/
+  mkdir lib
+  ./configure --prefix=$PWD/lib
+  make -j
+  make install
 }
 
 build_hh() {
