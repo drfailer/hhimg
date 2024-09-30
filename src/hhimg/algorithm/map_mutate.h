@@ -1,7 +1,7 @@
 #ifndef MAP_MUTATE_HPP
 #define MAP_MUTATE_HPP
 #include "../abstract/abstract_algorithm.h"
-#include "../abstract/hh/abstract_tile_algorithm.h"
+#include "../abstract/hh/tile_algorithms.h"
 #include <functional>
 
 namespace hhimg {

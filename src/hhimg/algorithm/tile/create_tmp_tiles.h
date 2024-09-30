@@ -1,7 +1,7 @@
 #ifndef HHIMG_CREATE_TMP_TILES_H
 #define HHIMG_CREATE_TMP_TILES_H
 #include "../../abstract/abstract_tile_factory.h"
-#include "../../abstract/hh/abstract_pair_tile_algorithm.h"
+#include "../../abstract/hh/tile_algorithms.h"
 #include "../../concrete/data/pixel_tile.h"
 #include <hedgehog/hedgehog.h>
 

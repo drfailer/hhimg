@@ -1,7 +1,7 @@
 #ifndef HHIMG_COPY_H
 #define HHIMG_COPY_H
 #include "../../abstract/abstract_tile_factory.h"
-#include "../../abstract/hh/abstract_tile_algorithm.h"
+#include "../../abstract/hh/tile_algorithms.h"
 
 namespace hhimg {
 

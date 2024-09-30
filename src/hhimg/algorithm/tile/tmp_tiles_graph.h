@@ -1,6 +1,6 @@
 #ifndef HHIMG_TMP_TILES_GRAPH_H
 #define HHIMG_TMP_TILES_GRAPH_H
-#include "../../abstract/hh/abstract_pair_tile_algorithm.h"
+#include "../../abstract/hh/tile_algorithms.h"
 #include "../../algorithm/tile/create_tmp_tiles.h"
 #include <hedgehog/hedgehog.h>
 

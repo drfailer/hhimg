@@ -2,11 +2,12 @@
 #define CONVOLUTION_HPP
 #include "../abstract/abstract_algorithm.h"
 #include "../abstract/abstract_image_factory.h"
-#include "../abstract/hh/abstract_pair_tile_algorithm.h"
+#include "../abstract/hh/tile_algorithms.h"
 #include "../concrete/data/mask.h"
 #include "../tools/perf_recorder.h"
 #include "hhimg/algorithm/tile/tmp_tiles_graph.h"
 #include "hhimg/algorithm/tile/update_stencils_graph.h"
+#include "hhimg/tools/concepts.h"
 
 namespace hhimg {
 

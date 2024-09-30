@@ -1,6 +1,6 @@
 #ifndef UPDATE_STENCILS_TASK_H
 #define UPDATE_STENCILS_TASK_H
-#include "../../abstract/hh/abstract_pair_tile_algorithm.h"
+#include "../../abstract/hh/tile_algorithms.h"
 #include "hedgehog/src/api/task/abstract_task.h"
 #include <hedgehog/hedgehog.h>
 

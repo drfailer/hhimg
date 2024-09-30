@@ -1,7 +1,7 @@
 #ifndef CONTRAST_BRIGHTNESS_H
 #define CONTRAST_BRIGHTNESS_H
 #include "../abstract/abstract_algorithm.h"
-#include "../abstract/hh/abstract_tile_algorithm.h"
+#include "../abstract/hh/tile_algorithms.h"
 #include "../tools/concepts.h"
 #include "../tools/perf_recorder.h"
 

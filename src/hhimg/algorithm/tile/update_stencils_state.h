@@ -1,7 +1,7 @@
 #ifndef HHIMG_UPDATE_STENCILS_STATE_H
 #define HHIMG_UPDATE_STENCILS_STATE_H
 #include "../../abstract/data/abstract_tile.h"
-#include "../../abstract/hh/abstract_pair_tile_algorithm.h"
+#include "../../abstract/hh/tile_algorithms.h"
 #include <hedgehog/hedgehog.h>
 #include <vector>
 

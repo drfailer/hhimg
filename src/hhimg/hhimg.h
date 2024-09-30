@@ -3,6 +3,7 @@
 
 
 #include "./concrete/chain_algorithm.h"
+#include "./concrete/hedgehog_pipeline.h"
 #include "./concrete/data/mask.h"
 #include "./algorithm/gray_scale.h"
 #include "./algorithm/non_maximum_suppression.h"
@@ -16,8 +17,7 @@
 #include "./tools/utils.h"
 #include "./abstract/abstract_algorithm.h"
 #include "./abstract/hh/abstract_hh_algorithm.h"
-#include "./abstract/hh/abstract_tile_algorithm.h"
-#include "./abstract/hh/abstract_pair_tile_algorithm.h"
+#include "./abstract/hh/tile_algorithms.h"
 #include "./abstract/abstract_image_factory.h"
 #include "./abstract/abstract_tile_factory.h"
 #include "./abstract/data/abstract_image.h"

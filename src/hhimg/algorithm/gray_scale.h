@@ -1,7 +1,7 @@
 #ifndef GRAY_SCALE_HPP
 #define GRAY_SCALE_HPP
 #include "../abstract/abstract_algorithm.h"
-#include "../abstract/hh/abstract_tile_algorithm.h"
+#include "../abstract/hh/tile_algorithms.h"
 #include "../tools/concepts.h"
 #include "../tools/perf_recorder.h"
 
