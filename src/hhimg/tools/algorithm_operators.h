@@ -2,7 +2,8 @@
 #define ALGORITHM_OPERATORS_HPP
 #include "../abstract/abstract_algorithm.h"
 #include "../concrete/chain_algorithm.h"
-#include "hhimg/tools/concepts.h"
+#include "../concrete/data/fl_img.h"
+#include "../tools/concepts.h"
 #include <memory>
 
 /******************************************************************************/
@@ -34,6 +35,26 @@ std::shared_ptr<Img> operator|=(std::shared_ptr<Img> image, Pipeline pipeline) {
 }
 
 template <hhimg::HHPipeline Pipeline, hhimg::TileAlgorithms Algo>
+    requires(requires(Pipeline p, Algo a) {
+        hhimg::clear_t<Algo>::setup(p, a);
+    })
+auto operator|(Pipeline pipeline, Algo algorithm) {
+    if (pipeline->ghostRegionSize() < algorithm->ghostRegionSize()) {
+        pipeline->ghostRegionSize(algorithm->ghostRegionSize());
+    }
+    return hhimg::clear_t<Algo>::setup(pipeline, algorithm);
+}
+
+/******************************************************************************/
+/*                                fast loader                                 */
+/******************************************************************************/
+
+template <typename TileLoader, typename FastLoader>
+void operator|=(hhimg::FLImg<TileLoader> image, FastLoader pipeline) {
+    pipeline->operator()(image);
+}
+
+template <hhimg::FLPipeline Pipeline, hhimg::FLAlgorithms Algo>
     requires(requires(Pipeline p, Algo a) {
         hhimg::clear_t<Algo>::setup(p, a);
     })
