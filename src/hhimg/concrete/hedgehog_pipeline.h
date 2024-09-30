@@ -73,9 +73,6 @@ struct HedgehogPipeline : TilePipeline<T> {
     size_t ghostRegionSize() const { return ghostRegionSize_; }
     void ghostRegionSize(size_t size) { ghostRegionSize_ = size; }
 
-    std::shared_ptr<TilePipeline<T>> graph() { return graph_; }
-    void lastTask(auto algo) { lastTask_ = algo; }
-
   private:
     void setOutput() {
         auto copy = std::make_shared<Copy<T>>(copyThreads_, tileFactory_);

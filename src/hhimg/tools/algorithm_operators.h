@@ -1,10 +1,7 @@
 #ifndef ALGORITHM_OPERATORS_HPP
 #define ALGORITHM_OPERATORS_HPP
 #include "../abstract/abstract_algorithm.h"
-#include "../algorithm/tile/tmp_tiles_graph.h"
 #include "../concrete/chain_algorithm.h"
-#include "../concrete/hedgehog_pipeline.h"
-#include "hhimg/algorithm/tile/update_stencils_graph.h"
 #include "hhimg/tools/concepts.h"
 #include <memory>
 
