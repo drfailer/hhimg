@@ -18,7 +18,8 @@ using GraphType = hh::Graph<1, AbstractTile<T>, AbstractTile<T>>;
 template <typename T>
 using TaskType = hh::AbstractTask<1, AbstractTile<T>, AbstractTile<T>>;
 
-template <typename T, typename LastTask = NullType>
+template <typename T, typename FirstTask = NullType,
+          typename LastTask = NullType>
 struct HedgehogPipeline {
     HedgehogPipeline(size_t tileSize, size_t splitThreads, size_t copyThreads,
                      std::shared_ptr<AbstractTileFactory<T>> tileFactory,
@@ -27,11 +28,13 @@ struct HedgehogPipeline {
           splitThreads_(splitThreads), copyThreads_(copyThreads),
           graph_(std::make_shared<TilePipeline<T>>(std::move(graphName))) {}
 
-    HedgehogPipeline(size_t tileSize, size_t splitThreads, size_t copyThreads,
-                     LastTask lastTask,
+    HedgehogPipeline(size_t tileSize, size_t ghostRegionSize,
+                     size_t splitThreads, size_t copyThreads,
+                     FirstTask firstTask, LastTask lastTask,
                      std::shared_ptr<AbstractTileFactory<T>> tileFactory,
                      std::shared_ptr<TilePipeline<T>> graph)
-        : lastTask_(lastTask), tileSize_(tileSize), tileFactory_(tileFactory),
+        : firstTask_(firstTask), lastTask_(lastTask), tileSize_(tileSize),
+          ghostRegionSize_(ghostRegionSize), tileFactory_(tileFactory),
           splitThreads_(splitThreads), copyThreads_(copyThreads),
           graph_(graph) {}
 
@@ -47,6 +50,7 @@ struct HedgehogPipeline {
 
     void setupGraph() {
         if (!graphCompleted_) {
+            setInput();
             setOutput();
             graph_->executeGraph();
             graphCompleted_ = true;
@@ -55,18 +59,17 @@ struct HedgehogPipeline {
         }
     }
 
-    template <typename Algo>
-    std::shared_ptr<HedgehogPipeline<T, Algo>> add(Algo algo) {
+    template <typename Algo> auto add(Algo algo) {
         if constexpr (null_type_v<LastTask>) {
-            auto splitGraph = std::make_shared<SplitGraph<T>>(
-                splitThreads_, tileSize_, ghostRegionSize_, tileFactory_);
-            graph_->inputs(splitGraph);
-            graph_->edges(splitGraph, algo);
+            return std::make_shared<HedgehogPipeline<T, Algo, Algo>>(
+                tileSize_, ghostRegionSize_, splitThreads_, copyThreads_, algo,
+                algo, tileFactory_, graph_);
         } else {
             graph_->edges(lastTask_, algo);
+            return std::make_shared<HedgehogPipeline<T, FirstTask, Algo>>(
+                tileSize_, ghostRegionSize_, splitThreads_, copyThreads_,
+                firstTask_, algo, tileFactory_, graph_);
         }
-        return std::make_shared<HedgehogPipeline<T, Algo>>(
-            tileSize_, splitThreads_, copyThreads_, algo, tileFactory_, graph_);
     }
 
     // can be overriden if a ghost region is required
@@ -74,17 +77,31 @@ struct HedgehogPipeline {
     void ghostRegionSize(size_t size) { ghostRegionSize_ = size; }
 
   private:
+    void setInput() {
+        if constexpr (!null_type_v<FirstTask>) {
+            auto splitGraph = std::make_shared<SplitGraph<T>>(
+                splitThreads_, tileSize_, ghostRegionSize_, tileFactory_);
+            graph_->inputs(splitGraph);
+            graph_->edges(splitGraph, firstTask_);
+        } else {
+            throw std::runtime_error("error: empty pipeline.");
+        }
+    }
+
     void setOutput() {
-        auto copy = std::make_shared<Copy<T>>(copyThreads_, tileFactory_);
         if constexpr (!null_type_v<LastTask>) {
+            auto copy = std::make_shared<Copy<T>>(copyThreads_, tileFactory_);
             graph_->edges(lastTask_, copy);
-        } // else throw
-        graph_->outputs(copy);
+            graph_->outputs(copy);
+        } else {
+            throw std::runtime_error("error: empty pipeline.");
+        }
     }
 
   private:
     bool graphCompleted_ = false;
     LastTask lastTask_;
+    FirstTask firstTask_;
     size_t tileSize_ = 0;
     size_t ghostRegionSize_ = 0;
     size_t splitThreads_ = 1;
