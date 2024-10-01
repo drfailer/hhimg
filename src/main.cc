@@ -51,6 +51,26 @@ void detailExtr(std::shared_ptr<CImgImage<PixelType>> image) {
     hhimg::utils::PerfRectorder::end("detailExtr");
 }
 
+void detailExtrHH(std::shared_ptr<CImgImage<PixelType>> image) {
+    auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
+    auto secondImage = image->copy();
+    std::vector<double> v(9, 1.0 / 9);
+    hhimg::Mask<double> meanFilter(v, 3, 3);
+    auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
+
+    hhimg::utils::PerfRectorder::start("detailExtr");
+    secondImage |= std::make_shared<hhimg::HedgehogPipeline<PixelType>>(
+                       256, 4, 4, tileFactory, "my algorithm") |
+                   std::make_shared<hhimg::Convolution<PixelType, double>>(
+                       32, meanFilter);
+    image |= std::make_shared<hhimg::HedgehogPipeline<PixelType>>(
+                 256, 4, 4, tileFactory, "my algorithm") |
+             std::make_shared<hhimg::Minus<PixelType>>(10, secondImage) |
+             std::make_shared<hhimg::GrayScale<PixelType>>(10) |
+             std::make_shared<hhimg::NonMaximumSuppression<PixelType>>(10, 10);
+    hhimg::utils::PerfRectorder::end("detailExtr");
+}
+
 void generateRainbow() {
     auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
     auto compute = [](auto, size_t x, size_t y) {
@@ -120,15 +140,16 @@ void run(Config config) {
 
     hhimg::utils::PerfRectorder::start("run");
 
-    hhimg::FLImg<PixelType> flimg = {
-      std::make_shared<GrayscaleTiffTileLoader<PixelType>>(1, "../img/img_r022_c026_c1.ome.tif")
-    };
+    /* hhimg::FLImg<PixelType> flimg = { */
+    /*   std::make_shared<GrayscaleTiffTileLoader<PixelType>>(1, "../img/img_r022_c026_c1.ome.tif") */
+    /* }; */
 
-    flimg |=
-        std::make_shared<hhimg::FastLoaderPipeline<PixelType>>(256, "test") |
-        std::make_shared<hhimg::TestAlgorithm<PixelType>>(1);
+    /* flimg |= */
+    /*     std::make_shared<hhimg::FastLoaderPipeline<PixelType>>(256, "test") | */
+    /*     std::make_shared<hhimg::TestAlgorithm<PixelType>>(1); */
 
     /* testHedgehog(image); */
+    detailExtrHH(image);
     /* halideBlur(image); */
 
     /* switch (config.algorithm) { */

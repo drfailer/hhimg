@@ -7,17 +7,16 @@
 #include "../tools/perf_recorder.h"
 #include "hhimg/algorithm/tile/tmp_tiles_graph.h"
 #include "hhimg/algorithm/tile/update_stencils_graph.h"
-#include "hhimg/tools/concepts.h"
 
 namespace hhimg {
 
 template <typename T, typename MaskType>
 class Convolution : public AbstractAlgorithm<T>,
-                    public AbstractPairTileAlgorithm<T> {
+                    public AbstractTmpTileAlgorithm<T> {
   public:
     Convolution(size_t nbThreads, Mask<MaskType> const &kernel,
                 MaskType bias = 0)
-        : AbstractPairTileAlgorithm<T>(nbThreads, "Convolution"),
+        : AbstractTmpTileAlgorithm<T>(nbThreads, "Convolution"),
           kernel_(kernel), bias_(bias) {}
     Convolution(std::shared_ptr<AbstractImageFactory<T>> imageFactory,
                 Mask<MaskType> const &kernel, MaskType bias = 0)
@@ -65,7 +64,7 @@ class Convolution : public AbstractAlgorithm<T>,
         return std::max(kernel_.width() / 2, kernel_.height() / 2);
     }
 
-    std::shared_ptr<typename AbstractPairTileAlgorithm<T>::TaskType>
+    std::shared_ptr<typename AbstractTmpTileAlgorithm<T>::TaskType>
     copy() override {
         return std::make_shared<Convolution<T, MaskType>>(this->numberThreads(),
                                                           kernel_, bias_);

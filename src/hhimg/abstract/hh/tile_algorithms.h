@@ -18,7 +18,11 @@ using AbstractTileAlgorithm =
     AbstractHHAlgorithm<AbstractTile<T>, AbstractTile<T>>;
 
 template <typename T>
-using AbstractPairTileAlgorithm =
+using AbstractTmpTileAlgorithm =
+    AbstractHHAlgorithm<PairTile<T>, AbstractTile<T>>;
+
+template <typename T>
+using Abstract2TilesAlgorithm =
     AbstractHHAlgorithm<PairTile<T>, AbstractTile<T>>;
 
 } // end namespace hhimg

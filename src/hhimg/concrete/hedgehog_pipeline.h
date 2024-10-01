@@ -76,11 +76,18 @@ struct HedgehogPipeline {
     size_t ghostRegionSize() const { return ghostRegionSize_; }
     void ghostRegionSize(size_t size) { ghostRegionSize_ = size; }
 
+    std::shared_ptr<SplitGraph<T>> createSplitGraph() const {
+        return std::make_shared<SplitGraph<T>>(splitThreads_, tileSize_,
+                                               ghostRegionSize_, tileFactory_);
+    }
+
+    void edges(auto t1, auto t2) { graph_->edges(t1, t2); }
+    void inputs(auto elt) { graph_->inputs(elt); }
+
   private:
     void setInput() {
         if constexpr (!null_type_v<FirstTask>) {
-            auto splitGraph = std::make_shared<SplitGraph<T>>(
-                splitThreads_, tileSize_, ghostRegionSize_, tileFactory_);
+            auto splitGraph = createSplitGraph();
             graph_->inputs(splitGraph);
             graph_->edges(splitGraph, firstTask_);
         } else {

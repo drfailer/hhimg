@@ -8,7 +8,7 @@ namespace hhimg {
 
 template <typename T>
 struct TmpTilesGraph : hh::Graph<1, AbstractTile<T>, AbstractTile<T>> {
-    TmpTilesGraph(std::shared_ptr<AbstractPairTileAlgorithm<T>> task)
+    TmpTilesGraph(std::shared_ptr<AbstractTmpTileAlgorithm<T>> task)
         : hh::Graph<1, AbstractTile<T>, AbstractTile<T>>(task->name()) {
         auto makePairTask = std::make_shared<hhimg::CreateTmpTiles<T>>(1);
 
