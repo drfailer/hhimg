@@ -1,8 +1,8 @@
 #ifndef FAST_LOADER_PIPELINE_H
 #define FAST_LOADER_PIPELINE_H
-#include "../tools/null_type.h"
 #include "../concrete/data/fl_img.h"
 #include "../concrete/data/fl_view.h"
+#include "../tools/null_type.h"
 #include <fast_loader/fast_loader.h>
 #include <hedgehog/hedgehog.h>
 #include <memory>
@@ -29,10 +29,7 @@ struct FastLoaderPipeline {
     template <typename TileLoader> void operator()(FLImg<TileLoader> in) {
         if constexpr (!null_type_v<LastTask>) {
             setupGraph(in);
-            for (std::shared_ptr<fl::IndexRequest> const &indexRequest :
-                 fastLoader_->generateIndexRequestForAllViews(0)) {
-                graph_->pushData(indexRequest);
-            }
+            requestAllViews(0);
             graph_->finishPushingData();
             graph_->waitForTermination();
             graph_->createDotFile("graph.dot", hh::ColorScheme::EXECUTION,
@@ -50,6 +47,13 @@ struct FastLoaderPipeline {
             graphCompleted_ = true;
         } else {
             graph_->cleanGraph();
+        }
+    }
+
+    void requestAllViews(size_t level) {
+        for (std::shared_ptr<fl::IndexRequest> const &indexRequest :
+             fastLoader_->generateIndexRequestForAllViews(level)) {
+            graph_->pushData(indexRequest);
         }
     }
 
