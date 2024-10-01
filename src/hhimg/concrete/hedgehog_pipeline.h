@@ -38,6 +38,12 @@ struct HedgehogPipeline {
           splitThreads_(splitThreads), copyThreads_(copyThreads),
           graph_(graph) {}
 
+    HedgehogPipeline(HedgehogPipeline<T, FirstTask, LastTask> const &other)
+        : HedgehogPipeline(other.tileSize_, other.ghostRegionSize_,
+                           other.splitThreads_, other.copyThreads_,
+                           other.firstTask_, other.lastTask_,
+                           other.tileFactory_, other.graph_) {}
+
     Image<T> operator()(Image<T> image) {
         setupGraph();
         graph_->pushData(image);
