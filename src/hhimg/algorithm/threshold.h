@@ -1,5 +1,5 @@
-#ifndef NON_MAXIMUM_SUPPRESSION_HPP
-#define NON_MAXIMUM_SUPPRESSION_HPP
+#ifndef THRESHOLD_HPP
+#define THRESHOLD_HPP
 #include "../abstract/abstract_algorithm.h"
 #include "../abstract/hh/tile_algorithms.h"
 #include "../tools/concepts.h"
@@ -8,17 +8,17 @@
 namespace hhimg {
 
 template <typename T>
-class NonMaximumSuppression : public AbstractAlgorithm<T>,
+class Threshold : public AbstractAlgorithm<T>,
                               public AbstractTileAlgorithm<T> {
   public:
-    NonMaximumSuppression(size_t nbThreads, T max, T lowValue, T highValue)
-        : AbstractTileAlgorithm<T>(nbThreads, "NonMaximumSuppression"),
+    Threshold(size_t nbThreads, T max, T lowValue, T highValue)
+        : AbstractTileAlgorithm<T>(nbThreads, "Threshold"),
           max_(max), lowValue_(lowValue), highValue_(highValue) {}
-    NonMaximumSuppression(T max, T lowValue, T highValue)
-        : NonMaximumSuppression(1, max, lowValue, highValue) {}
-    NonMaximumSuppression(T max) : NonMaximumSuppression(1, max, 0, 255) {}
-    NonMaximumSuppression(size_t nbThreads, T max)
-        : NonMaximumSuppression(nbThreads, max, 0, 255) {}
+    Threshold(T max, T lowValue, T highValue)
+        : Threshold(1, max, lowValue, highValue) {}
+    Threshold(T max) : Threshold(1, max, 0, 255) {}
+    Threshold(size_t nbThreads, T max)
+        : Threshold(nbThreads, max, 0, 255) {}
 
     void compute(ImgData auto &elt) const {
         for (size_t y = 0; y < elt->height(); ++y) {
@@ -46,7 +46,7 @@ class NonMaximumSuppression : public AbstractAlgorithm<T>,
 
     std::shared_ptr<typename AbstractTileAlgorithm<T>::TaskType>
     copy() override {
-        return std::make_shared<NonMaximumSuppression<T>>(
+        return std::make_shared<Threshold<T>>(
             this->numberThreads(), max_, lowValue_, highValue_);
     }
 

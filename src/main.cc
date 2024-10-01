@@ -18,7 +18,7 @@ void verticalBordersExtr(std::shared_ptr<CImgImage<PixelType>> image) {
     image |=
         hhimg::GrayScale<PixelType>() |
         hhimg::Convolution<PixelType, double>(imageFactory, verticalBorders) |
-        hhimg::NonMaximumSuppression<PixelType>(50);
+        hhimg::Threshold<PixelType>(50);
     hhimg::utils::PerfRectorder::end("verticalBordersExtr");
 }
 
@@ -30,14 +30,13 @@ void horizontalBordersExtr(std::shared_ptr<CImgImage<PixelType>> image) {
     image |=
         hhimg::GrayScale<PixelType>() |
         hhimg::Convolution<PixelType, double>(imageFactory, horizontalBorders) |
-        hhimg::NonMaximumSuppression<PixelType>(50);
+        hhimg::Threshold<PixelType>(50);
     hhimg::utils::PerfRectorder::end("horizontalBordersExtr");
 }
 
 void detailExtr(std::shared_ptr<CImgImage<PixelType>> image) {
+    hhimg::Mask<double> meanFilter(std::vector<double>(9, 1.0 / 9), 3, 3);
     auto secondImage = image->copy();
-    std::vector<double> v(9, 1.0 / 9);
-    hhimg::Mask<double> meanFilter(v, 3, 3);
     auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
 
     hhimg::utils::PerfRectorder::start("detailExtr");
@@ -47,27 +46,25 @@ void detailExtr(std::shared_ptr<CImgImage<PixelType>> image) {
                                     secondImage->height()) |
              hhimg::Minus<PixelType>(secondImage) |
              hhimg::GrayScale<PixelType>() |
-             hhimg::NonMaximumSuppression<PixelType>(10);
+             hhimg::Threshold<PixelType>(10);
     hhimg::utils::PerfRectorder::end("detailExtr");
 }
 
 void detailExtrHH(std::shared_ptr<CImgImage<PixelType>> image) {
+    hhimg::Mask<double> meanFilter(std::vector<double>(9, 1.0 / 9), 3, 3);
     auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
     auto secondImage = image->copy();
-    std::vector<double> v(9, 1.0 / 9);
-    hhimg::Mask<double> meanFilter(v, 3, 3);
-    auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
 
     hhimg::utils::PerfRectorder::start("detailExtr");
-    secondImage |= std::make_shared<hhimg::HedgehogPipeline<PixelType>>(
-                       256, 4, 4, tileFactory, "my algorithm") |
-                   std::make_shared<hhimg::Convolution<PixelType, double>>(
-                       32, meanFilter);
+    secondImage |=
+        std::make_shared<hhimg::HedgehogPipeline<PixelType>>(
+            256, 4, 4, tileFactory, "mean") |
+        std::make_shared<hhimg::Convolution<PixelType, double>>(32, meanFilter);
     image |= std::make_shared<hhimg::HedgehogPipeline<PixelType>>(
-                 256, 4, 4, tileFactory, "my algorithm") |
+                 256, 4, 4, tileFactory, "border extraction") |
              std::make_shared<hhimg::Minus<PixelType>>(10, secondImage) |
              std::make_shared<hhimg::GrayScale<PixelType>>(10) |
-             std::make_shared<hhimg::NonMaximumSuppression<PixelType>>(10, 10);
+             std::make_shared<hhimg::Threshold<PixelType>>(10, 10);
     hhimg::utils::PerfRectorder::end("detailExtr");
 }
 

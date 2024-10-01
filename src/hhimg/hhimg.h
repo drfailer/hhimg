@@ -9,7 +9,7 @@
 #include "./concrete/data/fl_img.h"
 #include "./concrete/data/fl_view.h"
 #include "./algorithm/gray_scale.h"
-#include "./algorithm/non_maximum_suppression.h"
+#include "./algorithm/threshold.h"
 #include "./algorithm/crop.h"
 #include "./algorithm/minus.h"
 #include "./algorithm/convolution.h"
