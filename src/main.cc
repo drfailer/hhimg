@@ -120,13 +120,13 @@ void run(Config config) {
 
     hhimg::utils::PerfRectorder::start("run");
 
-    hhimg::FLImg<GrayscaleTiffTileLoader<PixelType>> flimg = {
+    hhimg::FLImg<PixelType> flimg = {
       std::make_shared<GrayscaleTiffTileLoader<PixelType>>(1, "../img/img_r022_c026_c1.ome.tif")
     };
 
     flimg |=
         std::make_shared<hhimg::FastLoaderPipeline<PixelType>>(256, "test") |
-        std::make_shared<hhimg::TestAlgorithm<PixelType>>();
+        std::make_shared<hhimg::TestAlgorithm<PixelType>>(1);
 
     /* testHedgehog(image); */
     /* halideBlur(image); */

@@ -1,11 +1,11 @@
 #ifndef GRAYSCALE_TIFF_TILE_LOADER_H
 #define GRAYSCALE_TIFF_TILE_LOADER_H
-#include "fast_loader/fast_loader.h"
+#include <hhimg/hhimg.h>
 #include <tiffio.h>
 
 template <class DataType>
 class GrayscaleTiffTileLoader
-    : public fl::AbstractTileLoader<fl::DefaultView<DataType>> {
+    : public fl::AbstractTileLoader<hhimg::View<DataType>> {
     TIFF *tiff_ = nullptr; ///< Tiff file pointer
 
     std::vector<size_t>
@@ -23,7 +23,7 @@ class GrayscaleTiffTileLoader
     /// @param numberThreads Number of threads associated
     /// @param filePath Path of tiff file
     GrayscaleTiffTileLoader(size_t numberThreads, std::string const &filePath)
-        : fl::AbstractTileLoader<fl::DefaultView<DataType>>(
+        : fl::AbstractTileLoader<hhimg::View<DataType>>(
               "GrayscaleTiffTileLoader", filePath, numberThreads) {
         short samplesPerPixel = 0;
 
@@ -81,7 +81,7 @@ class GrayscaleTiffTileLoader
 
     /// @brief Copy Method for the GrayscaleTiffTileLoader
     /// @return Return a copy of the current GrayscaleTiffTileLoader
-    std::shared_ptr<fl::AbstractTileLoader<fl::DefaultView<DataType>>>
+    std::shared_ptr<fl::AbstractTileLoader<hhimg::View<DataType>>>
     copyTileLoader() override {
         return std::make_shared<GrayscaleTiffTileLoader<DataType>>(
             this->numberThreads(), this->filePath());
