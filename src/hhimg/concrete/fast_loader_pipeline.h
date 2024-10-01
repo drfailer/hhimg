@@ -31,14 +31,10 @@ struct FastLoaderPipeline {
             setupGraph(in);
             for (std::shared_ptr<fl::IndexRequest> const &indexRequest :
                  fastLoader_->generateIndexRequestForAllViews(0)) {
-                std::cout << "test" << std::endl;
                 graph_->pushData(indexRequest);
             }
-            std::cout << "finish pushing data" << std::endl;
             graph_->finishPushingData();
-            std::cout << "wait" << std::endl;
             graph_->waitForTermination();
-            std::cout << "dotfile" << std::endl;
             graph_->createDotFile("graph.dot", hh::ColorScheme::EXECUTION,
                                   hh::StructureOptions::QUEUE);
         } else {
