@@ -3,6 +3,7 @@
 #include "../concrete/data/fl_img.h"
 #include "../concrete/data/fl_view.h"
 #include "../../tools/null_type.h"
+#include "../algorithm/views/release_view.h"
 #include <fast_loader/fast_loader.h>
 #include <hedgehog/hedgehog.h>
 #include <memory>
@@ -82,7 +83,12 @@ struct FastLoaderPipeline {
         graph_->edges(fastLoader_, firstTask_);
     }
 
-    void setOutput() { graph_->outputs(lastTask_); }
+    void setOutput() {
+      // TODO: we should have a write task here, before the release of the view
+      auto releaseView = std::make_shared<ReleaseView<T>>(1);
+      graph_->edges(lastTask_, releaseView);
+      graph_->outputs(releaseView);
+    }
 
   private:
     bool graphCompleted_ = false;

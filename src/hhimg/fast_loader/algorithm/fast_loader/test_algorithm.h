@@ -14,7 +14,6 @@ struct TestAlgorithm : AbstractFLAlgorithm<View<T>, View<T>> {
 
     void operator()(std::shared_ptr<View<T>> in) override {
         this->addResult(in);
-        in->returnToMemoryManager();
     }
 
     std::shared_ptr<typename AbstractFLAlgorithm<View<T>, View<T>>::TaskType>
