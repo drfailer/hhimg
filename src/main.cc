@@ -1,10 +1,7 @@
 #include "config.h"
 #include "hhimg/algorithm/contrast_brightness.h"
-#include "hhimg/algorithm/fast_loader/test_algorithm.h"
-#include "hhimg/concrete/fast_loader_pipeline.h"
 #include "impl/cimg/cimg.h"
 #include "impl/cimg/cimg_tile_factory.h"
-#include "impl/tiff_fl/grayscale_tiff_tile_loader.h"
 #include <hedgehog/hedgehog.h>
 #include <hhimg/hhimg.h>
 
@@ -96,7 +93,6 @@ void contrast(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
 void testHedgehog(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
     auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
     std::vector<double> v(9, 1.0 / 9);
-    /* std::vector<double> v(9, 2.0); */
     hhimg::Mask<double> meanFilter(v, 3, 3);
     auto compute = [](auto tile, size_t x, size_t y) {
         return hhimg::Pixel<PixelType>{tile->at(x, y).red, 0,
@@ -114,20 +110,12 @@ void halideBlur(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
     auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
     hhimg::Mask<double> blurX({1. / 3., 1. / 3., 1. / 3.}, 3, 1);
     hhimg::Mask<double> blurY({1. / 3., 1. / 3., 1. / 3.}, 1, 3);
-    /* std::vector<double> v(9, 1.0 / 9); */
-    /* hhimg::Mask<double> meanFilter(v, 3, 3); */
 
     image |=
         std::make_shared<hhimg::HedgehogPipeline<PixelType>>(
             256, 8, 8, tileFactory, "Halide blur") |
         std::make_shared<hhimg::Convolution<PixelType, double>>(20, blurX) |
         std::make_shared<hhimg::Convolution<PixelType, double>>(20, blurY);
-    /* image |= */
-    /*     std::make_shared<hhimg::HedgehogPipeline<PixelType>>(256, tileFactory, */
-    /*                                                          "Halide blur") | */
-    /*     std::static_pointer_cast<hhimg::AbstractPairTileAlgorithm<PixelType>>( */
-    /*         std::make_shared<hhimg::Convolution<PixelType, double>>(32, */
-    /*           meanFilter)); */
 }
 
 void run(Config config) {
