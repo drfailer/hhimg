@@ -1,6 +1,7 @@
 #ifndef HDG_MINUS_HPP
 #define HDG_MINUS_HPP
 #include "../../tools/hhutils/trigger_state.h"
+#include "../../tools/null_type.h"
 #include "../abstract/tile_algorithms.h"
 #include "../concrete/hedgehog_pipeline.h"
 #include "tile/minus/minus_state.h"
@@ -9,13 +10,14 @@
 
 namespace hhimg::hdg {
 
-template <typename T> class Minus : public Abstract2TilesAlgorithm<T> {
+template <typename T, typename F = NullType, typename L = NullType>
+class Minus : public Abstract2TilesAlgorithm<T> {
   public:
-    Minus(size_t nbThreads, Image<T> const &imageToSubstract)
+    Minus(size_t nbThreads, Image<T> const &imageToSubstract,
+          std::shared_ptr<HedgehogPipeline<T, F, L>> pipeline = nullptr)
         : Abstract2TilesAlgorithm<T>(nbThreads, "Minus"),
-          imageToSubstract_(imageToSubstract) {}
+          imageToSubstract_(imageToSubstract), pipeline_(pipeline) {}
     Minus(Image<T> const &imageToSubstract) : Minus(1, imageToSubstract) {}
-    ~Minus() = default;
 
     void operator()(std::shared_ptr<PairTile<T>> tiles) override {
         auto t1 = tiles->first;
@@ -32,9 +34,12 @@ template <typename T> class Minus : public Abstract2TilesAlgorithm<T> {
     }
 
     auto createTiggerState() {
+        auto triggerState =
+            std::make_shared<TriggerState<AbstractImage<T>, AbstractImage<T>>>(
+                imageToSubstract_);
         return std::make_shared<
-            TriggerState<AbstractImage<T>, AbstractImage<T>>>(
-            imageToSubstract_);
+            hh::StateManager<1, AbstractImage<T>, AbstractImage<T>>>(
+            triggerState);
     }
 
     std::shared_ptr<typename Abstract2TilesAlgorithm<T>::TaskType>
@@ -45,25 +50,36 @@ template <typename T> class Minus : public Abstract2TilesAlgorithm<T> {
 
     constexpr static auto setup(std::shared_ptr<HedgehogPipeline<T>> pipeline,
                                 auto self) {
-        auto triggerState = self->createTiggerState();
-        auto triggerStateManager = std::make_shared<
-            hh::StateManager<1, AbstractImage<T>, AbstractImage<T>>>(
-            triggerState);
-        auto splitGraph = pipeline->createSplitGraph();
         auto minusWrapper = std::make_shared<MinusTileWrapper<T>>(1);
         auto minusState = std::make_shared<MinusState<T>>();
         auto minusStateManager =
             std::make_shared<MinusStateManager<T>>(minusState);
+        auto triggerStateManager = self->createTiggerState();
 
-        pipeline->inputs(triggerStateManager);
-        pipeline->edges(triggerStateManager, splitGraph);
-        pipeline->edges(splitGraph, minusWrapper);
+        if constexpr (null_type_v<F> && null_type_v<L>) {
+            auto splitGraph = pipeline->createSplitGraph();
+            pipeline->inputs(triggerStateManager);
+            pipeline->edges(triggerStateManager, splitGraph);
+            pipeline->edges(splitGraph, minusWrapper);
+        } else {
+            auto splitGraph =
+                pipeline->createSplitGraph(self->pipeline_->ghostRegionSize());
+
+            self->pipeline_->inputs(triggerStateManager);
+            self->pipeline_->edges(triggerStateManager, splitGraph);
+            self->pipeline_->edges(splitGraph, self->pipeline_->firstTask());
+            self->pipeline_->outputs(self->pipeline_->lastTask());
+
+            pipeline->inputs(self->pipeline_->graph());
+            pipeline->edges(self->pipeline_->graph(), minusWrapper);
+        }
         pipeline->edges(minusWrapper, minusStateManager);
         return pipeline->add(minusStateManager)->add(self);
     }
 
   private:
     Image<T> imageToSubstract_ = nullptr;
+    std::shared_ptr<HedgehogPipeline<T, F, L>> pipeline_ = nullptr;
 };
 
 }; // namespace hhimg::hdg

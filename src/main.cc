@@ -1,4 +1,5 @@
 #include "config.h"
+#include "hhimg/hedgehog/helpers.h"
 #include "impl/cimg/cimg.h"
 #include "impl/cimg/cimg_tile_factory.h"
 #include <hedgehog/hedgehog.h>
@@ -48,21 +49,16 @@ void detailExtr(std::shared_ptr<CImgImage<PixelType>> image) {
 }
 
 void detailExtrHH(std::shared_ptr<CImgImage<PixelType>> image) {
+    using namespace hhimg::hdg;
     hhimg::Mask<double> meanFilter(std::vector<double>(9, 1.0 / 9), 3, 3);
     auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
     auto secondImage = image->copy();
 
-    hhimg::utils::PerfRectorder::start("detailExtr");
-    secondImage |= std::make_shared<hhimg::hdg::HedgehogPipeline<PixelType>>(
-                       256, 4, 4, tileFactory, "mean") |
-                   std::make_shared<hhimg::hdg::Convolution<PixelType, double>>(
-                       32, meanFilter);
-    image |= std::make_shared<hhimg::hdg::HedgehogPipeline<PixelType>>(
-                 256, 4, 4, tileFactory, "border extraction") |
-             std::make_shared<hhimg::hdg::Minus<PixelType>>(10, secondImage) |
-             std::make_shared<hhimg::hdg::GrayScale<PixelType>>(10) |
-             std::make_shared<hhimg::hdg::Threshold<PixelType>>(10, 10);
-    hhimg::utils::PerfRectorder::end("detailExtr");
+    auto mean =
+        subpipeline<PixelType>("mean") | convolution<PixelType>(32, meanFilter);
+    image |= pipeline<PixelType>(256, 4, 4, tileFactory, "detail extraction") |
+             minus<PixelType>(10, secondImage, mean) |
+             grayscale<PixelType>(10) | threshold<PixelType>(10, 10);
 }
 
 void generateRainbow() {
@@ -138,6 +134,7 @@ void run(Config config) {
 
     /* testHedgehog(image); */
     detailExtrHH(image);
+    /* detailExtr(image); */
     /* halideBlur(image); */
 
     /* switch (config.algorithm) { */
