@@ -1,6 +1,6 @@
 #ifndef CIMG_IMAGE_HPP
 #define CIMG_IMAGE_HPP
-#include "hhimg/abstract/data/abstract_image.h"
+#include "hhimg/common/abstract_image.h"
 
 namespace cimg_library {
 template <typename T> class CImg;

@@ -1,5 +1,4 @@
 #include "config.h"
-#include "hhimg/algorithm/contrast_brightness.h"
 #include "impl/cimg/cimg.h"
 #include "impl/cimg/cimg_tile_factory.h"
 #include <hedgehog/hedgehog.h>
@@ -12,10 +11,10 @@ void verticalBordersExtr(std::shared_ptr<CImgImage<PixelType>> image) {
     auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
 
     hhimg::utils::PerfRectorder::start("verticalBordersExtr");
-    image |=
-        hhimg::GrayScale<PixelType>() |
-        hhimg::Convolution<PixelType, double>(imageFactory, verticalBorders) |
-        hhimg::Threshold<PixelType>(50);
+    image |= hhimg::seq::GrayScale<PixelType>() |
+             hhimg::seq::Convolution<PixelType, double>(imageFactory,
+                                                        verticalBorders) |
+             hhimg::seq::Threshold<PixelType>(50);
     hhimg::utils::PerfRectorder::end("verticalBordersExtr");
 }
 
@@ -24,10 +23,10 @@ void horizontalBordersExtr(std::shared_ptr<CImgImage<PixelType>> image) {
     auto imageFactory = std::make_shared<CImgImageFactory<PixelType>>();
 
     hhimg::utils::PerfRectorder::start("horizontalBordersExtr");
-    image |=
-        hhimg::GrayScale<PixelType>() |
-        hhimg::Convolution<PixelType, double>(imageFactory, horizontalBorders) |
-        hhimg::Threshold<PixelType>(50);
+    image |= hhimg::seq::GrayScale<PixelType>() |
+             hhimg::seq::Convolution<PixelType, double>(imageFactory,
+                                                        horizontalBorders) |
+             hhimg::seq::Threshold<PixelType>(50);
     hhimg::utils::PerfRectorder::end("horizontalBordersExtr");
 }
 
@@ -38,12 +37,13 @@ void detailExtr(std::shared_ptr<CImgImage<PixelType>> image) {
 
     hhimg::utils::PerfRectorder::start("detailExtr");
     secondImage |=
-        hhimg::Convolution<PixelType, double>(imageFactory, meanFilter);
-    image |= hhimg::Crop<PixelType>(imageFactory, 1, 1, secondImage->width(),
+        hhimg::seq::Convolution<PixelType, double>(imageFactory, meanFilter);
+    image |=
+        hhimg::seq::Crop<PixelType>(imageFactory, 1, 1, secondImage->width(),
                                     secondImage->height()) |
-             hhimg::Minus<PixelType>(secondImage) |
-             hhimg::GrayScale<PixelType>() |
-             hhimg::Threshold<PixelType>(10);
+        hhimg::seq::Minus<PixelType>(secondImage) |
+        hhimg::seq::GrayScale<PixelType>() |
+        hhimg::seq::Threshold<PixelType>(10);
     hhimg::utils::PerfRectorder::end("detailExtr");
 }
 
@@ -53,15 +53,15 @@ void detailExtrHH(std::shared_ptr<CImgImage<PixelType>> image) {
     auto secondImage = image->copy();
 
     hhimg::utils::PerfRectorder::start("detailExtr");
-    secondImage |=
-        std::make_shared<hhimg::HedgehogPipeline<PixelType>>(
-            256, 4, 4, tileFactory, "mean") |
-        std::make_shared<hhimg::Convolution<PixelType, double>>(32, meanFilter);
-    image |= std::make_shared<hhimg::HedgehogPipeline<PixelType>>(
+    secondImage |= std::make_shared<hhimg::hdg::HedgehogPipeline<PixelType>>(
+                       256, 4, 4, tileFactory, "mean") |
+                   std::make_shared<hhimg::hdg::Convolution<PixelType, double>>(
+                       32, meanFilter);
+    image |= std::make_shared<hhimg::hdg::HedgehogPipeline<PixelType>>(
                  256, 4, 4, tileFactory, "border extraction") |
-             std::make_shared<hhimg::Minus<PixelType>>(10, secondImage) |
-             std::make_shared<hhimg::GrayScale<PixelType>>(10) |
-             std::make_shared<hhimg::Threshold<PixelType>>(10, 10);
+             std::make_shared<hhimg::hdg::Minus<PixelType>>(10, secondImage) |
+             std::make_shared<hhimg::hdg::GrayScale<PixelType>>(10) |
+             std::make_shared<hhimg::hdg::Threshold<PixelType>>(10, 10);
     hhimg::utils::PerfRectorder::end("detailExtr");
 }
 
@@ -73,7 +73,7 @@ void generateRainbow() {
     };
     auto image = imageFactory->get(255, 255);
 
-    image |= hhimg::MapMutate<PixelType>(compute);
+    image |= hhimg::seq::MapMutate<PixelType>(compute);
     displayCImgImage(std::static_pointer_cast<CImgImage<PixelType>>(image));
 }
 
@@ -83,11 +83,11 @@ void redFilter(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
         return hhimg::Pixel<PixelType>{image->at(x, y).red, 0, 0};
     };
 
-    image |= hhimg::MapMutate<PixelType>(compute);
+    image |= hhimg::seq::MapMutate<PixelType>(compute);
 }
 
 void contrast(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
-    image |= hhimg::ContrastBrightness<PixelType>(1.5, 1);
+    image |= hhimg::seq::ContrastBrightness<PixelType>(1.5, 1);
 }
 
 void testHedgehog(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
@@ -99,11 +99,11 @@ void testHedgehog(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
                                        tile->at(x, y).blue};
     };
 
-    image |= std::make_shared<hhimg::HedgehogPipeline<PixelType>>(
+    image |= std::make_shared<hhimg::hdg::HedgehogPipeline<PixelType>>(
                  256, 4, 4, tileFactory, "my algorithm") |
-             std::make_shared<hhimg::Convolution<PixelType, double>>(
+             std::make_shared<hhimg::hdg::Convolution<PixelType, double>>(
                  32, meanFilter) |
-             std::make_shared<hhimg::MapMutate<PixelType>>(32, compute);
+             std::make_shared<hhimg::hdg::MapMutate<PixelType>>(32, compute);
 }
 
 void halideBlur(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
@@ -112,10 +112,11 @@ void halideBlur(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
     hhimg::Mask<double> blurY({1. / 3., 1. / 3., 1. / 3.}, 1, 3);
 
     image |=
-        std::make_shared<hhimg::HedgehogPipeline<PixelType>>(
+        std::make_shared<hhimg::hdg::HedgehogPipeline<PixelType>>(
             256, 8, 8, tileFactory, "Halide blur") |
-        std::make_shared<hhimg::Convolution<PixelType, double>>(20, blurX) |
-        std::make_shared<hhimg::Convolution<PixelType, double>>(20, blurY);
+        std::make_shared<hhimg::hdg::Convolution<PixelType, double>>(20,
+                                                                     blurX) |
+        std::make_shared<hhimg::hdg::Convolution<PixelType, double>>(20, blurY);
 }
 
 void run(Config config) {
@@ -126,11 +127,13 @@ void run(Config config) {
     hhimg::utils::PerfRectorder::start("run");
 
     /* hhimg::FLImg<PixelType> flimg = { */
-    /*   std::make_shared<GrayscaleTiffTileLoader<PixelType>>(1, "../img/img_r022_c026_c1.ome.tif") */
+    /*   std::make_shared<GrayscaleTiffTileLoader<PixelType>>(1,
+     * "../img/img_r022_c026_c1.ome.tif") */
     /* }; */
 
     /* flimg |= */
-    /*     std::make_shared<hhimg::FastLoaderPipeline<PixelType>>(256, "test") | */
+    /*     std::make_shared<hhimg::FastLoaderPipeline<PixelType>>(256, "test") |
+     */
     /*     std::make_shared<hhimg::TestAlgorithm<PixelType>>(1); */
 
     /* testHedgehog(image); */
