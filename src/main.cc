@@ -125,7 +125,7 @@ void run(Config config) {
 
     flimg |=
         std::make_shared<hhimg::fld::FastLoaderPipeline<PixelType>>(256, "test") |
-        std::make_shared<hhimg::fld::TestAlgorithm<PixelType>>(1);
+        std::make_shared<hhimg::fld::Threshold<PixelType>>(1, 10);
 
     /* testHedgehog(image); */
     /* detailExtrHH(image); */
