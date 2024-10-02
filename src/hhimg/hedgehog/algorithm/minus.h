@@ -1,5 +1,6 @@
 #ifndef HDG_MINUS_HPP
 #define HDG_MINUS_HPP
+#include "../../tools/hhutils/identity_state.h"
 #include "../../tools/hhutils/trigger_state.h"
 #include "../../tools/null_type.h"
 #include "../abstract/tile_algorithms.h"
@@ -34,12 +35,15 @@ class Minus : public Abstract2TilesAlgorithm<T> {
     }
 
     auto createTiggerState() {
-        auto triggerState =
-            std::make_shared<TriggerState<AbstractImage<T>, AbstractImage<T>>>(
-                imageToSubstract_);
-        return std::make_shared<
-            hh::StateManager<1, AbstractImage<T>, AbstractImage<T>>>(
-            triggerState);
+        using SMType = hh::StateManager<1, AbstractImage<T>, AbstractImage<T>>;
+        using IdType = IdentityState<AbstractImage<T>, AbstractImage<T>>;
+        using TrigType = TriggerState<AbstractImage<T>, AbstractImage<T>>;
+        return imageToSubstract_ != nullptr
+                   ? std::make_shared<SMType>(
+                         std::make_shared<TrigType>(imageToSubstract_),
+                         "trigger")
+                   : std::make_shared<SMType>(std::make_shared<IdType>(),
+                                              "identity");
     }
 
     std::shared_ptr<typename Abstract2TilesAlgorithm<T>::TaskType>

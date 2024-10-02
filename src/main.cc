@@ -52,12 +52,11 @@ void detailExtrHH(std::shared_ptr<CImgImage<PixelType>> image) {
     using namespace hhimg::hdg;
     hhimg::Mask<double> meanFilter(std::vector<double>(9, 1.0 / 9), 3, 3);
     auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
-    auto secondImage = image->copy();
 
     auto mean =
         subpipeline<PixelType>("mean") | convolution<PixelType>(32, meanFilter);
     image |= pipeline<PixelType>(256, 4, 4, tileFactory, "detail extraction") |
-             minus<PixelType>(10, secondImage, mean) |
+             minus<PixelType>(10, nullptr, mean) |
              grayscale<PixelType>(10) | threshold<PixelType>(10, 10);
 }
 
