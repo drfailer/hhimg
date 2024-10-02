@@ -4,3 +4,6 @@
 [submodule "lib/hedgehog"]
 	path = lib/hedgehog
 	url = https://github.com/usnistgov/hedgehog.git
+[submodule "lib/FastLoader"]
+	path = lib/FastLoader
+	url = https://github.com/usnistgov/FastLoader.git
