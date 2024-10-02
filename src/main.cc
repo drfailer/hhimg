@@ -1,8 +1,8 @@
 #include "config.h"
-#include "hhimg/hedgehog/helpers.h"
 #include "impl/cimg/cimg.h"
 #include "impl/cimg/cimg_tile_factory.h"
 #include <hedgehog/hedgehog.h>
+#include <hhimg/hedgehog/helpers.h>
 #include <hhimg/hhimg.h>
 
 using PixelType = unsigned char;
@@ -56,8 +56,8 @@ void detailExtrHH(std::shared_ptr<CImgImage<PixelType>> image) {
     auto mean =
         subpipeline<PixelType>("mean") | convolution<PixelType>(32, meanFilter);
     image |= pipeline<PixelType>(256, 4, 4, tileFactory, "detail extraction") |
-             minus<PixelType>(10, nullptr, mean) |
-             grayscale<PixelType>(10) | threshold<PixelType>(10, 10);
+             minus<PixelType>(10, nullptr, mean) | grayscale<PixelType>(10) |
+             threshold<PixelType>(10, 10);
 }
 
 void generateRainbow() {
@@ -86,6 +86,7 @@ void contrast(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
 }
 
 void testHedgehog(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
+    using namespace hhimg::hdg;
     auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
     std::vector<double> v(9, 1.0 / 9);
     hhimg::Mask<double> meanFilter(v, 3, 3);
@@ -94,24 +95,20 @@ void testHedgehog(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
                                        tile->at(x, y).blue};
     };
 
-    image |= std::make_shared<hhimg::hdg::HedgehogPipeline<PixelType>>(
-                 256, 4, 4, tileFactory, "my algorithm") |
-             std::make_shared<hhimg::hdg::Convolution<PixelType, double>>(
-                 32, meanFilter) |
-             std::make_shared<hhimg::hdg::MapMutate<PixelType>>(32, compute);
+    image |= pipeline<PixelType>(256, 4, 4, tileFactory, "my algorithm") |
+             convolution<PixelType>(32, meanFilter) |
+             mapMutate<PixelType>(32, compute);
 }
 
 void halideBlur(std::shared_ptr<hhimg::AbstractImage<PixelType>> image) {
+    using namespace hhimg::hdg;
     auto tileFactory = std::make_shared<CImgTileFactory<PixelType>>();
     hhimg::Mask<double> blurX({1. / 3., 1. / 3., 1. / 3.}, 3, 1);
     hhimg::Mask<double> blurY({1. / 3., 1. / 3., 1. / 3.}, 1, 3);
 
-    image |=
-        std::make_shared<hhimg::hdg::HedgehogPipeline<PixelType>>(
-            256, 8, 8, tileFactory, "Halide blur") |
-        std::make_shared<hhimg::hdg::Convolution<PixelType, double>>(20,
-                                                                     blurX) |
-        std::make_shared<hhimg::hdg::Convolution<PixelType, double>>(20, blurY);
+    image |= pipeline<PixelType>(256, 8, 8, tileFactory, "Halide blur") |
+             convolution<PixelType>(20, blurX) |
+             convolution<PixelType>(20, blurY);
 }
 
 void run(Config config) {
@@ -133,8 +130,8 @@ void run(Config config) {
 
     /* testHedgehog(image); */
     detailExtrHH(image);
-    /* detailExtr(image); */
     /* halideBlur(image); */
+    /* detailExtr(image); */
 
     /* switch (config.algorithm) { */
     /* case VerticalBorders: */
