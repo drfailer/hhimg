@@ -45,6 +45,14 @@ auto operator|(Pipeline pipeline, Algo algorithm) {
     return hhimg::clear_t<Algo>::setup(pipeline, algorithm);
 }
 
+template <hhimg::HHPipeline Pipeline, hhimg::TileAlgorithms Algo>
+    requires(requires(Pipeline p, Algo a) {
+        hhimg::clear_t<Algo>::setup(p, a);
+    })
+auto operator|(Algo algorithm, Pipeline pipeline) {
+    return (pipeline | algorithm);
+}
+
 /******************************************************************************/
 /*                                fast loader                                 */
 /******************************************************************************/
@@ -63,6 +71,14 @@ auto operator|(Pipeline pipeline, Algo algorithm) {
         pipeline->ghostRegionSize(algorithm->ghostRegionSize());
     }
     return hhimg::clear_t<Algo>::setup(pipeline, algorithm);
+}
+
+template <hhimg::FLPipeline Pipeline, hhimg::FLAlgorithms Algo>
+    requires(requires(Pipeline p, Algo a) {
+        hhimg::clear_t<Algo>::setup(p, a);
+    })
+auto operator|(Algo algorithm, Pipeline pipeline) {
+    return (pipeline | algorithm);
 }
 
 #endif
