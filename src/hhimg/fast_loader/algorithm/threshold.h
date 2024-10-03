@@ -12,9 +12,8 @@ template <typename T> struct Threshold : AbstractViewAlgorithm<T> {
 
     void operator()(std::shared_ptr<View<T>> view) override {
         size_t size =
-            std::accumulate(view->tileDims().begin(), view->tileDims().end(), 0,
-                            std::plus<size_t>());
-        std::cout << size << std::endl;
+            std::accumulate(view->tileDims().begin(), view->tileDims().end(), 1,
+                            std::multiplies<size_t>());
         for (size_t i = 0; i < size; ++i) {
             if (view->viewData()->data()[i] < value) {
                 view->viewData()->data()[i] = low;

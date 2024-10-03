@@ -2,8 +2,12 @@
 #define FLD_OPERATORS_H
 #include "../tools/concepts.h"
 
-template <typename TileLoader, typename FastLoader>
-void operator|=(hhimg::fld::FLImg<TileLoader> image, FastLoader pipeline) {
+template <typename Img, typename FastLoader>
+    requires(requires(Img i) {
+        i.tileLoader;
+        i.tileWriter;
+    })
+void operator|=(Img image, FastLoader pipeline) {
     pipeline->operator()(image);
 }
 

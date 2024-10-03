@@ -6,23 +6,24 @@
 
 namespace hhimg::fld {
 
-template <typename T>
+template <typename T, typename TileWriter>
 struct ReleaseView : hh::AbstractTask<1, View<T>, View<T>> {
-    ReleaseView(size_t nbThreads)
-        : hh::AbstractTask<1, View<T>, View<T>>("Release Views", nbThreads) {}
+    ReleaseView(TileWriter tr)
+        : hh::AbstractTask<1, View<T>, View<T>>("Release Views"),
+        tr(tr) {}
 
     void execute(std::shared_ptr<View<T>> in) override {
-        this->addResult(in); // FIXME: not sure about that
+        std::shared_ptr<View<T>> out = nullptr;
+        this->addResult(out); // FIXME: not sure about that
+        tr->writeTileToFile(in);
         in->returnToMemoryManager();
-    }
-
-    std::shared_ptr<hh::AbstractTask<1, View<T>, View<T>>> copy() override {
-        return std::make_shared<ReleaseView<T>>(this->numberThreads());
     }
 
     constexpr static auto setup(auto pipeline, auto self) {
         return pipeline->add(self);
     }
+
+    TileWriter tr;
 };
 
 } // end namespace hhimg::fld

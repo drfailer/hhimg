@@ -2,6 +2,7 @@
 #include "impl/cimg/cimg.h"
 #include "impl/cimg/cimg_tile_factory.h"
 #include "impl/tiff_fl/grayscale_tiff_tile_loader.h"
+#include "impl/tiff_fl/grayscale_tiff_tile_writer.h"
 #include <hedgehog/hedgehog.h>
 #include <hhimg/hedgehog/helpers.h>
 #include <hhimg/hhimg.h>
@@ -57,7 +58,8 @@ void detailExtrHH(std::shared_ptr<CImgImage<PixelType>> image) {
     auto mean =
         subpipeline<PixelType>("mean") | convolution<PixelType>(32, meanFilter);
     image |= pipeline<PixelType>(256, 4, 4, tileFactory, "detail extraction") |
-             minus<PixelType>(10, nullptr, mean) | grayscale<PixelType>(10) |
+             minus<PixelType>(10, nullptr, mean) |
+             grayscale<PixelType>(10) |
              threshold<PixelType>(10, 10);
 }
 
@@ -119,13 +121,16 @@ void run(Config config) {
 
     hhimg::utils::PerfRectorder::start("run");
 
-    hhimg::fld::FLImg<PixelType> flimg = {
-      std::make_shared<GrayscaleTiffTileLoader<PixelType>>(1, "../img/img_r022_c026_c1.ome.tif")
+    auto tl = std::make_shared<GrayscaleTiffTileLoader<uint64_t>>(1, "../img/img_r022_c026_c1.ome.tif");
+    /* auto tl = std::make_shared<GrayscaleTiffTileLoader<PixelType>>(1, "../img/shapes_lzw_tiled.tif"); */
+    hhimg::fld::FLImg<uint64_t, GrayscaleTiffTileWriter<uint64_t>> flimg = {
+      tl,
+      std::make_shared<GrayscaleTiffTileWriter<uint64_t>>("../img/save.tif", tl),
     };
 
     flimg |=
-        std::make_shared<hhimg::fld::FastLoaderPipeline<PixelType>>(256, "test") |
-        std::make_shared<hhimg::fld::Threshold<PixelType>>(1, 10);
+        std::make_shared<hhimg::fld::FastLoaderPipeline<uint64_t>>(256, "test") |
+        std::make_shared<hhimg::fld::Threshold<uint64_t>>(4, 3000, 0, -1);
 
     /* testHedgehog(image); */
     /* detailExtrHH(image); */

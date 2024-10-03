@@ -1,9 +1,9 @@
 #ifndef FAST_LOADER_PIPELINE_H
 #define FAST_LOADER_PIPELINE_H
-#include "../concrete/data/fl_img.h"
-#include "../concrete/data/fl_view.h"
 #include "../../tools/null_type.h"
 #include "../algorithm/views/release_view.h"
+#include "../concrete/data/fl_img.h"
+#include "../concrete/data/fl_view.h"
 #include <fast_loader/fast_loader.h>
 #include <hedgehog/hedgehog.h>
 #include <memory>
@@ -27,7 +27,7 @@ struct FastLoaderPipeline {
         : firstTask_(firstTask), lastTask_(lastTask), tileSize_(tileSize),
           ghostRegionSize_(ghostRegionSize), graph_(graph) {}
 
-    template <typename TileLoader> void operator()(FLImg<TileLoader> in) {
+    void operator()(auto in) {
         if constexpr (!null_type_v<LastTask>) {
             setupGraph(in);
             requestAllViews(0);
@@ -43,7 +43,7 @@ struct FastLoaderPipeline {
     void setupGraph(auto in) {
         if (!graphCompleted_) {
             setInput(in);
-            setOutput();
+            setOutput(in);
             graph_->executeGraph();
             graphCompleted_ = true;
         } else {
@@ -74,7 +74,7 @@ struct FastLoaderPipeline {
     void ghostRegionSize(size_t size) { ghostRegionSize_ = size; }
 
   private:
-    template <typename TileLoader> void setInput(FLImg<TileLoader> in) {
+    void setInput(auto in) {
         auto config = std::make_unique<fl::FastLoaderConfiguration<View<T>>>(
             in.tileLoader);
         fastLoader_ =
@@ -83,11 +83,14 @@ struct FastLoaderPipeline {
         graph_->edges(fastLoader_, firstTask_);
     }
 
-    void setOutput() {
-      // TODO: we should have a write task here, before the release of the view
-      auto releaseView = std::make_shared<ReleaseView<T>>(1);
-      graph_->edges(lastTask_, releaseView);
-      graph_->outputs(releaseView);
+    void setOutput(auto in) {
+        // TODO: we should have a write task here, before the release of the
+        // view
+        auto releaseView =
+            std::make_shared<ReleaseView<T, decltype(in.tileWriter)>>(
+                in.tileWriter);
+        graph_->edges(lastTask_, releaseView);
+        graph_->outputs(releaseView);
     }
 
   private:

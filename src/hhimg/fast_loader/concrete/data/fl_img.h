@@ -6,9 +6,10 @@
 
 namespace hhimg::fld {
 
-template <typename T> struct FLImg {
+template <typename T, typename TileWriter> struct FLImg {
     std::shared_ptr<fl::AbstractTileLoader<View<T>>> tileLoader =
         nullptr;
+    std::shared_ptr<TileWriter> tileWriter = nullptr;
 };
 
 } // end namespace hhimg::fld

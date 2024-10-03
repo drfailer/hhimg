@@ -209,6 +209,9 @@ class GrayscaleTiffTileLoader
         return dimNames_;
     }
 
+    [[nodiscard]] short sampleFormat() const { return sampleFormat_; }
+    [[nodiscard]] short bitsPerSample() const { return bitsPerSample_; }
+
   private:
     /// @brief Private function to cast and copy the values between the buffer
     /// from libtiff and the view
