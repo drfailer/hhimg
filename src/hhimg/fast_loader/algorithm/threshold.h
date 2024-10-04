@@ -1,7 +1,7 @@
 #ifndef FLD_THRESHOLD_HPP
 #define FLD_THRESHOLD_HPP
 #include "../abstract/view_algorithms.h"
-#include <numeric>
+#include "../../tools/utils.h"
 
 namespace hhimg::fld {
 
@@ -11,9 +11,8 @@ template <typename T> struct Threshold : AbstractViewAlgorithm<T> {
           low(low), high(high) {}
 
     void operator()(std::shared_ptr<View<T>> view) override {
-        size_t size =
-            std::accumulate(view->tileDims().begin(), view->tileDims().end(), 1,
-                            std::multiplies<size_t>());
+        size_t size = utils::computeSize(view->tileDims());
+
         for (size_t i = 0; i < size; ++i) {
             if (view->viewData()->data()[i] < value) {
                 view->viewData()->data()[i] = low;
